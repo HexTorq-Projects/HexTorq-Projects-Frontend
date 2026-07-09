@@ -1,0 +1,349 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ *
+ * Theme definitions (CSS variables for Light & Dark mode support)
+ * ------------------------------------------------------------------ */
+:root {
+  --bg: #f2f4fc; /* Soft pastel twilight background */
+  --bg-soft: #eceef5; /* Soft lavender white */
+  --surface: #ffffff; /* Card backgrounds */
+  --surface-hi: #dfe2f0; /* Selection background */
+  --line: #d3d6e8; /* Soft slate borders */
+  
+  --fg: #141829; /* Deep twilight black/navy headings */
+  --muted: #3a4160; /* Darker slate-indigo body text for light mode contrast */
+  --faint: #5b6386; /* Darker grey-lavender details for light mode contrast */
+
+  --violet-txt: #4c63b6; /* High contrast text accent */
+  --indigo-txt: #3b4e96; /* High contrast text accent */
+  --cyan-txt: #0c4a6e; /* High contrast text accent */
+
+  /* Brand accents — deep enough to stay legible on the light surface */
+  --brand-violet: #6d5bd0;
+  --brand-indigo: #4f46e5;
+  --brand-cyan: #0e7aa0;
+
+  /* Sellability tier accents (light mode) */
+  --tier-basic: #64748b;
+  --tier-standard: #0284c7;
+  --tier-high: #7c3aed;
+  --tier-premium: #b7791f;
+
+  --glass-border: rgba(20, 24, 41, 0.05);
+  --aurora-bg: radial-gradient(45rem 30rem at 15% -10%, rgba(167, 183, 231, 0.15), transparent 70%),
+               radial-gradient(40rem 28rem at 100% 0%, rgba(216, 226, 255, 0.12), transparent 70%);
+}
+
+.dark {
+  --bg: #0b0c15; /* Deep dark twilight navy */
+  --bg-soft: #0f1018; /* Deep soft twilight navy */
+  --surface: #141624; /* Navy card surface */
+  --surface-hi: #1d2033; /* Navy selection background */
+  --line: #24283e; /* Navy borders */
+  
+  --fg: #f0f2fa; /* Light twilight headings */
+  --muted: #9da6cc; /* Muted blue-lavender body text */
+  --faint: #656c94; /* Faint blue-lavender details */
+
+  --violet-txt: #a7b7e7;
+  --indigo-txt: #8fa4df;
+  --cyan-txt: #d8e2ff;
+
+  /* Brand accents — bright twilight pastels read well on the dark surface */
+  --brand-violet: #a7b7e7;
+  --brand-indigo: #8fa4df;
+  --brand-cyan: #d8e2ff;
+
+  /* Sellability tier accents (dark mode — unchanged from original theme) */
+  --tier-basic: #64748b;
+  --tier-standard: #8fa4df;
+  --tier-high: #a7b7e7;
+  --tier-premium: #d8e2ff;
+
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --aurora-bg: radial-gradient(45rem 30rem at 15% -10%, rgba(167, 183, 231, 0.22), transparent 70%),
+               radial-gradient(40rem 28rem at 100% 0%, rgba(216, 226, 255, 0.16), transparent 70%);
+}
+
+/* ------------------------------------------------------------------ *
+ * Hextorq design tokens (Tailwind v4 @theme mapping)
+ * ------------------------------------------------------------------ */
+@theme {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Surfaces mapping */
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-surface: var(--surface);
+  --color-surface-hi: var(--surface-hi);
+  --color-line: var(--line);
+
+  /* Typography mapping */
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+
+  /* Brand Accents (Twilight Haze) — theme-aware for light/dark legibility */
+  --color-violet: var(--brand-violet);
+  --color-indigo: var(--brand-indigo);
+  --color-cyan: var(--brand-cyan);
+
+  /* Typography Accents (Dark/Light Responsive) */
+  --color-violet-txt: var(--violet-txt);
+  --color-indigo-txt: var(--indigo-txt);
+  --color-cyan-txt: var(--cyan-txt);
+
+  /* Twilight Haze Specific Gradients */
+  --color-twilight-a: #a7b7e7;
+  --color-twilight-b: #d8e2ff;
+
+  /* Tier Accents (theme-aware) */
+  --color-tier-basic: var(--tier-basic);
+  --color-tier-standard: var(--tier-standard);
+  --color-tier-high: var(--tier-high);
+  --color-tier-premium: var(--tier-premium);
+
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Base Layout & Transitions
+ * ------------------------------------------------------------------ */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  /* Smooth transition for theme switching */
+  body, header, nav, footer, div, section, aside, a, button, input, textarea, select {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-violet) 40%, transparent);
+    color: #fff;
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-surface-hi);
+    border-radius: 999px;
+    border: 2px solid var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-line); }
+}
+
+/* ------------------------------------------------------------------ *
+ * Brand Utilities
+ * ------------------------------------------------------------------ */
+@layer utilities {
+  .text-gradient {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-violet),
+      var(--color-indigo) 45%,
+      var(--color-cyan)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-brand {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-violet),
+      var(--color-indigo) 45%,
+      var(--color-cyan)
+    );
+  }
+
+  /* Frosted light/dark glassmorphism cards */
+  .glass {
+    background: color-mix(in oklab, var(--color-surface) 80%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .glow-violet {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-violet) 18%, transparent),
+      0 20px 60px -20px color-mix(in oklab, var(--color-violet) 45%, transparent);
+  }
+
+  .aurora {
+    background: var(--aurora-bg);
+  }
+
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* "Twilight Haze" soft-gradient accent utilities */
+  .bg-twilight {
+    background-image: linear-gradient(135deg, var(--color-twilight-a), var(--color-twilight-b));
+  }
+
+  .text-twilight {
+    background-image: linear-gradient(100deg, var(--color-twilight-a), var(--color-twilight-b));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Soft blurred gradient orb — drop into a relatively-positioned section for
+     an ambient "Twilight Haze" glow accent (hero backdrops, footer, auth cards). */
+  .twilight-orb {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 9999px;
+    filter: blur(70px);
+    opacity: 0.55;
+    background: radial-gradient(
+      circle at 30% 30%,
+      color-mix(in oklab, var(--color-twilight-a) 75%, transparent),
+      color-mix(in oklab, var(--color-twilight-b) 55%, transparent) 55%,
+      transparent 75%
+    );
+  }
+  .dark .twilight-orb {
+    opacity: 0.4;
+  }
+
+  /* Bottom fade mask — hints that a scrollable list has more content below. */
+  .fade-scroll-b {
+    mask-image: linear-gradient(to bottom, black calc(100% - 22px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 22px), transparent 100%);
+  }
+
+  @keyframes shine {
+    0% { left: -150%; }
+    50% { left: 150%; }
+    100% { left: 150%; }
+  }
+
+  .animate-shine {
+    animation: shine 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .glow-premium {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-tier-premium) 20%, transparent),
+      0 20px 60px -25px color-mix(in oklab, var(--color-tier-premium) 30%, transparent);
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Legible accent ink: uses the raw (often pastel) color in dark mode and a
+     deepened variant in light mode so category/tier labels keep contrast. */
+  .accent-ink { color: var(--accent-ink-color, currentColor); }
+
+  /* Infinite horizontal marquee (testimonials / moving cards) */
+  @keyframes marquee-x {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .animate-marquee-x {
+    animation: marquee-x var(--marquee-duration, 42s) linear infinite;
+    will-change: transform;
+  }
+  .marquee-pause:hover .animate-marquee-x {
+    animation-play-state: paused;
+  }
+  /* Edge fade for horizontal marquees */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  }
+
+  /* Infinite vertical marquee columns (testimonials / moving cards) */
+  @keyframes marquee-y-up {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+  }
+  @keyframes marquee-y-down {
+    from { transform: translateY(-50%); }
+    to { transform: translateY(0); }
+  }
+  .animate-marquee-y-up {
+    animation: marquee-y-up var(--marquee-duration, 35s) linear infinite;
+    will-change: transform;
+  }
+  .animate-marquee-y-down {
+    animation: marquee-y-down var(--marquee-duration, 35s) linear infinite;
+    will-change: transform;
+  }
+
+  /* Edge fade for vertical marquees */
+  .marquee-y-mask {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  }
+}
+
+/* Deepen accent-ink in light mode only (unlayered so it wins over the utility). */
+html:not(.dark) .accent-ink {
+  color: color-mix(in oklab, var(--accent-ink-color, #64748b) 68%, #0a0d1c);
+}
+
+/* respect reduced motion globally as a safety net */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
