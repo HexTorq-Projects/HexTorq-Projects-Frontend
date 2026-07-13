@@ -359,7 +359,7 @@ export default function Home() {
         <div className="mx-auto max-w-4xl text-center space-y-6 md:space-y-8 relative z-10 pt-16">
           <Reveal delay={0.1} className="space-y-4">
             <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-fg leading-[1.05]">
-              asdfghjkl;'lkjhg<br />
+              Graduate with Distinction. <br />
               Production-Ready Projects, <br />
               <Typewriter
                 words={["Architected for Excellence.", "Delivered with Source Code.", "Backed by Real Mentorship.", "Viva-Ready & Documented."]}
