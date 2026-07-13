@@ -48,9 +48,8 @@ function ProductWalkthrough() {
             <button
               key={s}
               onClick={() => setStep(s)}
-              className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                step === s ? "bg-violet-txt w-4" : "bg-line hover:bg-violet/50"
-              }`}
+              className={`h-2 w-2 rounded-full transition-all duration-300 ${step === s ? "bg-violet-txt w-4" : "bg-line hover:bg-violet/50"
+                }`}
               aria-label={`Go to step ${s + 1}`}
             />
           ))}
@@ -360,11 +359,11 @@ export default function Home() {
         <div className="mx-auto max-w-4xl text-center space-y-6 md:space-y-8 relative z-10 pt-16">
           <Reveal delay={0.1} className="space-y-4">
             <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-fg leading-[1.05]">
-              Graduate with Distinction. <br />
+              asdfghjkl;'lkjhg<br />
               Production-Ready Projects, <br />
-              <Typewriter 
-                words={["Architected for Excellence.", "Delivered with Source Code.", "Backed by Real Mentorship.", "Viva-Ready & Documented."]} 
-                className="text-gradient" 
+              <Typewriter
+                words={["Architected for Excellence.", "Delivered with Source Code.", "Backed by Real Mentorship.", "Viva-Ready & Documented."]}
+                className="text-gradient"
               />
             </h1>
             <p className="mx-auto max-w-2xl text-base sm:text-lg text-muted leading-relaxed">
@@ -580,7 +579,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div 
+        <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 grid-flow-row-dense"
           onMouseEnter={() => setIsStreamsHovered(true)}
           onMouseLeave={() => setIsStreamsHovered(false)}
@@ -676,7 +675,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div 
+            <div
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
               onMouseEnter={() => setIsSpotlightHovered(true)}
               onMouseLeave={() => setIsSpotlightHovered(false)}
@@ -772,11 +771,11 @@ export default function Home() {
             const s = deliverableStyles[d.color];
             const Icon = d.icon;
             const glowColor = d.color === "violet" ? "#a855f7" : d.color === "cyan" ? "#06b6d4" : "#10b981";
-            const borderColors = d.color === "violet" 
-              ? ['#a855f7', '#c084fc', '#38bdf8'] 
-              : d.color === "cyan" 
-              ? ['#06b6d4', '#38bdf8', '#a855f7'] 
-              : ['#10b981', '#34d399', '#38bdf8'];
+            const borderColors = d.color === "violet"
+              ? ['#a855f7', '#c084fc', '#38bdf8']
+              : d.color === "cyan"
+                ? ['#06b6d4', '#38bdf8', '#a855f7']
+                : ['#10b981', '#34d399', '#38bdf8'];
 
             return (
               <Reveal key={d.title} delay={idx * 0.08}>
@@ -829,15 +828,15 @@ export default function Home() {
           <div className="marquee-y-mask relative h-[660px] overflow-hidden py-4 max-w-[960px] mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
               {/* Column 1 (Left): Scrolls Down */}
-              <div 
-                className="flex flex-col gap-6 animate-marquee-y-down" 
+              <div
+                className="flex flex-col gap-6 animate-marquee-y-down"
                 style={{ "--marquee-duration": "32s" } as CSSProperties}
               >
                 {[...studentReviews.filter((_, i) => i % 3 === 0), ...studentReviews.filter((_, i) => i % 3 === 0)].map((rev, idx) => (
                   <div key={idx} className="shrink-0">
                     <Card className="bg-surface/30 backdrop-blur-md border border-line p-5 flex flex-col justify-between hover:border-violet/40 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
                       <div className="absolute -top-12 -right-12 h-24 w-24 rounded-full bg-violet/5 blur-2xl group-hover:bg-violet/10 transition-colors" />
-                      
+
                       <div className="space-y-4">
                         {/* Header: Profile, Username/College, and Twitter Icon */}
                         <div className="flex items-center gap-3">
@@ -849,7 +848,7 @@ export default function Home() {
                             <p className="text-[10px] text-muted truncate">@{rev.name.replace(/\s+/g, "").toLowerCase()}_dev</p>
                           </div>
                           <svg className="h-4 w-4 text-faint shrink-0 ml-auto" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                           </svg>
                         </div>
 
@@ -880,15 +879,15 @@ export default function Home() {
               </div>
 
               {/* Column 2 (Middle): Scrolls Up */}
-              <div 
-                className="hidden md:flex flex-col gap-6 animate-marquee-y-up" 
+              <div
+                className="hidden md:flex flex-col gap-6 animate-marquee-y-up"
                 style={{ "--marquee-duration": "28s" } as CSSProperties}
               >
                 {[...studentReviews.filter((_, i) => i % 3 === 1), ...studentReviews.filter((_, i) => i % 3 === 1)].map((rev, idx) => (
                   <div key={idx} className="shrink-0">
                     <Card className="bg-surface/30 backdrop-blur-md border border-line p-5 flex flex-col justify-between hover:border-violet/40 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
                       <div className="absolute -top-12 -right-12 h-24 w-24 rounded-full bg-violet/5 blur-2xl group-hover:bg-violet/10 transition-colors" />
-                      
+
                       <div className="space-y-4">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-tr from-violet to-cyan flex items-center justify-center font-display text-white font-bold text-sm">
@@ -899,7 +898,7 @@ export default function Home() {
                             <p className="text-[10px] text-muted truncate">@{rev.name.replace(/\s+/g, "").toLowerCase()}_dev</p>
                           </div>
                           <svg className="h-4 w-4 text-faint shrink-0 ml-auto" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                           </svg>
                         </div>
 
@@ -929,15 +928,15 @@ export default function Home() {
               </div>
 
               {/* Column 3 (Right): Scrolls Down */}
-              <div 
-                className="hidden lg:flex flex-col gap-6 animate-marquee-y-down" 
+              <div
+                className="hidden lg:flex flex-col gap-6 animate-marquee-y-down"
                 style={{ "--marquee-duration": "35s" } as CSSProperties}
               >
                 {[...studentReviews.filter((_, i) => i % 3 === 2), ...studentReviews.filter((_, i) => i % 3 === 2)].map((rev, idx) => (
                   <div key={idx} className="shrink-0">
                     <Card className="bg-surface/30 backdrop-blur-md border border-line p-5 flex flex-col justify-between hover:border-violet/40 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
                       <div className="absolute -top-12 -right-12 h-24 w-24 rounded-full bg-violet/5 blur-2xl group-hover:bg-violet/10 transition-colors" />
-                      
+
                       <div className="space-y-4">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-tr from-violet to-cyan flex items-center justify-center font-display text-white font-bold text-sm">
@@ -948,7 +947,7 @@ export default function Home() {
                             <p className="text-[10px] text-muted truncate">@{rev.name.replace(/\s+/g, "").toLowerCase()}_dev</p>
                           </div>
                           <svg className="h-4 w-4 text-faint shrink-0 ml-auto" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                           </svg>
                         </div>
 
