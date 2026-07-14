@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Sparkles, Lock, CheckCircle2, XCircle } from "lucide-react";
+import { Sparkles, Lock, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useResetPassword } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
@@ -48,6 +48,8 @@ export default function ResetPassword() {
   const reduced = useReducedMotion();
 
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [success, setSuccess] = useState(false);
@@ -187,18 +189,31 @@ export default function ResetPassword() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label="New Password" htmlFor="reset-password">
-            <Input
-              id="reset-password"
-              type="password"
-              placeholder="••••••••"
-              required
-              minLength={6}
-              icon={<Lock className="h-4 w-4" />}
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setShowReqs(true); }}
-              disabled={isPending}
-              onFocus={() => setShowReqs(true)}
-            />
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint z-10">
+                <Lock className="h-4 w-4" />
+              </span>
+              <input
+                id="reset-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setShowReqs(true); }}
+                disabled={isPending}
+                onFocus={() => setShowReqs(true)}
+                className="w-full rounded-xl border border-line bg-bg-soft pl-10 pr-10 py-2.5 text-sm text-fg placeholder:text-faint transition-colors focus:outline-none focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-faint hover:text-fg transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
             {showReqs && password && (
               <motion.div
                 initial={{ opacity: 0, y: -4 }}
@@ -239,17 +254,30 @@ export default function ResetPassword() {
             htmlFor="reset-confirm"
             error={confirmPassword && !passwordsMatch ? "Passwords do not match" : undefined}
           >
-            <Input
-              id="reset-confirm"
-              type="password"
-              placeholder="••••••••"
-              required
-              minLength={6}
-              icon={<Lock className="h-4 w-4" />}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isPending}
-            />
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint z-10">
+                <Lock className="h-4 w-4" />
+              </span>
+              <input
+                id="reset-confirm"
+                type={showConfirm ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                minLength={6}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isPending}
+                className="w-full rounded-xl border border-line bg-bg-soft pl-10 pr-10 py-2.5 text-sm text-fg placeholder:text-faint transition-colors focus:outline-none focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-faint hover:text-fg transition-colors"
+                tabIndex={-1}
+              >
+                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </Field>
 
           <Button type="submit" variant="auth" className="w-full mt-6" disabled={isPending || !canSubmit}>

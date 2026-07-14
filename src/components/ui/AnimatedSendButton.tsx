@@ -43,13 +43,14 @@ export const AnimatedSendButton: React.FC<AnimatedSendButtonProps> = ({
             <span style={{ '--i': 1 } as React.CSSProperties}>e</span>
             <span style={{ '--i': 2 } as React.CSSProperties}>n</span>
             <span style={{ '--i': 3 } as React.CSSProperties}>d</span>
-            <span style={{ '--i': 4 } as React.CSSProperties}>M</span>
-            <span style={{ '--i': 5 } as React.CSSProperties}>e</span>
-            <span style={{ '--i': 6 } as React.CSSProperties}>s</span>
+            <span style={{ '--i': 4 } as React.CSSProperties}> </span>
+            <span style={{ '--i': 5 } as React.CSSProperties}>M</span>
+            <span style={{ '--i': 6 } as React.CSSProperties}>e</span>
             <span style={{ '--i': 7 } as React.CSSProperties}>s</span>
-            <span style={{ '--i': 8 } as React.CSSProperties}>a</span>
-            <span style={{ '--i': 9 } as React.CSSProperties}>g</span>
-            <span style={{ '--i': 10 } as React.CSSProperties}>e</span>
+            <span style={{ '--i': 8 } as React.CSSProperties}>s</span>
+            <span style={{ '--i': 9 } as React.CSSProperties}>a</span>
+            <span style={{ '--i': 10 } as React.CSSProperties}>g</span>
+            <span style={{ '--i': 11 } as React.CSSProperties}>e</span>
           </p>
         </div>
 
@@ -63,10 +64,12 @@ export const AnimatedSendButton: React.FC<AnimatedSendButtonProps> = ({
             </svg>
           </div>
           <p>
-            <span style={{ '--i': 5 } as React.CSSProperties}>S</span>
-            <span style={{ '--i': 6 } as React.CSSProperties}>e</span>
-            <span style={{ '--i': 7 } as React.CSSProperties}>n</span>
-            <span style={{ '--i': 8 } as React.CSSProperties}>t</span>
+            <span style={{ '--i': 0 } as React.CSSProperties}>S</span>
+            <span style={{ '--i': 1 } as React.CSSProperties}>e</span>
+            <span style={{ '--i': 2 } as React.CSSProperties}>n</span>
+            <span style={{ '--i': 3 } as React.CSSProperties}>t</span>
+            <span style={{ '--i': 4 } as React.CSSProperties}> </span>
+            <span style={{ '--i': 5 } as React.CSSProperties}>✓</span>
           </p>
         </div>
       </button>

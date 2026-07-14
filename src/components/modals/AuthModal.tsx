@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { X, Sparkles, Mail, Lock, User, Phone, CheckCircle2, XCircle } from "lucide-react";
+import { X, Sparkles, Mail, Lock, User, Phone, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUiStore } from "@/store/useUiStore";
 import { useLogin, useRegister } from "@/api/auth";
@@ -49,6 +49,7 @@ export function AuthModal() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showReqs, setShowReqs] = useState(false);
@@ -191,18 +192,31 @@ export function AuthModal() {
               </Field>
 
               <Field label="Password" htmlFor="password">
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                  icon={<Lock className="h-4 w-4" />}
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); if (mode === "register") setShowReqs(true); }}
-                  disabled={isPending}
-                  onFocus={() => { if (mode === "register") setShowReqs(true); }}
-                />
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint z-10">
+                    <Lock className="h-4 w-4" />
+                  </span>
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); if (mode === "register") setShowReqs(true); }}
+                    disabled={isPending}
+                    onFocus={() => { if (mode === "register") setShowReqs(true); }}
+                    className="w-full rounded-xl border border-line bg-bg-soft pl-10 pr-10 py-2.5 text-sm text-fg placeholder:text-faint transition-colors focus:outline-none focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-faint hover:text-fg transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 {mode === "login" && (
                   <div className="flex items-center justify-end mt-1">
                     <Link

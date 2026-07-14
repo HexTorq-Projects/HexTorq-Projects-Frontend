@@ -274,12 +274,24 @@
   position: relative;
 }
 
-.animated-send-wrapper .state--default span:nth-child(4) {
-  margin-right: 6px; /* Space between Send and Message */
+.animated-send-wrapper .state--default span:nth-child(5) {
+  margin-right: 2px;
+  display: inline-block;
+  width: 4px;
 }
 
 .animated-send-wrapper .state--sent {
   display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.animated-send-wrapper .button {
+  min-height: 68px;
+}
+
+.animated-send-wrapper .state {
+  min-height: 28px;
 }
 
 .animated-send-wrapper .state--sent svg {
