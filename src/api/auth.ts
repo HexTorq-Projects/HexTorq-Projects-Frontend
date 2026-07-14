@@ -45,3 +45,23 @@ export function useRegister() {
     },
   });
 }
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      apiFetch<{ ok: boolean }>("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      }),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (body: { token: string; password: string }) =>
+      apiFetch<{ ok: boolean }>("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+  });
+}

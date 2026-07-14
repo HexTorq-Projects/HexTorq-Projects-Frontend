@@ -47,7 +47,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen pt-24 pb-12 flex items-center justify-center px-4 relative overflow-hidden aurora grain">
-      {/* Twilight Haze soft accent glow */}
       <div className="twilight-orb w-[26rem] h-[26rem] -top-24 -left-24" aria-hidden="true" />
       <div className="twilight-orb w-[22rem] h-[22rem] -bottom-28 -right-20" aria-hidden="true" />
 
@@ -109,6 +108,15 @@ export default function Login() {
               disabled={isPending}
             />
           </Field>
+
+          <div className="flex items-center justify-end -mt-1">
+            <Link
+              to="/forgot-password"
+              className="text-xs text-muted hover:text-violet-txt font-medium transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
 
           <Button type="submit" variant="auth" className="w-full mt-6" disabled={isPending}>
             {isPending && <Spinner className="text-white" />}

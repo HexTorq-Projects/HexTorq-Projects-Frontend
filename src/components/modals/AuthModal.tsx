@@ -6,7 +6,7 @@ import { useLogin, useRegister } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 export function AuthModal() {
   const { authModal, closeAuth } = useUiStore();
@@ -168,6 +168,17 @@ export function AuthModal() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isPending}
                 />
+                {mode === "login" && (
+                  <div className="flex items-center justify-end mt-1">
+                    <Link
+                      to="/forgot-password"
+                      onClick={() => { closeAuth(); }}
+                      className="text-[11px] text-muted hover:text-violet-txt font-medium transition-colors"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                )}
               </Field>
 
               {mode === "register" && (
