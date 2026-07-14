@@ -5,7 +5,6 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useCreateEnquiry } from "@/api/enquiries";
 import { Button } from "@/components/ui/Button";
 import { Input, Textarea, Field } from "@/components/ui/Input";
-import { WHATSAPP_NUMBER } from "@/lib/constants";
 
 export function EnquiryModal() {
   const { enquiry, closeEnquiry } = useUiStore();
@@ -53,22 +52,6 @@ export function EnquiryModal() {
       },
       {
         onSuccess: () => {
-          // Open WhatsApp link with prefilled text
-          const greeting = `Hello Hextorq Team,\n\nI have submitted an enquiry for a project. Here are my details:`;
-          const details = `\n- *Name*: ${name}\n- *Email*: ${email}${
-            phone ? `\n- *WhatsApp*: ${phone}` : ""
-          }`;
-          const projectDetails = enquiry.projectTitle
-            ? `\n- *Project Title*: ${enquiry.projectTitle}`
-            : "";
-          const msgText = `\n\n*My Message*:\n${message}`;
-
-          const fullText = `${greeting}${details}${projectDetails}${msgText}`;
-          const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-            fullText
-          )}`;
-
-          window.open(whatsappUrl, "_blank");
           closeEnquiry();
         },
         onError: (err: any) => {
@@ -182,12 +165,12 @@ export function EnquiryModal() {
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  Proceed to WhatsApp Chat
+                  Send Enquiry
                 </>
               )}
             </Button>
             <p className="text-[11px] text-center text-faint">
-              Note: Submitting this form creates a record on Hextorq and opens WhatsApp to complete your order manually with our staff. Payments will happen later after discussion.
+              Your details will be shared with our team. We'll respond within 24 hours.
             </p>
           </div>
         </form>

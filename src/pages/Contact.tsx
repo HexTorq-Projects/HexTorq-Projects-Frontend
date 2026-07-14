@@ -32,10 +32,6 @@ export default function Contact() {
           setEmail("");
           setPhone("");
           setMessage("");
-
-          // Trigger WhatsApp
-          const text = `Hi Hextorq Team,\n\nI have sent a general contact enquiry.\n- Name: ${name}\n- Email: ${email}\n- Message: ${message}`;
-          window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, "_blank");
         },
         onError: (err: any) => {
           setErrorMsg(err.message || "Failed to submit message. Please try again.");
@@ -168,7 +164,7 @@ export default function Contact() {
                   transition={{ duration: 0.3 }}
                   className="overflow-hidden rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-sm font-medium text-emerald-400"
                 >
-                  Your message was sent successfully! We've also initiated a redirect to WhatsApp to start chatting.
+                  Your message was sent successfully! We'll get back to you within 24 hours.
                 </motion.div>
               )}
               {errorMsg && (
