@@ -78,5 +78,5 @@ export function appAreaColor(name: string | null | undefined): string {
 }
 
 /** WhatsApp number for the "enquire" manual-close flow (payments later). */
-export const WHATSAPP_NUMBER = "919999999999"; // TODO: replace with real Hextorq number
-export const CONTACT_EMAIL = "hello@hextorq.com"; // TODO: replace
+export const WHATSAPP_NUMBER = "918220348218";
+export const CONTACT_EMAIL = "enquiry@hextorq.com";
