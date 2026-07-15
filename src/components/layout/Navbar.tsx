@@ -7,7 +7,6 @@ import { useUiStore } from "@/store/useUiStore";
 import { useWishlist } from "@/api/wishlist";
 import { Button } from "@/components/ui/Button";
 import { HoverRoll } from "@/components/motion/HoverRoll";
-import logoSrc from "@/assests/hextorq logo 111.png";
 
 export function Navbar() {
   const { user, clear } = useAuthStore();
@@ -74,12 +73,11 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <img
-              src={logoSrc}
-              alt="Hextorq"
-              className="h-10 w-auto object-contain"
-            />
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="font-display text-2xl tracking-tight flex items-center gap-0">
+              <span className="font-black text-fg tracking-tighter">HEX</span>
+              <span className="font-light text-gradient tracking-tight">TORQ</span>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
