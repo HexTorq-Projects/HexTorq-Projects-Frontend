@@ -110,17 +110,21 @@ export default function Contact() {
             })}
 
             <Reveal delay={0.15}>
-              <div className="group flex gap-4 items-start rounded-xl p-2 -m-2 transition-all duration-200 hover:bg-surface-hi/50 hover:translate-x-1">
+              <a
+                href="https://maps.app.goo.gl/6xYXGuZdBpzCnLnp7"
+                target="_blank"
+                className="group flex gap-4 items-start rounded-xl p-2 -m-2 transition-all duration-200 hover:bg-surface-hi/50 hover:translate-x-1"
+              >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-faint/10 border border-faint/20 text-faint shrink-0 transition-transform duration-200 group-hover:scale-110">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
                   <h4 className="font-display font-semibold text-fg text-sm">IT Lab Center</h4>
                   <p className="text-sm text-muted leading-relaxed">
-                    Hextorq IT Labs, Outer Ring Road, Bangalore, KA, India.
+                    2, Second Floor, Vinayakar Kovil Street,<br/>Thirumalapalayam, Coimbatore - 641105.
                   </p>
                 </div>
-              </div>
+              </a>
             </Reveal>
           </div>
 
