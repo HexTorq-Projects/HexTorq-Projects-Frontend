@@ -76,8 +76,9 @@ export function Navbar() {
           <Link to="/" className="flex items-center gap-3 group">
             <motion.span
               className="font-display text-2xl tracking-[-0.02em] flex items-center gap-[0.02em] select-none"
-              animate={{ y: [0, -1.5, 0] }}
-              transition={{ duration: 3, ease: "easeInOut", repeat: Infinity }}
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 2.8, ease: [0.45, 0, 0.55, 1], repeat: Infinity }}
+              style={{ transformOrigin: "center" }}
             >
               <span className="font-[900] text-fg">HE</span>
               <span
