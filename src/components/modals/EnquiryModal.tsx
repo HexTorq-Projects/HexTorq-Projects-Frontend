@@ -131,7 +131,7 @@ export function EnquiryModal() {
             </Field>
           </div>
 
-          <Field label="WhatsApp / Phone Number" htmlFor="enq-phone" hint="Prefilled with country code if possible (e.g. 919999999999)">
+          <Field label="WhatsApp / Phone Number" htmlFor="enq-phone" hint="With country code (e.g. 91XXXXXXXXXX)">
             <Input
               id="enq-phone"
               type="tel"

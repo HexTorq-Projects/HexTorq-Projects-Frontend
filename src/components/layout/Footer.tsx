@@ -106,14 +106,18 @@ export function Footer() {
                   +{WHATSAPP_NUMBER}
                 </a>
               </div>
-              <div className="flex items-start gap-2.5">
+              <a
+                href="https://maps.app.goo.gl/6xYXGuZdBpzCnLnp7"
+                target="_blank"
+                className="flex items-start gap-2.5 group"
+              >
                 <MapPin className="h-4 w-4 text-faint mt-0.5 shrink-0" />
-                <span className="text-faint">
-                  Hextorq IT Labs,
+                <span className="text-faint group-hover:text-fg transition-colors">
+                  2, Second Floor, Vinayakar Kovil St,
                   <br />
-                  Bangalore, India
+                  Thirumalapalayam, Coimbatore - 641105
                 </span>
-              </div>
+              </a>
 
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi Hextorq, I want to talk about my final year project.")}`}

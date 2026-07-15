@@ -216,7 +216,7 @@ export default function Contact() {
                 <Input
                   id="contact-phone"
                   type="tel"
-                  placeholder="WhatsApp Number (e.g. 919999999999)"
+                  placeholder="WhatsApp Number"
                   icon={<Phone className="h-4 w-4" />}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
