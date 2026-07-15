@@ -107,7 +107,7 @@ export function Footer() {
                 </a>
               </div>
               <a
-                href="https://maps.app.goo.gl/6xYXGuZdBpzCnLnp7"
+                href="https://maps.app.goo.gl/x2PFXegDg3Mv9A1h7"
                 target="_blank"
                 className="flex items-start gap-2.5 group"
               >

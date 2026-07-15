@@ -111,7 +111,7 @@ export default function Contact() {
 
             <Reveal delay={0.15}>
               <a
-                href="https://maps.app.goo.gl/6xYXGuZdBpzCnLnp7"
+                href="https://maps.app.goo.gl/x2PFXegDg3Mv9A1h7"
                 target="_blank"
                 className="group flex gap-4 items-start rounded-xl p-2 -m-2 transition-all duration-200 hover:bg-surface-hi/50 hover:translate-x-1"
               >
