@@ -74,27 +74,22 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <span className="font-display text-2xl tracking-[-0.02em] flex items-center gap-[0.02em] select-none">
+            <motion.span
+              className="font-display text-2xl tracking-[-0.02em] flex items-center gap-[0.02em] select-none"
+              animate={{ y: [0, -1.5, 0] }}
+              transition={{ duration: 3, ease: "easeInOut", repeat: Infinity }}
+            >
               <span className="font-[900] text-fg">HE</span>
-              <motion.span
+              <span
                 className="font-[900] bg-gradient-to-r from-[#3b82f6] via-[#7c3aed] to-[#a855f7] bg-clip-text text-transparent inline-block"
                 style={{ filter: "drop-shadow(0 0 6px rgba(124,58,237,0.4))" }}
-                animate={{
-                  scale: [1, 1.06, 1],
-                  opacity: [1, 0.85, 1],
-                }}
-                transition={{
-                  duration: 2.5,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                }}
-              >X</motion.span>
+              >X</span>
               <span className="font-[900] text-fg">TOR</span>
               <span className="font-[900] text-fg relative">
                 Q
                 <span className="absolute -bottom-[2px] -right-[3px] w-[6px] h-[6px] rounded-full bg-violet-600 opacity-70" />
               </span>
-            </span>
+            </motion.span>
           </Link>
 
           {/* Desktop Navigation */}
