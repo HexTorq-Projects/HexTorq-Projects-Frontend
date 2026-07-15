@@ -73,10 +73,12 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-display text-2xl tracking-tight flex items-center gap-0">
-              <span className="font-black text-fg tracking-tighter">HEX</span>
-              <span className="font-light text-gradient tracking-tight">TORQ</span>
+          <Link to="/" className="flex items-center group">
+            <span className="font-display text-2xl tracking-tight flex items-center gap-0 font-black">
+              <span className="text-fg">HE</span>
+              <span className="bg-gradient-to-r from-blue-500 to-violet-600 bg-clip-text text-transparent">X</span>
+              <span className="text-fg">TOR</span>
+              <span className="text-fg">Q</span>
             </span>
           </Link>
 
