@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Navbar } from "./components/layout/Navbar";
@@ -6,6 +6,7 @@ import { Footer } from "./components/layout/Footer";
 import { AuthModal } from "./components/modals/AuthModal";
 import { EnquiryModal } from "./components/modals/EnquiryModal";
 import { useRotatingTitle } from "./hooks/useRotatingTitle";
+import { IntroOverlay, useIntroOverlay } from "./components/intro/IntroOverlay";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import CategoryPage from "./pages/CategoryPage";
@@ -100,18 +101,32 @@ function RouteProgressBar() {
 
 export function App() {
   useRotatingTitle();
+  const { showIntro, handleFinish } = useIntroOverlay();
+  const [siteReady, setSiteReady] = useState(!showIntro);
+
+  useEffect(() => {
+    if (!showIntro) setSiteReady(true);
+  }, [showIntro]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <RouteProgressBar />
-      <Navbar />
-      <main className="flex-grow">
-        <AnimatedRoutes />
-      </main>
-      <Footer />
-      <AuthModal />
-      <EnquiryModal />
-    </div>
+    <>
+      {showIntro && <IntroOverlay onFinish={handleFinish} />}
+      <motion.div
+        className="flex flex-col min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: siteReady ? 1 : 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <RouteProgressBar />
+        <Navbar />
+        <main className="flex-grow">
+          <AnimatedRoutes />
+        </main>
+        <Footer />
+        <AuthModal />
+        <EnquiryModal />
+      </motion.div>
+    </>
   );
 }
 export default App;
