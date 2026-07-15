@@ -76,7 +76,19 @@ export function Navbar() {
           <Link to="/" className="flex items-center gap-3 group">
             <span className="font-display text-2xl tracking-[-0.02em] flex items-center gap-[0.02em] select-none">
               <span className="font-[900] text-fg">HE</span>
-              <span className="font-[900] bg-gradient-to-r from-[#3b82f6] via-[#7c3aed] to-[#a855f7] bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(124,58,237,0.4)]">X</span>
+              <motion.span
+                className="font-[900] bg-gradient-to-r from-[#3b82f6] via-[#7c3aed] to-[#a855f7] bg-clip-text text-transparent inline-block"
+                style={{ filter: "drop-shadow(0 0 6px rgba(124,58,237,0.4))" }}
+                animate={{
+                  scale: [1, 1.06, 1],
+                  opacity: [1, 0.85, 1],
+                }}
+                transition={{
+                  duration: 2.5,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                }}
+              >X</motion.span>
               <span className="font-[900] text-fg">TOR</span>
               <span className="font-[900] text-fg relative">
                 Q
