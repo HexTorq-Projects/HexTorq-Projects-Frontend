@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { User, LogOut, Menu, X, Sun, Moon } from "lucide-react";
+import { User, LogOut, Menu, X, Sun, Moon, ShoppingCart, PackageCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUiStore } from "@/store/useUiStore";
 import { useWishlist } from "@/api/wishlist";
+import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/Button";
 import { HoverRoll } from "@/components/motion/HoverRoll";
 
@@ -13,6 +14,7 @@ export function Navbar() {
   const { openAuth, mobileNavOpen, setMobileNav } = useUiStore();
   const location = useLocation();
   const { data: wishlist = [] } = useWishlist();
+  const cartItems = useCartStore((s) => s.items);
 
   // Load preferences from localStorage or default to Dark Mode
   const [isDark, setIsDark] = useState(() => {
@@ -50,6 +52,7 @@ export function Navbar() {
   const links = [
     { name: "Home", path: "/" },
     { name: "Explore Projects", path: "/explore" },
+    { name: "Cart", path: "/cart" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -111,6 +114,29 @@ export function Navbar() {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
             {/* Theme Toggle Button */}
+            <Link
+              to="/cart"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full bg-surface-hi border border-line text-muted hover:text-fg hover:border-violet/40 transition-all"
+              title="Cart"
+            >
+              <ShoppingCart className="h-4.5 w-4.5" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan text-[10px] font-bold text-bg ring-2 ring-bg px-1">
+                  {cartItems.length}
+                </span>
+              )}
+            </Link>
+
+            {user && (
+              <Link
+                to="/orders"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-hi border border-line text-muted hover:text-fg hover:border-violet/40 transition-all"
+                title="Orders"
+              >
+                <PackageCheck className="h-4.5 w-4.5" />
+              </Link>
+            )}
+
             <button
               onClick={() => setIsDark(!isDark)}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-hi border border-line text-muted hover:text-fg hover:border-violet/40 transition-all cursor-pointer"
@@ -172,13 +198,13 @@ export function Navbar() {
 
             {user && (
               <Link
-                to="/dashboard"
+                to="/cart"
                 className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface-hi border border-line"
               >
-                <User className="h-4 w-4 text-violet-txt" />
-                {wishlist.length > 0 && (
+                <ShoppingCart className="h-4 w-4 text-cyan-txt" />
+                {cartItems.length > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-bg">
-                    {wishlist.length}
+                    {cartItems.length}
                   </span>
                 )}
               </Link>
@@ -235,6 +261,27 @@ export function Navbar() {
                       {wishlist.length > 0 && (
                         <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
                           {wishlist.length}
+                        </span>
+                      )}
+                    </Link>
+                    <Link
+                      to="/orders"
+                      onClick={() => setMobileNav(false)}
+                      className="flex items-center gap-3 text-base font-medium py-2 text-muted hover:text-fg transition-colors"
+                    >
+                      <PackageCheck className="h-5 w-5 text-cyan-txt" />
+                      <span>Orders</span>
+                    </Link>
+                    <Link
+                      to="/cart"
+                      onClick={() => setMobileNav(false)}
+                      className="flex items-center gap-3 text-base font-medium py-2 text-muted hover:text-fg transition-colors"
+                    >
+                      <ShoppingCart className="h-5 w-5 text-cyan-txt" />
+                      <span>Cart</span>
+                      {cartItems.length > 0 && (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan px-1 text-[10px] font-bold text-bg">
+                          {cartItems.length}
                         </span>
                       )}
                     </Link>

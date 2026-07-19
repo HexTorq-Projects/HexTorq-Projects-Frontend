@@ -6,7 +6,9 @@ import { useLogin, useRegister } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
-import { useLocation, useNavigate } from "react-router-dom";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { OrDivider } from "@/components/auth/OrDivider";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 export function AuthModal() {
   const { authModal, closeAuth } = useUiStore();
@@ -22,18 +24,18 @@ export function AuthModal() {
   const [phone, setPhone] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  const successCallback = () => {
+    closeAuth();
+    if (authModal.redirectTo) {
+      navigate(authModal.redirectTo);
+    } else if (location.pathname === "/login" || location.pathname === "/register") {
+      navigate("/dashboard");
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
-
-    const successCallback = () => {
-      closeAuth();
-      if (authModal.redirectTo) {
-        navigate(authModal.redirectTo);
-      } else if (location.pathname === "/login" || location.pathname === "/register") {
-        navigate("/dashboard");
-      }
-    };
 
     if (mode === "login") {
       loginMutation.mutate(
@@ -127,6 +129,11 @@ export function AuthModal() {
               )}
             </AnimatePresence>
 
+            <div className="relative z-10">
+              <GoogleAuthButton onSuccess={successCallback} onError={(msg) => setErrorMsg(msg)} />
+              <OrDivider />
+            </div>
+
             <form onSubmit={handleSubmit} className="relative z-10 space-y-4">
               {mode === "register" && (
                 <Field label="Full Name" htmlFor="name">
@@ -169,6 +176,18 @@ export function AuthModal() {
                   disabled={isPending}
                 />
               </Field>
+
+              {mode === "login" && (
+                <div className="text-right -mt-2">
+                  <Link
+                    to="/forgot-password"
+                    onClick={closeAuth}
+                    className="text-xs text-violet font-semibold hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              )}
 
               {mode === "register" && (
                 <Field label="Phone Number (WhatsApp preferred)" htmlFor="phone" hint="Optional, for direct project updates">

@@ -14,7 +14,14 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Dashboard from "./pages/Dashboard";
+import OrderHistory from "./pages/OrderHistory";
+import PaymentCallback from "./pages/PaymentCallback";
+import AdminApp from "./pages/admin/AdminApp";
 
 /** Cross-fades route content on navigation and resets scroll, so opening a
  *  project (or any page) never feels like an abrupt jump-cut. */
@@ -36,6 +43,12 @@ function AnimatedRoutes() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/orders" element={<OrderHistory />} />
+      <Route path="/payment/callback" element={<PaymentCallback />} />
       <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   );
@@ -96,6 +109,15 @@ function RouteProgressBar() {
 
 export function App() {
   useRotatingTitle();
+  const location = useLocation();
+
+  if (location.pathname.startsWith("/admin")) {
+    return (
+      <Routes>
+        <Route path="/admin/*" element={<AdminApp />} />
+      </Routes>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

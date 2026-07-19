@@ -7,6 +7,8 @@ import { useLogin } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { OrDivider } from "@/components/auth/OrDivider";
 
 export default function Login() {
   const { user } = useAuthStore();
@@ -83,6 +85,12 @@ export default function Login() {
           )}
         </AnimatePresence>
 
+        <GoogleAuthButton
+          onSuccess={() => navigate(redirectTo)}
+          onError={(msg) => setErrorMsg(msg)}
+        />
+        <OrDivider />
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label="Email Address" htmlFor="login-email">
             <Input
@@ -109,6 +117,12 @@ export default function Login() {
               disabled={isPending}
             />
           </Field>
+
+          <div className="text-right -mt-2">
+            <Link to="/forgot-password" className="text-xs text-violet font-semibold hover:underline">
+              Forgot password?
+            </Link>
+          </div>
 
           <Button type="submit" variant="auth" className="w-full mt-6" disabled={isPending}>
             {isPending && <Spinner className="text-white" />}

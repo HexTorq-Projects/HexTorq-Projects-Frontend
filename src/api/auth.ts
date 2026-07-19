@@ -45,3 +45,45 @@ export function useRegister() {
     },
   });
 }
+
+export function useGoogleLogin() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (credential: string) =>
+      apiFetch<AuthResponse>("/auth/google", {
+        method: "POST",
+        body: JSON.stringify({ credential }),
+      }),
+    onSuccess: (data) => {
+      setAuth(data.token, data.user);
+      qc.setQueryData(["me"], data.user);
+    },
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      apiFetch<{ message: string }>("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      }),
+  });
+}
+
+export function useResetPassword() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { email: string; token: string; newPassword: string }) =>
+      apiFetch<AuthResponse>("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    onSuccess: (data) => {
+      setAuth(data.token, data.user);
+      qc.setQueryData(["me"], data.user);
+    },
+  });
+}
