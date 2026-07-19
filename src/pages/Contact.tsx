@@ -32,10 +32,6 @@ export default function Contact() {
           setEmail("");
           setPhone("");
           setMessage("");
-
-          // Trigger WhatsApp
-          const text = `Hi Hextorq Team,\n\nI have sent a general contact enquiry.\n- Name: ${name}\n- Email: ${email}\n- Message: ${message}`;
-          window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, "_blank");
         },
         onError: (err: any) => {
           setErrorMsg(err.message || "Failed to submit message. Please try again.");
@@ -114,17 +110,21 @@ export default function Contact() {
             })}
 
             <Reveal delay={0.15}>
-              <div className="group flex gap-4 items-start rounded-xl p-2 -m-2 transition-all duration-200 hover:bg-surface-hi/50 hover:translate-x-1">
+              <a
+                href="https://maps.app.goo.gl/x2PFXegDg3Mv9A1h7"
+                target="_blank"
+                className="group flex gap-4 items-start rounded-xl p-2 -m-2 transition-all duration-200 hover:bg-surface-hi/50 hover:translate-x-1"
+              >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-faint/10 border border-faint/20 text-faint shrink-0 transition-transform duration-200 group-hover:scale-110">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
                   <h4 className="font-display font-semibold text-fg text-sm">IT Lab Center</h4>
                   <p className="text-sm text-muted leading-relaxed">
-                    Hextorq IT Labs, Outer Ring Road, Bangalore, KA, India.
+                    2, Second Floor, Vinayakar Kovil Street,<br/>Thirumalapalayam, Coimbatore - 641105.
                   </p>
                 </div>
-              </div>
+              </a>
             </Reveal>
           </div>
 
@@ -168,7 +168,7 @@ export default function Contact() {
                   transition={{ duration: 0.3 }}
                   className="overflow-hidden rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-sm font-medium text-emerald-400"
                 >
-                  Your message was sent successfully! We've also initiated a redirect to WhatsApp to start chatting.
+                  Your message was sent successfully! We'll get back to you within 24 hours.
                 </motion.div>
               )}
               {errorMsg && (
@@ -216,7 +216,7 @@ export default function Contact() {
                 <Input
                   id="contact-phone"
                   type="tel"
-                  placeholder="WhatsApp Number (e.g. 919999999999)"
+                  placeholder="WhatsApp Number"
                   icon={<Phone className="h-4 w-4" />}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}

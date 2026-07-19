@@ -65,7 +65,7 @@ export function useGoogleLogin() {
 export function useForgotPassword() {
   return useMutation({
     mutationFn: (email: string) =>
-      apiFetch<{ message: string }>("/auth/forgot-password", {
+      apiFetch<{ ok: boolean }>("/auth/forgot-password", {
         method: "POST",
         body: JSON.stringify({ email }),
       }),
@@ -76,7 +76,8 @@ export function useResetPassword() {
   const setAuth = useAuthStore((s) => s.setAuth);
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: { email: string; token: string; newPassword: string }) =>
+    // backend logs the user straight in after a successful reset
+    mutationFn: (body: { token: string; password: string }) =>
       apiFetch<AuthResponse>("/auth/reset-password", {
         method: "POST",
         body: JSON.stringify(body),

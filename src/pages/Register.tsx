@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Sparkles, Mail, Lock, User, Phone } from "lucide-react";
+import { Sparkles, Mail, Lock, User, Phone, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRegister } from "@/api/auth";
@@ -9,6 +9,39 @@ import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { OrDivider } from "@/components/auth/OrDivider";
+import { cn } from "@/lib/cn";
+
+type StrengthLevel = 0 | 1 | 2 | 3 | 4;
+
+const strengthMeta: Record<StrengthLevel, { label: string; color: string; bg: string; width: string }> = {
+  0: { label: "Very Weak", color: "text-rose-400", bg: "bg-rose-500/30", width: "w-0" },
+  1: { label: "Weak", color: "text-rose-400", bg: "bg-rose-500", width: "w-1/4" },
+  2: { label: "Fair", color: "text-amber-400", bg: "bg-amber-400", width: "w-2/4" },
+  3: { label: "Strong", color: "text-emerald-400", bg: "bg-emerald-400", width: "w-3/4" },
+  4: { label: "Very Strong", color: "text-emerald-400", bg: "bg-emerald-400", width: "w-full" },
+};
+
+function passwordStrength(pw: string): StrengthLevel {
+  if (!pw) return 0;
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  if (score <= 1) return 1;
+  if (score === 2) return 2;
+  if (score === 3) return 3;
+  return 4;
+}
+
+const requirements = [
+  { label: "At least 6 characters", test: (pw: string) => pw.length >= 6 },
+  { label: "At least 8 characters", test: (pw: string) => pw.length >= 8 },
+  { label: "Uppercase letter", test: (pw: string) => /[A-Z]/.test(pw) },
+  { label: "Number", test: (pw: string) => /[0-9]/.test(pw) },
+  { label: "Special character", test: (pw: string) => /[^A-Za-z0-9]/.test(pw) },
+];
 
 export default function Register() {
   const { user } = useAuthStore();
@@ -21,14 +54,19 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showReqs, setShowReqs] = useState(false);
 
   useEffect(() => {
     if (user) {
       navigate(redirectTo);
     }
   }, [user, navigate, redirectTo]);
+
+  const level = useMemo(() => passwordStrength(password), [password]);
+  const meta = strengthMeta[level];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +94,6 @@ export default function Register() {
 
   return (
     <div className="min-h-screen pt-24 pb-12 flex items-center justify-center px-4 relative overflow-hidden aurora grain">
-      {/* Twilight Haze soft accent glow */}
       <div className="twilight-orb w-[26rem] h-[26rem] -top-24 -right-24" aria-hidden="true" />
       <div className="twilight-orb w-[22rem] h-[22rem] -bottom-28 -left-20" aria-hidden="true" />
 
@@ -126,17 +163,64 @@ export default function Register() {
           </Field>
 
           <Field label="Password" htmlFor="reg-password">
-            <Input
-              id="reg-password"
-              type="password"
-              placeholder="••••••••"
-              required
-              minLength={6}
-              icon={<Lock className="h-4 w-4" />}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isPending}
-            />
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint z-10">
+                <Lock className="h-4 w-4" />
+              </span>
+              <input
+                id="reg-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setShowReqs(true); }}
+                disabled={isPending}
+                onFocus={() => setShowReqs(true)}
+                className="w-full rounded-xl border border-line bg-bg-soft pl-10 pr-10 py-2.5 text-sm text-fg placeholder:text-faint transition-colors focus:outline-none focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-faint hover:text-fg transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            {showReqs && password && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-3 space-y-2"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-1.5 rounded-full bg-surface-hi overflow-hidden">
+                    <div className={cn("h-full rounded-full transition-all duration-500", meta.bg)} style={{ width: meta.width === "w-0" ? "0%" : meta.width === "w-1/4" ? "25%" : meta.width === "w-2/4" ? "50%" : meta.width === "w-3/4" ? "75%" : "100%" }} />
+                  </div>
+                  <span className={cn("text-[11px] font-semibold whitespace-nowrap", meta.color)}>
+                    {meta.label}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                  {requirements.map((req) => {
+                    const passed = req.test(password);
+                    return (
+                      <div key={req.label} className="flex items-center gap-1.5 text-[11px]">
+                        {passed ? (
+                          <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
+                        ) : (
+                          <XCircle className="h-3 w-3 text-muted shrink-0" />
+                        )}
+                        <span className={passed ? "text-emerald-400" : "text-faint"}>
+                          {req.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
           </Field>
 
           <Field label="Phone Number (WhatsApp preferred)" htmlFor="reg-phone" hint="Optional, for direct project updates">

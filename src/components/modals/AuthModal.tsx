@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { X, Sparkles, Mail, Lock, User, Phone } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { X, Sparkles, Mail, Lock, User, Phone, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUiStore } from "@/store/useUiStore";
 import { useLogin, useRegister } from "@/api/auth";
@@ -8,7 +8,37 @@ import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { OrDivider } from "@/components/auth/OrDivider";
+import { cn } from "@/lib/cn";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+
+type StrengthLevel = 0 | 1 | 2 | 3 | 4;
+const strengthMeta: Record<StrengthLevel, { label: string; color: string; bg: string }> = {
+  0: { label: "Very Weak", color: "text-rose-400", bg: "bg-rose-500/30" },
+  1: { label: "Weak", color: "text-rose-400", bg: "bg-rose-500" },
+  2: { label: "Fair", color: "text-amber-400", bg: "bg-amber-400" },
+  3: { label: "Strong", color: "text-emerald-400", bg: "bg-emerald-400" },
+  4: { label: "Very Strong", color: "text-emerald-400", bg: "bg-emerald-400" },
+};
+function passwordStrength(pw: string): StrengthLevel {
+  if (!pw) return 0;
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  if (score <= 1) return 1;
+  if (score === 2) return 2;
+  if (score === 3) return 3;
+  return 4;
+}
+const requirements = [
+  { label: "At least 6 characters", test: (pw: string) => pw.length >= 6 },
+  { label: "At least 8 characters", test: (pw: string) => pw.length >= 8 },
+  { label: "Uppercase letter", test: (pw: string) => /[A-Z]/.test(pw) },
+  { label: "Number", test: (pw: string) => /[0-9]/.test(pw) },
+  { label: "Special character", test: (pw: string) => /[^A-Za-z0-9]/.test(pw) },
+];
 
 export function AuthModal() {
   const { authModal, closeAuth } = useUiStore();
@@ -21,8 +51,13 @@ export function AuthModal() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showReqs, setShowReqs] = useState(false);
+
+  const level = useMemo(() => passwordStrength(password), [password]);
+  const meta = strengthMeta[level];
 
   const successCallback = () => {
     closeAuth();
@@ -164,30 +199,76 @@ export function AuthModal() {
               </Field>
 
               <Field label="Password" htmlFor="password">
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                  icon={<Lock className="h-4 w-4" />}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isPending}
-                />
-              </Field>
-
-              {mode === "login" && (
-                <div className="text-right -mt-2">
-                  <Link
-                    to="/forgot-password"
-                    onClick={closeAuth}
-                    className="text-xs text-violet font-semibold hover:underline"
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint z-10">
+                    <Lock className="h-4 w-4" />
+                  </span>
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); if (mode === "register") setShowReqs(true); }}
+                    disabled={isPending}
+                    onFocus={() => { if (mode === "register") setShowReqs(true); }}
+                    className="w-full rounded-xl border border-line bg-bg-soft pl-10 pr-10 py-2.5 text-sm text-fg placeholder:text-faint transition-colors focus:outline-none focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-faint hover:text-fg transition-colors"
+                    tabIndex={-1}
                   >
-                    Forgot password?
-                  </Link>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
-              )}
+                {mode === "login" && (
+                  <div className="flex items-center justify-end mt-1">
+                    <Link
+                      to="/forgot-password"
+                      onClick={() => { closeAuth(); }}
+                      className="text-[11px] text-muted hover:text-violet-txt font-medium transition-colors"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                )}
+                {mode === "register" && showReqs && password && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-3 space-y-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1.5 rounded-full bg-surface-hi overflow-hidden">
+                        <div className={cn("h-full rounded-full transition-all duration-500", meta.bg)} style={{ width: level <= 1 ? "25%" : level === 2 ? "50%" : level === 3 ? "75%" : "100%" }} />
+                      </div>
+                      <span className={cn("text-[11px] font-semibold whitespace-nowrap", meta.color)}>
+                        {meta.label}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                      {requirements.map((req) => {
+                        const passed = req.test(password);
+                        return (
+                          <div key={req.label} className="flex items-center gap-1.5 text-[11px]">
+                            {passed ? (
+                              <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
+                            ) : (
+                              <XCircle className="h-3 w-3 text-muted shrink-0" />
+                            )}
+                            <span className={passed ? "text-emerald-400" : "text-faint"}>
+                              {req.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </Field>
 
               {mode === "register" && (
                 <Field label="Phone Number (WhatsApp preferred)" htmlFor="phone" hint="Optional, for direct project updates">

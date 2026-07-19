@@ -76,17 +76,24 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative flex items-center justify-center">
-              <svg className="h-6 w-6 text-violet group-hover:rotate-60 transition-transform duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" />
-                <circle cx="12" cy="12" r="2.5" fill="currentColor" className="text-cyan" />
-              </svg>
-            </div>
-            <span className="font-display text-2xl tracking-tight transition-transform duration-350 flex items-center">
-              <span className="font-black text-fg tracking-tighter">HEX</span>
-              <span className="font-light text-gradient tracking-tight">TORQ</span>
-            </span>
+          <Link to="/" className="flex items-center gap-3 group">
+            <motion.span
+              className="font-display text-2xl tracking-[-0.02em] flex items-center gap-[0.02em] select-none"
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 2.8, ease: [0.45, 0, 0.55, 1], repeat: Infinity }}
+              style={{ transformOrigin: "center" }}
+            >
+              <span className="font-[900] text-fg">HE</span>
+              <span
+                className="font-[900] bg-gradient-to-r from-[#3b82f6] via-[#7c3aed] to-[#a855f7] bg-clip-text text-transparent inline-block"
+                style={{ filter: "drop-shadow(0 0 6px rgba(124,58,237,0.4))" }}
+              >X</span>
+              <span className="font-[900] text-fg">TOR</span>
+              <span className="font-[900] text-fg relative">
+                Q
+                <span className="absolute -bottom-[2px] -right-[3px] w-[6px] h-[6px] rounded-full bg-violet-600 opacity-70" />
+              </span>
+            </motion.span>
           </Link>
 
           {/* Desktop Navigation */}
