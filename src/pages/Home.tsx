@@ -373,7 +373,7 @@ export default function Home() {
 
           <Reveal delay={0.2} className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/explore">
-              <Button size="lg" className="flex items-center gap-2">
+              <Button variant="solid" size="lg" className="glass bg-surface-hi/40 backdrop-blur-md border border-line/50 hover:bg-surface-hi/70 flex items-center gap-2">
                 Browse Projects Catalog
                 <ArrowRight className="h-4.5 w-4.5" />
               </Button>
@@ -993,7 +993,7 @@ export default function Home() {
             </p>
             <div className="pt-2 flex flex-wrap gap-4 justify-center">
               <Link to="/explore">
-                <Button size="md" className="flex items-center gap-2">
+                <Button variant="solid" size="md" className="glass bg-surface-hi/40 backdrop-blur-md border border-line/50 hover:bg-surface-hi/70 flex items-center gap-2">
                   Browse Catalog Grid
                   <ArrowRight className="h-4 w-4" />
                 </Button>
