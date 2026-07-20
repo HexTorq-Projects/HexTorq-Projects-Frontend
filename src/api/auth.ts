@@ -46,6 +46,22 @@ export function useRegister() {
   });
 }
 
+export function useGoogleLogin() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (credential: string) =>
+      apiFetch<AuthResponse>("/auth/google", {
+        method: "POST",
+        body: JSON.stringify({ credential }),
+      }),
+    onSuccess: (data) => {
+      setAuth(data.token, data.user);
+      qc.setQueryData(["me"], data.user);
+    },
+  });
+}
+
 export function useForgotPassword() {
   return useMutation({
     mutationFn: (email: string) =>
@@ -57,11 +73,18 @@ export function useForgotPassword() {
 }
 
 export function useResetPassword() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const qc = useQueryClient();
   return useMutation({
+    // backend logs the user straight in after a successful reset
     mutationFn: (body: { token: string; password: string }) =>
-      apiFetch<{ ok: boolean }>("/auth/reset-password", {
+      apiFetch<AuthResponse>("/auth/reset-password", {
         method: "POST",
         body: JSON.stringify(body),
       }),
+    onSuccess: (data) => {
+      setAuth(data.token, data.user);
+      qc.setQueryData(["me"], data.user);
+    },
   });
 }

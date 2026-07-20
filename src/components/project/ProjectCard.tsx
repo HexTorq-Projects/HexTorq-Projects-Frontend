@@ -11,6 +11,8 @@ import { splitList } from "@/lib/format";
 import { categoryMeta } from "@/lib/constants";
 import { useState } from "react";
 import { BorderGlow } from "@/components/ui/BorderGlow";
+import { ShoppingCart, Check } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
 
 export function ProjectCard({ project }: { project: Project }) {
   const techList = splitList(project.suggestedTech).slice(0, 3);
@@ -18,6 +20,8 @@ export function ProjectCard({ project }: { project: Project }) {
   const catColor = categoryMeta(project.category?.categoryName).color;
   const [hovered, setHovered] = useState(false);
   const reduced = useReducedMotion();
+  const addToCart = useCartStore((s) => s.add);
+  const inCart = useCartStore((s) => s.has(project.id));
 
   const content = (
     <>
@@ -112,6 +116,18 @@ export function ProjectCard({ project }: { project: Project }) {
       <div className="absolute top-4 right-4 z-20">
         <WishlistButton project={project} />
       </div>
+      <button
+        type="button"
+        onClick={() => addToCart(project)}
+        className={`absolute bottom-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-lg transition-all ${
+          inCart
+            ? "border-emerald-500/40 bg-emerald-500 text-white"
+            : "border-line bg-bg/90 text-muted hover:text-fg hover:border-cyan/60"
+        }`}
+        title={inCart ? "Added to cart" : "Add to cart"}
+      >
+        {inCart ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
+      </button>
     </>
   );
 

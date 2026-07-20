@@ -1,5 +1,5 @@
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MessageCircle, Heart, Shield, Code, CheckCircle, Package, Sparkles } from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, MessageCircle, Heart, Shield, Code, CheckCircle, Package, Sparkles, ShoppingCart } from "lucide-react";
 import { useProject } from "@/api/catalog";
 import { useUiStore } from "@/store/useUiStore";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -12,9 +12,11 @@ import { splitList } from "@/lib/format";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Reveal } from "@/components/motion/Reveal";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data: project, isLoading, error } = useProject(id);
 
   const { openEnquiry, openAuth } = useUiStore();
@@ -23,9 +25,16 @@ export default function ProjectDetail() {
 
   const addWishlist = useAddWishlist();
   const removeWishlist = useRemoveWishlist();
+  const addToCart = useCartStore((s) => s.add);
+  const inCart = useCartStore((s) => (project ? s.has(project.id) : false));
 
   const isLiked = wishlist.some((p) => p.id === id);
   const wishlistPending = addWishlist.isPending || removeWishlist.isPending;
+
+  const handleAddToCart = () => {
+    if (!project) return;
+    addToCart(project);
+  };
 
   const handleWishlistToggle = () => {
     if (!user) {
@@ -213,6 +222,27 @@ export default function ProjectDetail() {
               <div className="space-y-3">
                 <Button
                   variant="primary"
+                  onClick={() => {
+                    handleAddToCart();
+                    navigate("/checkout");
+                  }}
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart className="h-4.5 w-4.5" />
+                  Buy with Pay-Panda
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={handleAddToCart}
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart className="h-4.5 w-4.5" />
+                  {inCart ? "Added to Cart" : "Add to Cart"}
+                </Button>
+
+                <Button
+                  variant="solid"
                   onClick={() => openEnquiry(project.id, project.projectTitle)}
                   className="w-full flex items-center justify-center gap-2"
                 >

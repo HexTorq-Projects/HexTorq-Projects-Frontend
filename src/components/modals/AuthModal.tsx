@@ -6,6 +6,8 @@ import { useLogin, useRegister } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { OrDivider } from "@/components/auth/OrDivider";
 import { cn } from "@/lib/cn";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 
@@ -57,18 +59,18 @@ export function AuthModal() {
   const level = useMemo(() => passwordStrength(password), [password]);
   const meta = strengthMeta[level];
 
+  const successCallback = () => {
+    closeAuth();
+    if (authModal.redirectTo) {
+      navigate(authModal.redirectTo);
+    } else if (location.pathname === "/login" || location.pathname === "/register") {
+      navigate("/dashboard");
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
-
-    const successCallback = () => {
-      closeAuth();
-      if (authModal.redirectTo) {
-        navigate(authModal.redirectTo);
-      } else if (location.pathname === "/login" || location.pathname === "/register") {
-        navigate("/dashboard");
-      }
-    };
 
     if (mode === "login") {
       loginMutation.mutate(
@@ -161,6 +163,11 @@ export function AuthModal() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            <div className="relative z-10">
+              <GoogleAuthButton onSuccess={successCallback} onError={(msg) => setErrorMsg(msg)} />
+              <OrDivider />
+            </div>
 
             <form onSubmit={handleSubmit} className="relative z-10 space-y-4">
               {mode === "register" && (

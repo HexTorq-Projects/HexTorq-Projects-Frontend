@@ -7,6 +7,8 @@ import { useRegister } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { OrDivider } from "@/components/auth/OrDivider";
 import { cn } from "@/lib/cn";
 
 type StrengthLevel = 0 | 1 | 2 | 3 | 4;
@@ -126,6 +128,12 @@ export default function Register() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <GoogleAuthButton
+          onSuccess={() => navigate(redirectTo)}
+          onError={(msg) => setErrorMsg(msg)}
+        />
+        <OrDivider />
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label="Full Name" htmlFor="reg-name">

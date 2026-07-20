@@ -7,6 +7,8 @@ import { useLogin } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 import { Spinner } from "@/components/ui/Spinner";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { OrDivider } from "@/components/auth/OrDivider";
 
 export default function Login() {
   const { user } = useAuthStore();
@@ -82,6 +84,12 @@ export default function Login() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <GoogleAuthButton
+          onSuccess={() => navigate(redirectTo)}
+          onError={(msg) => setErrorMsg(msg)}
+        />
+        <OrDivider />
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label="Email Address" htmlFor="login-email">
