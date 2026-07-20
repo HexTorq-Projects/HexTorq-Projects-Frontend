@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { GoogleLogin, useGoogleOAuth, type CredentialResponse } from "@react-oauth/google";
 import { useGoogleLogin as useGoogleLoginMutation } from "@/api/auth";
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+// Same hardcoded fallback as AppProviders.tsx — Client IDs aren't secret.
+const GOOGLE_CLIENT_ID =
+  (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ||
+  "919142469320-am40k8k0vs7gm034ht808d6csu4l7sdp.apps.googleusercontent.com";
 
 interface GoogleAuthButtonProps {
   onSuccess: () => void;

@@ -6,7 +6,12 @@ import { queryClient } from "@/api/queryClient";
 import { AuthProvider } from "./AuthProvider";
 import { LenisProvider } from "./LenisProvider";
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+// Google OAuth Client IDs are public identifiers, not secrets (they're visible in
+// browser JS regardless) — hardcoded as a fallback so sign-in works even if the
+// hosting platform's env vars aren't configured. VITE_GOOGLE_CLIENT_ID still overrides.
+const GOOGLE_CLIENT_ID =
+  (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ||
+  "919142469320-am40k8k0vs7gm034ht808d6csu4l7sdp.apps.googleusercontent.com";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const content = (
