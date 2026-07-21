@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import type { Project } from "@/api/types";
 import { Card } from "@/components/ui/Card";
 import { TierBadge } from "./TierBadge";
@@ -9,7 +9,7 @@ import { CategoryPill } from "./CategoryPill";
 import { WishlistButton } from "./WishlistButton";
 import { splitList } from "@/lib/format";
 import { categoryMeta } from "@/lib/constants";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { BorderGlow } from "@/components/ui/BorderGlow";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
@@ -21,7 +21,24 @@ export function ProjectCard({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false);
   const reduced = useReducedMotion();
   const addToCart = useCartStore((s) => s.add);
+  const removeFromCart = useCartStore((s) => s.remove);
   const inCart = useCartStore((s) => s.has(project.id));
+  const [justAdded, setJustAdded] = useState(false);
+
+  const handleCartClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (inCart) {
+        removeFromCart(project.id);
+      } else {
+        addToCart(project);
+        setJustAdded(true);
+        setTimeout(() => setJustAdded(false), 1200);
+      }
+    },
+    [inCart, project, addToCart, removeFromCart]
+  );
 
   const content = (
     <>
@@ -60,7 +77,7 @@ export function ProjectCard({ project }: { project: Project }) {
               style={{ backgroundColor: isPremium ? "#f5b944" : catColor }}
             />
 
-            {/* ── FIXED-HEIGHT SECTION: Category + Tier badges ── */}
+            {/* ── SECTION: Category + Tier badges ── */}
             <div className="flex items-center justify-between gap-1.5 mb-3 pr-9 relative z-10 h-[24px] shrink-0">
               <span className="min-w-0 truncate">
                 <CategoryPill name={project.category?.categoryName} short />
@@ -68,16 +85,16 @@ export function ProjectCard({ project }: { project: Project }) {
               <TierBadge tier={project.sellabilityTier} />
             </div>
 
-            {/* ── FIXED-HEIGHT SECTION: Title (exactly 2 lines worth of space) ── */}
+            {/* ── SECTION: Title (3 lines allowed for better readability) ── */}
             <h3
-              className={`font-display text-[13px] sm:text-sm lg:text-base font-bold text-fg transition-colors mb-3 line-clamp-2 leading-snug relative z-10 h-[2.6rem] sm:h-[2.75rem] lg:h-[3rem] shrink-0 ${
+              className={`font-display text-[13px] sm:text-sm font-bold text-fg transition-colors mb-3 line-clamp-3 leading-snug relative z-10 min-h-[3.2rem] sm:min-h-[3.5rem] shrink-0 ${
                 isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
               }`}
             >
               {project.projectTitle}
             </h3>
 
-            {/* ── FIXED-HEIGHT SECTION: Tech Tags (single row, overflow faded) ── */}
+            {/* ── SECTION: Tech Tags (single row, overflow faded) ── */}
             <div
               className="flex flex-nowrap gap-1.5 mb-3 relative z-10 overflow-hidden h-[24px] items-center shrink-0"
               style={{
@@ -105,38 +122,81 @@ export function ProjectCard({ project }: { project: Project }) {
             {/* Divider */}
             <div className="h-px bg-line/40 w-full mb-3 relative z-10 shrink-0" />
 
-            {/* ── FIXED-HEIGHT SECTION: Footer (Complexity + Price) ── */}
-            {/* pr-10 reserves space so PriceBlock never overlaps the absolute cart button */}
-            <div className="flex items-center justify-between gap-2 pr-10 relative z-10 h-[36px] shrink-0">
+            {/* ── SECTION: Footer (Complexity + Price) ── */}
+            <div className="flex items-center justify-between gap-2 relative z-10 shrink-0">
               <div className="shrink-0">
                 <ComplexityBadge complexity={project.complexity} />
               </div>
-              <PriceBlock
-                recommended={project.recommendedPrice}
-                discounted={project.discountedPrice}
-                original={project.originalPrice}
-                size="sm"
-              />
+              <div className="flex items-center gap-2 min-w-0">
+                <PriceBlock
+                  recommended={project.recommendedPrice}
+                  discounted={project.discountedPrice}
+                  original={project.originalPrice}
+                  size="sm"
+                />
+                {/* ── Cart Button: inline in the footer for proper alignment ── */}
+                <motion.button
+                  type="button"
+                  onClick={handleCartClick}
+                  className={`relative shrink-0 flex h-8 w-8 items-center justify-center rounded-full border shadow-lg transition-colors z-20 overflow-hidden ${
+                    inCart
+                      ? "border-emerald-500/40 bg-emerald-500 text-white"
+                      : "border-line bg-bg/80 text-muted hover:text-fg hover:border-cyan/60"
+                  }`}
+                  whileTap={{ scale: 0.85 }}
+                  animate={justAdded ? { scale: [1, 1.3, 1] } : {}}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  title={inCart ? "Remove from cart" : "Add to cart"}
+                >
+                  {/* Pulse ring on add */}
+                  <AnimatePresence>
+                    {justAdded && (
+                      <motion.span
+                        className="absolute inset-0 rounded-full bg-emerald-400"
+                        initial={{ scale: 0.5, opacity: 0.6 }}
+                        animate={{ scale: 2.5, opacity: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                      />
+                    )}
+                  </AnimatePresence>
+                  {/* Icon swap */}
+                  <AnimatePresence mode="wait" initial={false}>
+                    {inCart ? (
+                      <motion.span
+                        key="check"
+                        initial={{ scale: 0, rotate: -90 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: 90 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        className="flex items-center justify-center"
+                      >
+                        <Check className="h-4 w-4" />
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="cart"
+                        initial={{ scale: 0, rotate: 90 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: -90 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        className="flex items-center justify-center"
+                      >
+                        <ShoppingCart className="h-3.5 w-3.5" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </div>
             </div>
           </Card>
         </BorderGlow>
       </Link>
 
-      {/* Floating Wishlist Button — sits in the reserved gutter above, never over the tier badge */}
+      {/* Floating Wishlist Button */}
       <div className="absolute top-4 right-4 z-20">
         <WishlistButton project={project} />
       </div>
-      <button
-        type="button"
-        onClick={() => addToCart(project)}
-        className={`absolute bottom-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-lg transition-all ${inCart
-            ? "border-emerald-500/40 bg-emerald-500 text-white"
-            : "border-line bg-bg/90 text-muted hover:text-fg hover:border-cyan/60"
-          }`}
-        title={inCart ? "Added to cart" : "Add to cart"}
-      >
-        {inCart ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
-      </button>
     </>
   );
 

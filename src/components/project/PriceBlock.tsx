@@ -17,20 +17,22 @@ export function PriceBlock({ recommended, discounted, original, size = "md", cla
 
   if (size === "sm") {
     return (
-      <div className={cn("flex items-center gap-1.5 whitespace-nowrap shrink-0", className)}>
-        <span className="font-display font-bold text-fg text-sm sm:text-base">
-          {formatINR(sell)}
-        </span>
-        {strike && (
-          <span className="text-[11px] text-faint line-through hidden sm:inline">
-            {formatINR(strike)}
+      <div className={cn("flex flex-col items-end leading-tight shrink-0 min-w-0", className)}>
+        <div className="flex items-center gap-1 whitespace-nowrap">
+          <span className="font-display font-bold text-fg text-sm">
+            {formatINR(sell)}
           </span>
-        )}
-        {pct != null && (
-          <span className="rounded bg-emerald-500/15 px-1 py-0.5 text-[10px] font-bold text-emerald-400 leading-none">
-            {pct}%
-          </span>
-        )}
+          {strike && (
+            <span className="text-[10px] text-faint line-through">
+              {formatINR(strike)}
+            </span>
+          )}
+          {pct != null && (
+            <span className="rounded bg-emerald-500/15 px-1 py-px text-[9px] font-bold text-emerald-400 leading-none">
+              {pct}%
+            </span>
+          )}
+        </div>
       </div>
     );
   }

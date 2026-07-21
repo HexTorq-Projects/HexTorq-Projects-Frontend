@@ -403,6 +403,7 @@ export default function Home() {
 
       {/* Stats ribbon */}
       <section className="relative z-10 mx-auto max-w-7xl px-4 md:px-8 -mt-10 sm:-mt-12">
+        <Reveal>
         <div className="glass border border-line rounded-3xl p-6 md:p-8 bg-surface/65 shadow-2xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div className="space-y-1">
             <CountUp
@@ -438,6 +439,7 @@ export default function Home() {
             <span className="text-xs sm:text-sm text-muted">Premium Spotlights</span>
           </div>
         </div>
+        </Reveal>
       </section>
 
       {/* What We Assure Section */}
@@ -570,6 +572,7 @@ export default function Home() {
 
       {/* Stream Showcase Grid */}
       <section className="py-20 mx-auto max-w-7xl px-4 md:px-8 space-y-12">
+        <Reveal>
         <div className="text-center space-y-3">
           <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
             Select Your Stream
@@ -578,6 +581,7 @@ export default function Home() {
             Pick a specific department stream to find standard or high-complexity source codes tailored to your curriculum.
           </p>
         </div>
+        </Reveal>
 
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 grid-flow-row-dense"
@@ -654,6 +658,7 @@ export default function Home() {
           <div className="twilight-orb w-[30rem] h-[30rem] -top-44 right-0" aria-hidden="true" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-4 md:px-8 space-y-12">
+            <Reveal>
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-tier-premium tracking-wider uppercase">
@@ -674,6 +679,7 @@ export default function Home() {
                 </Button>
               </Link>
             </div>
+            </Reveal>
 
             <div
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
@@ -703,6 +709,7 @@ export default function Home() {
       <section className="py-20 bg-bg-soft/40 border-b border-line/40 relative">
         <div className="mx-auto max-w-7xl px-4 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
+            <Reveal>
             <div className="space-y-3">
               <div className="inline-flex items-center gap-1 text-xs font-bold text-cyan uppercase tracking-wide">
                 <Laptop className="h-3.5 w-3.5" />
@@ -715,6 +722,7 @@ export default function Home() {
                 Hextorq projects are packaged for seamless deployments. We handle full database setups, script configs, and environment wiring so you get a functional local demo environment instantly.
               </p>
             </div>
+            </Reveal>
 
             {/* Simple Step Milestones */}
             <div className="space-y-5">
@@ -811,6 +819,7 @@ export default function Home() {
       {/* Student Success Stories & Reviews Testimonials Section */}
       <section className="py-20 bg-surface-hi/5 border-y border-line/40 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 md:px-8 space-y-16">
+          <Reveal>
           <div className="text-center space-y-3">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan/30 bg-cyan/5 px-3 py-1 text-xs font-semibold text-cyan select-none">
               <CheckCircle className="h-3.5 w-3.5" />
@@ -823,6 +832,7 @@ export default function Home() {
               Read how final-year students from top universities successfully deployed their code and aced their assessments.
             </p>
           </div>
+          </Reveal>
 
           {/* Infinite auto-scrolling vertical columns of review cards (keeps moving on hover). */}
           <div className="marquee-y-mask relative h-[660px] overflow-hidden py-4 max-w-[960px] mx-auto">
@@ -982,6 +992,7 @@ export default function Home() {
 
       {/* Final CTA */}
       <section className="py-16 mx-auto max-w-5xl px-4 text-center">
+        <Reveal>
         <div className="relative overflow-hidden rounded-3xl border border-violet/30 bg-surface p-8 md:p-12 shadow-2xl glow-violet">
           <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-violet/15 blur-[60px]" />
           <div className="relative z-10 max-w-2xl mx-auto space-y-5">
@@ -1006,6 +1017,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        </Reveal>
       </section>
     </div>
   );
