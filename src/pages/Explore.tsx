@@ -22,6 +22,7 @@ import { ProjectCard } from "@/components/project/ProjectCard";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { Input } from "@/components/ui/Input";
+import { Pagination15 } from "@/components/explore/Pagination15";
 import { TIER_ORDER, COMPLEXITY_ORDER, TIER_META, categoryMeta, appAreaColor } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/Skeleton";
 
@@ -368,22 +369,6 @@ export default function Explore() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [filters.page]);
 
-  const handlePrevPage = () => store.setPage(Math.max(1, currentPage - 1));
-  const handleNextPage = () => store.setPage(Math.min(totalPages, currentPage + 1));
-
-  /** Page numbers to render, collapsing long gaps with an ellipsis. */
-  const buildPageList = (current: number, total: number): (number | "ellipsis")[] => {
-    const pages: (number | "ellipsis")[] = [];
-    for (let p = 1; p <= total; p++) {
-      if (p === 1 || p === total || (p >= current - 1 && p <= current + 1)) {
-        pages.push(p);
-      } else if (pages[pages.length - 1] !== "ellipsis") {
-        pages.push("ellipsis");
-      }
-    }
-    return pages;
-  };
-
   const getGridColsClass = () => {
     switch (ui.gridColumns) {
       case 2:
@@ -571,59 +556,16 @@ export default function Explore() {
             </div>
           )}
 
-          {/* Pagination Controls — numbered pages for quick jumping */}
+          {/* Pagination Controls */}
           {projectsData && projectsData.pages > 1 && (
-            <div className="border-t border-line/40 pt-8 mt-12 space-y-3">
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrevPage}
-                  disabled={currentPage <= 1}
-                  className="flex items-center gap-1.5 h-10"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Previous</span>
-                </Button>
-
-                <div className="flex items-center gap-1.5">
-                  {buildPageList(currentPage, projectsData.pages).map((p, i) =>
-                    p === "ellipsis" ? (
-                      <span key={`gap-${i}`} className="px-1.5 text-faint select-none">
-                        …
-                      </span>
-                    ) : (
-                      <button
-                        key={p}
-                        onClick={() => store.setPage(p)}
-                        aria-current={p === currentPage ? "page" : undefined}
-                        className={`h-10 min-w-[2.5rem] px-3 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
-                          p === currentPage
-                            ? "bg-violet border-violet text-white shadow-md shadow-violet/20"
-                            : "border-line text-muted hover:text-fg hover:border-violet/40 hover:bg-surface-hi"
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    )
-                  )}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNextPage}
-                  disabled={currentPage >= projectsData.pages}
-                  className="flex items-center gap-1.5 h-10"
-                >
-                  <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-center text-xs text-muted">
-                Page <strong className="text-fg">{currentPage}</strong> of{" "}
-                <strong className="text-fg">{projectsData.pages}</strong>
-              </p>
+            <div className="border-t border-line/40 pt-8 mt-12">
+              <Pagination15
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={(p) => store.setPage(p)}
+              />
             </div>
           )}
         </main>
