@@ -37,13 +37,13 @@ export function useRotatingTitle() {
     let currentIndex = 0;
 
     const changeFavicon = (src: string) => {
-      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-      if (!link) {
-        link = document.createElement("link");
-        link.rel = "icon";
-        document.head.appendChild(link);
-      }
+      const old = document.querySelector("link[rel~='icon']");
+      if (old) old.remove();
+      const link = document.createElement("link");
+      link.rel = "icon";
+      link.type = "image/png";
       link.href = src;
+      document.head.appendChild(link);
     };
 
     const handleVisibilityChange = () => {
