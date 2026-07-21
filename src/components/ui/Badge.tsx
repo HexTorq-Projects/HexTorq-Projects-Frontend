@@ -13,7 +13,7 @@ export function Badge({ children, color = "#94a3b8", className, glow }: BadgePro
   return (
     <span
       className={cn(
-        "accent-ink inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold leading-5 whitespace-nowrap shrink-0",
+        "accent-ink inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold leading-5",
         className
       )}
       style={{

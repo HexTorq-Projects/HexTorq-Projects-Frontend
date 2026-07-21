@@ -15,34 +15,12 @@ export function PriceBlock({ recommended, discounted, original, size = "md", cla
   const strike = original && sell && original > sell ? original : null;
   const pct = discountPercent(strike, sell);
 
-  if (size === "sm") {
-    return (
-      <div className={cn("flex flex-col items-end leading-tight text-right shrink-0", className)}>
-        <div className="flex items-center gap-1.5 whitespace-nowrap">
-          <span className="font-display font-bold text-fg text-sm sm:text-base">
-            {formatINR(sell)}
-          </span>
-          {pct != null && (
-            <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400 leading-none">
-              {pct}% off
-            </span>
-          )}
-        </div>
-        {strike && (
-          <span className="text-[11px] text-faint line-through mt-0.5 whitespace-nowrap">
-            {formatINR(strike)}
-          </span>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className={cn("flex flex-wrap items-baseline gap-x-2 gap-y-1", className)}>
       <span
         className={cn(
           "font-display font-semibold text-fg",
-          size === "lg" ? "text-3xl" : "text-xl"
+          size === "lg" ? "text-3xl" : size === "sm" ? "text-base" : "text-xl"
         )}
       >
         {formatINR(sell)}

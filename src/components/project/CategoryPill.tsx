@@ -17,14 +17,11 @@ export function CategoryPill({ name, short, asLink = false, className }: Categor
 
   const content = (
     <span
-      className={cn(
-        "accent-ink inline-flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap truncate min-w-0 max-w-[130px] sm:max-w-[160px]",
-        className
-      )}
+      className={cn("accent-ink inline-flex items-center gap-1.5 text-xs font-semibold", className)}
       style={{ "--accent-ink-color": m.color } as CSSProperties}
     >
-      <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
-      <span className="truncate">{label}</span>
+      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: m.color }} />
+      {label}
     </span>
   );
 

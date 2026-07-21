@@ -38,9 +38,10 @@ export function ProjectCard({ project }: { project: Project }) {
           className="h-full group cursor-pointer"
         >
           <Card
-            className={`flex flex-col h-full relative overflow-hidden transition-colors duration-350 border-0 bg-transparent p-4 sm:p-4.5 ${
-              isPremium ? "glow-premium" : ""
-            }`}
+            className={`flex flex-col h-full relative overflow-hidden transition-colors duration-350 border-0 bg-transparent ${isPremium
+              ? "glow-premium"
+              : ""
+              }`}
             style={{}}
           >
             {/* Shine Overlay for Premium items */}
@@ -62,37 +63,32 @@ export function ProjectCard({ project }: { project: Project }) {
               style={{ backgroundColor: isPremium ? "#f5b944" : catColor }}
             />
 
-            {/* Card Top: Badges */}
-            <div className="flex items-center justify-between gap-1.5 mb-3.5 pr-9 relative z-10 min-h-[24px]">
+            {/* Card Top: Badges — right padding reserves room for the floating wishlist button so it never covers the tier badge */}
+            <div className="flex items-center justify-between gap-2 mb-4 pr-10 relative z-10">
               <CategoryPill name={project.category?.categoryName} short />
               <TierBadge tier={project.sellabilityTier} />
             </div>
 
-            {/* Title */}
+            {/* Title — always legible text-fg; premium gets a warm hover accent instead of a low-contrast base color */}
             <h3
-              className={`font-display text-sm sm:text-base font-bold text-fg transition-colors mb-3 line-clamp-2 leading-snug relative z-10 min-h-[2.5rem] sm:min-h-[2.75rem] flex items-center ${
-                isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
-              }`}
+              className={`font-display text-base font-bold text-fg transition-colors mb-4 line-clamp-2 leading-tight relative z-10 min-h-[2.5rem] ${isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
+                }`}
             >
               {project.projectTitle}
             </h3>
 
             {/* Tech Tags */}
             <div
-              className="flex flex-nowrap gap-1.5 mb-4 relative z-10 overflow-hidden h-[24px] items-center"
-              style={{
-                maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
-              }}
+              className="flex flex-nowrap gap-1.5 mb-5 relative z-10 overflow-hidden h-[26px] items-start"
+              style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
             >
               {techList.map((tech) => (
                 <span
                   key={tech}
-                  className={`whitespace-nowrap shrink-0 rounded-full border px-2 py-0.5 text-[11px] text-muted font-medium transition-colors ${
-                    isPremium
-                      ? "bg-amber-500/[0.02] border-amber-500/10 group-hover:border-amber-500/20"
-                      : "bg-surface-hi border-line group-hover:border-line/80"
-                  }`}
+                  className={`whitespace-nowrap shrink-0 rounded-full border px-2.5 py-0.5 text-xs text-muted font-medium transition-colors ${isPremium
+                    ? "bg-amber-500/[0.02] border-amber-500/10 group-hover:border-amber-500/20"
+                    : "bg-surface-hi border-line group-hover:border-line/80"
+                    }`}
                 >
                   {tech}
                 </span>
@@ -100,39 +96,33 @@ export function ProjectCard({ project }: { project: Project }) {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-line/40 w-full mb-3.5 mt-auto relative z-10" />
+            <div className="h-px bg-line/40 w-full mb-4.5 relative z-10" />
 
-            {/* Card Footer: Complexity and Price — pr-11 reserves room so PriceBlock never overlaps the Cart button */}
-            <div className="flex items-center justify-between gap-1.5 pr-11 relative z-10 min-h-[36px]">
-              <div className="shrink-0">
-                <ComplexityBadge complexity={project.complexity} />
-              </div>
-              <div className="min-w-0 flex justify-end">
-                <PriceBlock
-                  recommended={project.recommendedPrice}
-                  discounted={project.discountedPrice}
-                  original={project.originalPrice}
-                  size="sm"
-                />
-              </div>
+            {/* Card Footer: Complexity and Price */}
+            <div className="flex items-center justify-between mt-auto relative z-10">
+              <ComplexityBadge complexity={project.complexity} />
+              <PriceBlock
+                recommended={project.recommendedPrice}
+                discounted={project.discountedPrice}
+                original={project.originalPrice}
+                size="sm"
+              />
             </div>
           </Card>
         </BorderGlow>
       </Link>
 
-      {/* Floating Wishlist Button */}
-      <div className="absolute top-3.5 right-3.5 z-20">
+      {/* Floating Wishlist Button — sits in the reserved gutter above, never over the tier badge */}
+      <div className="absolute top-4 right-4 z-20">
         <WishlistButton project={project} />
       </div>
-      {/* Floating Cart Button */}
       <button
         type="button"
         onClick={() => addToCart(project)}
-        className={`absolute bottom-3.5 right-3.5 z-20 flex h-8.5 w-8.5 items-center justify-center rounded-full border shadow-lg transition-all ${
-          inCart
+        className={`absolute bottom-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-lg transition-all ${inCart
             ? "border-emerald-500/40 bg-emerald-500 text-white"
             : "border-line bg-bg/90 text-muted hover:text-fg hover:border-cyan/60"
-        }`}
+          }`}
         title={inCart ? "Added to cart" : "Add to cart"}
       >
         {inCart ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
