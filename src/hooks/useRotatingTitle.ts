@@ -5,9 +5,16 @@ export function useRotatingTitle() {
     let interval: number;
     const originalTitle = "Hextorq | Academic Project Marketplace";
     const alternateTitles = [
-      "💡 Ready for Your Viva?",
-      "🚀 Get Project Setup Support",
-      "🔥 Elite Engineering Codebases"
+      "Ready for Your Viva?",
+      "Get Project Setup Support",
+      "Elite Engineering Codebases",
+      "3,800+ Project Templates",
+      "AI/ML, Web, IoT & More",
+      "Viva-Ready Documentation",
+      "Browse Premium Projects",
+      "Academic Project Marketplace",
+      "14+ Academic Streams",
+      "Defend with Confidence"
     ];
     let currentIndex = 0;
 
