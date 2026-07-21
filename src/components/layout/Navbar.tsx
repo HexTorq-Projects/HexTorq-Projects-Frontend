@@ -8,6 +8,7 @@ import { useWishlist } from "@/api/wishlist";
 import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/Button";
 import { HoverRoll } from "@/components/motion/HoverRoll";
+import logoImg from "@/assests/logo.png";
 
 export function Navbar() {
   const { user, clear } = useAuthStore();
@@ -77,23 +78,14 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <motion.span
-              className="font-display text-2xl tracking-[-0.02em] flex items-center gap-[0.02em] select-none"
+            <motion.img
+              src={logoImg}
+              alt="Hextorq Logo"
+              className="h-7 md:h-8 w-auto select-none"
               animate={{ scale: [1, 1.02, 1] }}
               transition={{ duration: 2.8, ease: [0.45, 0, 0.55, 1], repeat: Infinity }}
-              style={{ transformOrigin: "center" }}
-            >
-              <span className="font-[900] text-fg">HE</span>
-              <span
-                className="font-[900] bg-gradient-to-r from-[#3b82f6] via-[#7c3aed] to-[#a855f7] bg-clip-text text-transparent inline-block"
-                style={{ filter: "drop-shadow(0 0 6px rgba(124,58,237,0.4))" }}
-              >X</span>
-              <span className="font-[900] text-fg">TOR</span>
-              <span className="font-[900] text-fg relative">
-                Q
-                <span className="absolute -bottom-[2px] -right-[3px] w-[6px] h-[6px] rounded-full bg-violet-600 opacity-70" />
-              </span>
-            </motion.span>
+              style={{ transformOrigin: "left center" }}
+            />
           </Link>
 
           {/* Desktop Navigation */}
