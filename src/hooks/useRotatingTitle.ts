@@ -32,6 +32,8 @@ export function useRotatingTitle() {
       "/logos/logo_10_stacked_h_1784617589220.png"
     ];
     
+    alternateFavicons.forEach(src => { new Image().src = src; });
+    
     let currentIndex = 0;
 
     const changeFavicon = (src: string) => {
