@@ -4,7 +4,7 @@ export function useRotatingTitle() {
   useEffect(() => {
     let interval: number;
     const originalTitle = "Hextorq | Academic Project Marketplace";
-    const originalFavicon = "/favicon.svg";
+    const originalFavicon = "/logos/logo_4_gear_h_1784617493907.png";
     
     const alternateTitles = [
       "Ready for Your Viva?",
