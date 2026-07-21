@@ -85,10 +85,10 @@ export function ProjectCard({ project }: { project: Project }) {
               <TierBadge tier={project.sellabilityTier} />
             </div>
 
-            {/* ── SECTION: Title (Full Disclosure, title attribute for hover tooltip) ── */}
+            {/* ── SECTION: Title (Full Disclosure, responsive size text-xs sm:text-sm) ── */}
             <h3
               title={project.projectTitle}
-              className={`font-display text-[13px] sm:text-sm font-bold text-fg transition-colors mb-3 line-clamp-3 leading-snug relative z-10 min-h-[3.3rem] sm:min-h-[3.6rem] shrink-0 ${
+              className={`font-display text-xs sm:text-sm font-bold text-fg transition-colors mb-3 line-clamp-3 leading-snug relative z-10 min-h-[3.1rem] sm:min-h-[3.4rem] shrink-0 ${
                 isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
               }`}
             >
