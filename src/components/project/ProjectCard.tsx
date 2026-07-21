@@ -38,10 +38,7 @@ export function ProjectCard({ project }: { project: Project }) {
           className="h-full group cursor-pointer"
         >
           <Card
-            className={`flex flex-col h-full relative overflow-hidden transition-colors duration-350 border-0 bg-transparent ${isPremium
-              ? "glow-premium"
-              : ""
-              }`}
+            className={`flex flex-col h-full relative overflow-hidden transition-colors duration-350 border-0 bg-transparent ${isPremium ? "glow-premium" : ""}`}
             style={{}}
           >
             {/* Shine Overlay for Premium items */}
@@ -63,44 +60,57 @@ export function ProjectCard({ project }: { project: Project }) {
               style={{ backgroundColor: isPremium ? "#f5b944" : catColor }}
             />
 
-            {/* Card Top: Badges — right padding reserves room for the floating wishlist button so it never covers the tier badge */}
-            <div className="flex items-center justify-between gap-2 mb-4 pr-10 relative z-10">
-              <CategoryPill name={project.category?.categoryName} short />
+            {/* ── FIXED-HEIGHT SECTION: Category + Tier badges ── */}
+            <div className="flex items-center justify-between gap-1.5 mb-3 pr-9 relative z-10 h-[24px] shrink-0">
+              <span className="min-w-0 truncate">
+                <CategoryPill name={project.category?.categoryName} short />
+              </span>
               <TierBadge tier={project.sellabilityTier} />
             </div>
 
-            {/* Title — always legible text-fg; premium gets a warm hover accent instead of a low-contrast base color */}
+            {/* ── FIXED-HEIGHT SECTION: Title (exactly 2 lines worth of space) ── */}
             <h3
-              className={`font-display text-base font-bold text-fg transition-colors mb-4 line-clamp-2 leading-tight relative z-10 min-h-[2.5rem] ${isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
-                }`}
+              className={`font-display text-[13px] sm:text-sm lg:text-base font-bold text-fg transition-colors mb-3 line-clamp-2 leading-snug relative z-10 h-[2.6rem] sm:h-[2.75rem] lg:h-[3rem] shrink-0 ${
+                isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
+              }`}
             >
               {project.projectTitle}
             </h3>
 
-            {/* Tech Tags */}
+            {/* ── FIXED-HEIGHT SECTION: Tech Tags (single row, overflow faded) ── */}
             <div
-              className="flex flex-nowrap gap-1.5 mb-5 relative z-10 overflow-hidden h-[26px] items-start"
-              style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
+              className="flex flex-nowrap gap-1.5 mb-3 relative z-10 overflow-hidden h-[24px] items-center shrink-0"
+              style={{
+                maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
+              }}
             >
               {techList.map((tech) => (
                 <span
                   key={tech}
-                  className={`whitespace-nowrap shrink-0 rounded-full border px-2.5 py-0.5 text-xs text-muted font-medium transition-colors ${isPremium
-                    ? "bg-amber-500/[0.02] border-amber-500/10 group-hover:border-amber-500/20"
-                    : "bg-surface-hi border-line group-hover:border-line/80"
-                    }`}
+                  className={`whitespace-nowrap shrink-0 rounded-full border px-2 py-0.5 text-[11px] text-muted font-medium transition-colors ${
+                    isPremium
+                      ? "bg-amber-500/[0.02] border-amber-500/10 group-hover:border-amber-500/20"
+                      : "bg-surface-hi border-line group-hover:border-line/80"
+                  }`}
                 >
                   {tech}
                 </span>
               ))}
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-line/40 w-full mb-4.5 relative z-10" />
+            {/* ── Spacer pushes divider+footer to bottom ── */}
+            <div className="flex-1" />
 
-            {/* Card Footer: Complexity and Price */}
-            <div className="flex items-center justify-between mt-auto relative z-10">
-              <ComplexityBadge complexity={project.complexity} />
+            {/* Divider */}
+            <div className="h-px bg-line/40 w-full mb-3 relative z-10 shrink-0" />
+
+            {/* ── FIXED-HEIGHT SECTION: Footer (Complexity + Price) ── */}
+            {/* pr-10 reserves space so PriceBlock never overlaps the absolute cart button */}
+            <div className="flex items-center justify-between gap-2 pr-10 relative z-10 h-[36px] shrink-0">
+              <div className="shrink-0">
+                <ComplexityBadge complexity={project.complexity} />
+              </div>
               <PriceBlock
                 recommended={project.recommendedPrice}
                 discounted={project.discountedPrice}
