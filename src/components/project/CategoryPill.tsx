@@ -21,7 +21,7 @@ export function CategoryPill({ name, short, asLink = false, className }: Categor
       style={{ "--accent-ink-color": m.color } as CSSProperties}
     >
       <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
-      <span className="truncate max-w-[100px] sm:max-w-[140px]">{label}</span>
+      <span>{label}</span>
     </span>
   );
 

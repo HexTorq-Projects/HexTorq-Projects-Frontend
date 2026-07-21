@@ -78,16 +78,17 @@ export function ProjectCard({ project }: { project: Project }) {
             />
 
             {/* ── SECTION: Category + Tier badges ── */}
-            <div className="flex items-center justify-between gap-1.5 mb-3 pr-9 relative z-10 h-[24px] shrink-0">
-              <span className="min-w-0 truncate">
+            <div className="flex items-center justify-between gap-1.5 mb-3 pr-10 relative z-10 h-[24px] shrink-0">
+              <span className="min-w-0">
                 <CategoryPill name={project.category?.categoryName} short />
               </span>
               <TierBadge tier={project.sellabilityTier} />
             </div>
 
-            {/* ── SECTION: Title (3 lines allowed for better readability) ── */}
+            {/* ── SECTION: Title (Full Disclosure, title attribute for hover tooltip) ── */}
             <h3
-              className={`font-display text-[13px] sm:text-sm font-bold text-fg transition-colors mb-3 line-clamp-3 leading-snug relative z-10 min-h-[3.2rem] sm:min-h-[3.5rem] shrink-0 ${
+              title={project.projectTitle}
+              className={`font-display text-[13px] sm:text-sm font-bold text-fg transition-colors mb-3 line-clamp-3 leading-snug relative z-10 min-h-[3.3rem] sm:min-h-[3.6rem] shrink-0 ${
                 isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
               }`}
             >
