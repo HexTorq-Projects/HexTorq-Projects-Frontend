@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-export type ButtonVariant = "primary" | "solid" | "outline" | "ghost" | "auth";
+export type ButtonVariant = "primary" | "solid" | "outline" | "ghost" | "auth" | "purple-accent";
 export type ButtonSize = "sm" | "md" | "lg";
 
 const base =
@@ -20,6 +20,7 @@ const variants: Record<ButtonVariant, string> = {
   outline: "border border-line text-fg hover:border-violet/60 hover:bg-surface",
   ghost: "text-muted hover:text-fg hover:bg-surface",
   auth: "bg-gradient-to-r from-violet-txt to-cyan-txt text-white dark:text-bg shadow-md hover:shadow-lg hover:-translate-y-0.5 border border-line/40 transition-all font-semibold",
+  "purple-accent": "bg-violet/10 backdrop-blur-md border border-violet/30 hover:bg-violet/20 hover:border-violet/60 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] text-violet-txt shadow-sm",
 };
 
 export function buttonClasses(
