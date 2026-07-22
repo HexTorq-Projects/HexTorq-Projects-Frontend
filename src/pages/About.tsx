@@ -2,6 +2,7 @@ import { CheckCircle2, Shield, Code2, Users, FileText, Settings, HelpCircle, Awa
 import { Button } from "@/components/ui/Button";
 import { Link } from "react-router-dom";
 import { Reveal } from "@/components/motion/Reveal";
+import { BorderGlow } from "@/components/ui/BorderGlow";
 
 export default function About() {
   const steps = [
@@ -77,37 +78,73 @@ export default function About() {
       {/* Trust Cards */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Reveal delay={0.1} className="h-full">
-          <div className="glass p-6 rounded-2xl border border-line flex gap-4 h-full hover:border-violet/30 hover:-translate-y-0.5 transition-all">
-            <Shield className="h-8 w-8 text-rose-400 shrink-0" />
-            <div className="space-y-1">
-              <h3 className="font-display font-semibold text-fg text-lg">Elite Quality Assurance</h3>
-              <p className="text-sm text-muted">
-                Every codebase undergoes rigorous automated and manual validation. We build stable systems that actually run, compile, and scale.
-              </p>
+          <BorderGlow
+            edgeSensitivity={30}
+            glowColor="#f43f5e"
+            backgroundColor="var(--color-surface)"
+            borderRadius={20}
+            glowRadius={40}
+            glowIntensity={0.8}
+            coneSpread={25}
+            colors={['#f43f5e', '#fb7185', '#38bdf8']}
+            className="h-full group"
+          >
+            <div className="glass p-6 rounded-2xl border border-line flex gap-4 h-full hover:border-violet/30 hover:-translate-y-0.5 transition-all">
+              <Shield className="h-8 w-8 text-rose-400 shrink-0" />
+              <div className="space-y-1">
+                <h3 className="font-display font-semibold text-fg text-lg">Elite Quality Assurance</h3>
+                <p className="text-sm text-muted">
+                  Every codebase undergoes rigorous automated and manual validation. We build stable systems that actually run, compile, and scale.
+                </p>
+              </div>
             </div>
-          </div>
+          </BorderGlow>
         </Reveal>
         <Reveal delay={0.2} className="h-full">
-          <div className="glass p-6 rounded-2xl border border-line flex gap-4 h-full hover:border-violet/30 hover:-translate-y-0.5 transition-all">
-            <Code2 className="h-8 w-8 text-cyan shrink-0" />
-            <div className="space-y-1">
-              <h3 className="font-display font-semibold text-fg text-lg">Cutting-Edge Tech Stacks</h3>
-              <p className="text-sm text-muted">
-                No outdated curricula. We build with React, Next.js, Python AI/ML, Rust Smart Contracts, and PostgreSQL to ensure your portfolio is competitive.
-              </p>
+          <BorderGlow
+            edgeSensitivity={30}
+            glowColor="#06b6d4"
+            backgroundColor="var(--color-surface)"
+            borderRadius={20}
+            glowRadius={40}
+            glowIntensity={0.8}
+            coneSpread={25}
+            colors={['#06b6d4', '#22d3ee', '#a855f7']}
+            className="h-full group"
+          >
+            <div className="glass p-6 rounded-2xl border border-line flex gap-4 h-full hover:border-violet/30 hover:-translate-y-0.5 transition-all">
+              <Code2 className="h-8 w-8 text-cyan shrink-0" />
+              <div className="space-y-1">
+                <h3 className="font-display font-semibold text-fg text-lg">Cutting-Edge Tech Stacks</h3>
+                <p className="text-sm text-muted">
+                  No outdated curricula. We build with React, Next.js, Python AI/ML, Rust Smart Contracts, and PostgreSQL to ensure your portfolio is competitive.
+                </p>
+              </div>
             </div>
-          </div>
+          </BorderGlow>
         </Reveal>
         <Reveal delay={0.3} className="h-full">
-          <div className="glass p-6 rounded-2xl border border-line flex gap-4 h-full hover:border-violet/30 hover:-translate-y-0.5 transition-all">
-            <Users className="h-8 w-8 text-violet shrink-0" />
-            <div className="space-y-1">
-              <h3 className="font-display font-semibold text-fg text-lg">1:1 Engineering Access</h3>
-              <p className="text-sm text-muted">
-                Direct Slack and WhatsApp communication channel with the senior developers who designed your system, ensuring zero environment setup friction.
-              </p>
+          <BorderGlow
+            edgeSensitivity={30}
+            glowColor="#a855f7"
+            backgroundColor="var(--color-surface)"
+            borderRadius={20}
+            glowRadius={40}
+            glowIntensity={0.8}
+            coneSpread={25}
+            colors={['#a855f7', '#c084fc', '#38bdf8']}
+            className="h-full group"
+          >
+            <div className="glass p-6 rounded-2xl border border-line flex gap-4 h-full hover:border-violet/30 hover:-translate-y-0.5 transition-all">
+              <Users className="h-8 w-8 text-violet shrink-0" />
+              <div className="space-y-1">
+                <h3 className="font-display font-semibold text-fg text-lg">1:1 Engineering Access</h3>
+                <p className="text-sm text-muted">
+                  Direct Slack and WhatsApp communication channel with the senior developers who designed your system, ensuring zero environment setup friction.
+                </p>
+              </div>
             </div>
-          </div>
+          </BorderGlow>
         </Reveal>
       </section>
 
@@ -172,59 +209,107 @@ export default function About() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Reveal delay={0.05} className="h-full">
-            <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
-              <div className="space-y-3">
-                <div className="p-3 bg-surface rounded-xl inline-block border border-line">
-                  <Terminal className="h-6 w-6 text-violet" />
+            <BorderGlow
+              edgeSensitivity={30}
+              glowColor="#a855f7"
+              backgroundColor="var(--color-surface)"
+              borderRadius={20}
+              glowRadius={40}
+              glowIntensity={0.8}
+              coneSpread={25}
+              colors={['#a855f7', '#c084fc', '#38bdf8']}
+              className="h-full group"
+            >
+              <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
+                <div className="space-y-3">
+                  <div className="p-3 bg-surface rounded-xl inline-block border border-line">
+                    <Terminal className="h-6 w-6 text-violet" />
+                  </div>
+                  <h3 className="font-display font-semibold text-fg text-base">Line-by-Line Code Walkthroughs</h3>
+                  <p className="text-xs text-muted leading-relaxed">
+                    Our engineers conduct screen-sharing sessions explaining every controller, database query, and algorithm. You will understand exactly how every line fits together.
+                  </p>
                 </div>
-                <h3 className="font-display font-semibold text-fg text-base">Line-by-Line Code Walkthroughs</h3>
-                <p className="text-xs text-muted leading-relaxed">
-                  Our engineers conduct screen-sharing sessions explaining every controller, database query, and algorithm. You will understand exactly how every line fits together.
-                </p>
               </div>
-            </div>
+            </BorderGlow>
           </Reveal>
 
           <Reveal delay={0.1} className="h-full">
-            <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
-              <div className="space-y-3">
-                <div className="p-3 bg-surface rounded-xl inline-block border border-line">
-                  <BookOpen className="h-6 w-6 text-cyan" />
+            <BorderGlow
+              edgeSensitivity={30}
+              glowColor="#06b6d4"
+              backgroundColor="var(--color-surface)"
+              borderRadius={20}
+              glowRadius={40}
+              glowIntensity={0.8}
+              coneSpread={25}
+              colors={['#06b6d4', '#22d3ee', '#a855f7']}
+              className="h-full group"
+            >
+              <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
+                <div className="space-y-3">
+                  <div className="p-3 bg-surface rounded-xl inline-block border border-line">
+                    <BookOpen className="h-6 w-6 text-cyan" />
+                  </div>
+                  <h3 className="font-display font-semibold text-fg text-base">Architecture & Diagram Mastery</h3>
+                  <p className="text-xs text-muted leading-relaxed">
+                    Learn to explain system requirements, ER diagrams, and data flows. We teach you the high-level architecture so you can present like a system architect.
+                  </p>
                 </div>
-                <h3 className="font-display font-semibold text-fg text-base">Architecture & Diagram Mastery</h3>
-                <p className="text-xs text-muted leading-relaxed">
-                  Learn to explain system requirements, ER diagrams, and data flows. We teach you the high-level architecture so you can present like a system architect.
-                </p>
               </div>
-            </div>
+            </BorderGlow>
           </Reveal>
 
           <Reveal delay={0.15} className="h-full">
-            <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
-              <div className="space-y-3">
-                <div className="p-3 bg-surface rounded-xl inline-block border border-line">
-                  <MonitorPlay className="h-6 w-6 text-emerald-400" />
+            <BorderGlow
+              edgeSensitivity={30}
+              glowColor="#34d399"
+              backgroundColor="var(--color-surface)"
+              borderRadius={20}
+              glowRadius={40}
+              glowIntensity={0.8}
+              coneSpread={25}
+              colors={['#34d399', '#6ee7b7', '#a855f7']}
+              className="h-full group"
+            >
+              <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
+                <div className="space-y-3">
+                  <div className="p-3 bg-surface rounded-xl inline-block border border-line">
+                    <MonitorPlay className="h-6 w-6 text-emerald-400" />
+                  </div>
+                  <h3 className="font-display font-semibold text-fg text-base">Mock Viva Defense Panels</h3>
+                  <p className="text-xs text-muted leading-relaxed">
+                    We put you through mock evaluation rounds, grilling you with common review questions. You'll learn how to handle critical panel objections with technical depth.
+                  </p>
                 </div>
-                <h3 className="font-display font-semibold text-fg text-base">Mock Viva Defense Panels</h3>
-                <p className="text-xs text-muted leading-relaxed">
-                  We put you through mock evaluation rounds, grilling you with common review questions. You'll learn how to handle critical panel objections with technical depth.
-                </p>
               </div>
-            </div>
+            </BorderGlow>
           </Reveal>
 
           <Reveal delay={0.2} className="h-full">
-            <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
-              <div className="space-y-3">
-                <div className="p-3 bg-surface rounded-xl inline-block border border-line">
-                  <MessageSquare className="h-6 w-6 text-amber-400" />
+            <BorderGlow
+              edgeSensitivity={30}
+              glowColor="#fbbf24"
+              backgroundColor="var(--color-surface)"
+              borderRadius={20}
+              glowRadius={40}
+              glowIntensity={0.8}
+              coneSpread={25}
+              colors={['#fbbf24', '#fcd34d', '#38bdf8']}
+              className="h-full group"
+            >
+              <div className="glass p-6 rounded-2xl border border-line flex flex-col justify-between h-full hover:border-violet/40 hover:-translate-y-0.5 transition-all">
+                <div className="space-y-3">
+                  <div className="p-3 bg-surface rounded-xl inline-block border border-line">
+                    <MessageSquare className="h-6 w-6 text-amber-400" />
+                  </div>
+                  <h3 className="font-display font-semibold text-fg text-base">Direct Engineer Hotlines</h3>
+                  <p className="text-xs text-muted leading-relaxed">
+                    Stuck during a presentation preparation or database compilation? Reach our developers directly on WhatsApp for immediate support and doubt resolution.
+                  </p>
                 </div>
-                <h3 className="font-display font-semibold text-fg text-base">Direct Engineer Hotlines</h3>
-                <p className="text-xs text-muted leading-relaxed">
-                  Stuck during a presentation preparation or database compilation? Reach our developers directly on WhatsApp for immediate support and doubt resolution.
-                </p>
               </div>
-            </div>
+            </BorderGlow>
           </Reveal>
         </div>
       </section>
@@ -266,17 +351,29 @@ export default function About() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {steps.map((s, idx) => (
             <Reveal key={idx} delay={idx * 0.08} className="h-full">
-              <div className="space-y-3 bg-bg-soft/50 border border-line/45 p-5 rounded-2xl relative overflow-hidden group hover:border-violet/30 transition-all h-full">
-                <div className="p-3 bg-surface rounded-xl inline-block border border-line/80">
-                  {s.icon}
+              <BorderGlow
+                edgeSensitivity={30}
+                glowColor="#a855f7"
+                backgroundColor="var(--color-surface)"
+                borderRadius={20}
+                glowRadius={40}
+                glowIntensity={0.8}
+                coneSpread={25}
+                colors={['#a855f7', '#c084fc', '#38bdf8']}
+                className="h-full group"
+              >
+                <div className="space-y-3 bg-bg-soft/50 border border-line/45 p-5 rounded-2xl relative overflow-hidden hover:border-violet/30 transition-all h-full">
+                  <div className="p-3 bg-surface rounded-xl inline-block border border-line/80">
+                    {s.icon}
+                  </div>
+                  <h3 className="font-display font-semibold text-fg text-base pt-1">
+                    {s.title}
+                  </h3>
+                  <p className="text-xs text-muted leading-relaxed">
+                    {s.desc}
+                  </p>
                 </div>
-                <h3 className="font-display font-semibold text-fg text-base pt-1">
-                  {s.title}
-                </h3>
-                <p className="text-xs text-muted leading-relaxed">
-                  {s.desc}
-                </p>
-              </div>
+              </BorderGlow>
             </Reveal>
           ))}
         </div>
