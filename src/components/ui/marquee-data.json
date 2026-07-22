@@ -1,0 +1,193 @@
+[
+  {
+    "id": "25d0b0fc-c877-4d1c-9029-70b5255588d3",
+    "image": "/marquee/25d0b0fc-c877-4d1c-9029-70b5255588d3.webp",
+    "title": "Enhancing Cybersecurity in Smart Cyber-Physical Power Systems Using Deep Learning and Hybrid Protection",
+    "category": "AI/ML & Data Science",
+    "tier": "Premium",
+    "tech": [
+      "Python",
+      "cryptography libraries",
+      "Flask",
+      "cloud database"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "33ebff5a-5c8e-4637-9812-37742b47ff0f",
+    "image": "/marquee/33ebff5a-5c8e-4637-9812-37742b47ff0f.webp",
+    "title": "A Secure Framework for Privacy-Preserving Analytics in Healthcare Records Using Zero-Knowledge Proofs and Blockchain in Multi-Tenant Cloud Environments",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "Premium",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "03041705-e717-4535-821c-274dd2fcc5b9",
+    "image": "/marquee/03041705-e717-4535-821c-274dd2fcc5b9.webp",
+    "title": "Cybersecurity in Connected and Autonomous Vehicles A Systematic Review of Automotive Security",
+    "category": "IoT, Embedded & Robotics",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "cryptography libraries",
+      "Flask",
+      "cloud database"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "62b43f51-2c98-42a8-9e75-f171f5eb61f2",
+    "image": "/marquee/62b43f51-2c98-42a8-9e75-f171f5eb61f2.webp",
+    "title": "MACHINE LEARNING-ENHANCED HEART DISEASE PREDICTOR USING CARDIAC HEALTH DATA",
+    "category": "Biomedical & Healthcare",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹5,500",
+    "originalPrice": "₹6,500",
+    "discount": "15%"
+  },
+  {
+    "id": "5273d03d-9e78-4f84-813f-5ae63cfb01ab",
+    "image": "/marquee/5273d03d-9e78-4f84-813f-5ae63cfb01ab.webp",
+    "title": "Blockchain-Based e-Voting Using Smart Contracts, Differential Privacy, and Self-Sovereign Identities",
+    "category": "Blockchain & Decentralized Systems",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "5668a67c-567d-49d9-8cfa-f7f5cfc0b19b",
+    "image": "/marquee/5668a67c-567d-49d9-8cfa-f7f5cfc0b19b.webp",
+    "title": "Mitigating Cyber Risks in Smart Cyber-Physical Power Systems Through Deep Learning and Hybrid Security Models",
+    "category": "AI/ML & Data Science",
+    "tier": "Premium",
+    "tech": [
+      "Python",
+      "cryptography libraries",
+      "Flask",
+      "cloud database"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "15e9e9e4-e2c5-4443-88ef-e2154ef18e00",
+    "image": "/marquee/15e9e9e4-e2c5-4443-88ef-e2154ef18e00.webp",
+    "title": "MACHINE LEARNING BASED CLOUD NETWORK INTRUSION DETECTION SYSTEM",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "cryptography libraries",
+      "Flask",
+      "cloud database"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "6cac33e5-535a-4d3c-953b-55f8571504d0",
+    "image": "/marquee/6cac33e5-535a-4d3c-953b-55f8571504d0.webp",
+    "title": "GEN AI-DRIVEN EQUIPMENT HEALTH MONITORING IN FACTORIES USING IOT SENSOR STREAMS",
+    "category": "IoT, Embedded & Robotics",
+    "tier": "High",
+    "tech": [
+      "Arduino/ESP32/Raspberry Pi",
+      "sensors",
+      "MQTT/HTTP",
+      "web dashboard"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "c7014c9e-9f60-4fc1-bad6-4335dbe9fdf9",
+    "image": "/marquee/c7014c9e-9f60-4fc1-bad6-4335dbe9fdf9.webp",
+    "title": "AI CHATBOT FOR MEDICAL Q&A POWERED BY LLM AND HEALTH DATA INTEGRATION",
+    "category": "Biomedical & Healthcare",
+    "tier": "High",
+    "tech": [
+      "Web or Python stack with database",
+      "reports",
+      "and admin panel"
+    ],
+    "price": "₹5,500",
+    "originalPrice": "₹6,500",
+    "discount": "15%"
+  },
+  {
+    "id": "933414f6-b4cc-40da-a869-0854a129dfba",
+    "image": "/marquee/933414f6-b4cc-40da-a869-0854a129dfba.webp",
+    "title": "Decentralized Security Frameworks for Sensitive Data Protection Using Blockchain",
+    "category": "Blockchain & Decentralized Systems",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "fbbbd793-b1c2-47e3-b267-731b88ecf5e7",
+    "image": "/marquee/fbbbd793-b1c2-47e3-b267-731b88ecf5e7.webp",
+    "title": "MACHINE LEARNING MODEL FOR PERSONALIZED AGE-BASED HEALTHCARE ANALYTICS AND RECOMMENDATIONS",
+    "category": "AI/ML & Data Science",
+    "tier": "Premium",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "3a609721-3d2b-4c5c-b618-b067cb3d13ae",
+    "image": "/marquee/3a609721-3d2b-4c5c-b618-b067cb3d13ae.webp",
+    "title": "BLOCKCHAIN-INTEGRATED MEDICAL RECORDS SYSTEM WITH AI-DRIVEN SECURITY AND ACCESS AUDITING",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  }
+]

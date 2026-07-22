@@ -9,3 +9,7 @@ dist-ssr
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+# Marquee screenshot pipeline: raw PNGs are a build artifact; only the
+# optimized public/marquee/*.webp are committed and deployed.
+public/marquee/raw/
