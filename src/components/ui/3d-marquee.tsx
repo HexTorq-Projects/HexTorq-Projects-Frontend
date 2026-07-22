@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
-import { Sparkles, Code2, Check, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 export interface HexTorqCardItem {
   id: string;
@@ -281,7 +281,6 @@ export const ThreeDMarquee = ({
   cards?: HexTorqCardItem[];
   className?: string;
 }) => {
-  // If images array is explicitly provided, support fallback image rendering
   const itemsList = cards || DEFAULT_HEXTORQ_CARDS;
   const chunkSize = Math.ceil(itemsList.length / 4);
   const chunks = Array.from({ length: 4 }, (_, colIndex) => {
@@ -292,35 +291,38 @@ export const ThreeDMarquee = ({
   return (
     <div
       className={cn(
-        "mx-auto block h-[640px] overflow-hidden rounded-3xl max-sm:h-110 select-none relative",
+        "mx-auto block h-[550px] sm:h-[620px] overflow-hidden rounded-3xl select-none relative w-full",
         className
       )}
+      style={{ perspective: "1000px" }}
     >
-      <div className="flex size-full items-center justify-center">
-        <div className="size-[1780px] shrink-0 scale-50 sm:scale-75 lg:scale-95">
+      <div className="flex size-full items-center justify-center relative">
+        <div
+          className="shrink-0 scale-75 sm:scale-90 lg:scale-100 transition-transform duration-500"
+          style={{ transformStyle: "preserve-3d" }}
+        >
           <div
             style={{
-              transform: "rotateX(55deg) rotateY(0deg) rotateZ(-45deg)",
+              transform: "rotateX(42deg) rotateY(0deg) rotateZ(-32deg)",
+              transformStyle: "preserve-3d",
             }}
-            className="relative top-96 right-[50%] grid size-full origin-top-left grid-cols-4 gap-8 transform-3d"
+            className="grid grid-cols-4 gap-6 sm:gap-8 origin-center"
           >
             {chunks.map((subarray, colIndex) => (
               <motion.div
-                animate={{ y: colIndex % 2 === 0 ? 120 : -120 }}
+                animate={{ y: colIndex % 2 === 0 ? 80 : -80 }}
                 transition={{
-                  duration: colIndex % 2 === 0 ? 16 : 22,
+                  duration: colIndex % 2 === 0 ? 18 : 24,
                   repeat: Infinity,
                   repeatType: "reverse",
                   ease: "easeInOut",
                 }}
                 key={colIndex + "marquee"}
-                className="flex flex-col items-start gap-8"
+                className="flex flex-col items-start gap-6 sm:gap-8"
+                style={{ transformStyle: "preserve-3d" }}
               >
-                <GridLineVertical className="-left-4" offset="80px" />
                 {subarray.map((item, itemIndex) => (
                   <div className="relative" key={itemIndex + item.id}>
-                    <GridLineHorizontal className="-top-4" offset="20px" />
-                    
                     {/* Render standard image fallback if images prop was passed */}
                     {images && images.length > 0 && typeof item === "string" ? (
                       <motion.img
@@ -328,68 +330,67 @@ export const ThreeDMarquee = ({
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         src={item}
                         alt={`Preview ${itemIndex + 1}`}
-                        className="aspect-[970/700] rounded-xl object-cover ring ring-gray-950/5 hover:shadow-2xl"
-                        width={970}
-                        height={700}
+                        className="w-[340px] sm:w-[400px] aspect-[970/650] rounded-xl object-cover ring ring-line/20 shadow-2xl"
                       />
                     ) : (
                       /* Render HexTorq Project Visual Card */
                       <motion.div
-                        whileHover={{ y: -12, scale: 1.03 }}
+                        whileHover={{ y: -12, scale: 1.04, z: 20 }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="w-[420px] aspect-[970/680] rounded-2xl bg-surface/95 border border-line/60 p-5 shadow-2xl backdrop-blur-xl flex flex-col justify-between overflow-hidden group hover:border-cyan/50 hover:shadow-cyan/20 transition-all duration-300 relative"
+                        className="w-[340px] sm:w-[400px] rounded-2xl bg-surface/95 border border-line/80 p-4 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col justify-between overflow-hidden group hover:border-cyan/60 hover:shadow-cyan/30 transition-all duration-300 relative"
+                        style={{ transformStyle: "preserve-3d" }}
                       >
                         {/* Glowing top line accent */}
                         <div
-                          className="absolute top-0 left-0 w-full h-[3px] opacity-80"
+                          className="absolute top-0 left-0 w-full h-[3px] opacity-90"
                           style={{ backgroundColor: item.categoryColor }}
                         />
 
                         {/* Top Metadata Header */}
-                        <div className="flex items-center justify-between gap-2 z-10">
-                          <div className="flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap">
+                        <div className="flex items-center justify-between gap-2 z-10 mb-2">
+                          <div className="flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap min-w-0">
                             <span
-                              className="h-2 w-2 rounded-full"
+                              className="h-2 w-2 rounded-full shrink-0"
                               style={{ backgroundColor: item.categoryColor }}
                             />
-                            <span className="text-muted text-[11px] font-medium uppercase tracking-wider">
+                            <span className="text-muted text-[11px] font-medium uppercase tracking-wider truncate">
                               {item.category}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
                               Viva Ready
                             </span>
-                            <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400">
+                            <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-400">
                               {item.tier}
                             </span>
                           </div>
                         </div>
 
                         {/* Title */}
-                        <h4 className="font-display text-sm font-bold text-fg line-clamp-2 leading-snug my-1 z-10 group-hover:text-cyan transition-colors">
+                        <h4 className="font-display text-xs sm:text-sm font-bold text-fg line-clamp-2 leading-snug my-1 z-10 group-hover:text-cyan transition-colors">
                           {item.title}
                         </h4>
 
-                        {/* Interactive Code Editor Snippet Box */}
-                        <div className="rounded-xl border border-line/50 bg-bg/90 p-3 font-mono text-[11px] leading-relaxed text-muted/90 overflow-hidden relative shadow-inner my-1">
-                          <div className="flex items-center justify-between border-b border-line/40 pb-1.5 mb-2 select-none">
+                        {/* Code Editor Snippet Box */}
+                        <div className="rounded-xl border border-line/60 bg-bg/95 p-3 font-mono text-[10.5px] leading-relaxed text-muted/90 overflow-hidden relative shadow-inner my-2">
+                          <div className="flex items-center justify-between border-b border-line/40 pb-1.5 mb-1.5 select-none">
                             <div className="flex items-center gap-1.5">
-                              <span className="h-2 w-2 rounded-full bg-rose-500/70" />
-                              <span className="h-2 w-2 rounded-full bg-amber-500/70" />
-                              <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
-                              <span className="text-[10px] text-muted/60 pl-1 font-sans">
+                              <span className="h-2 w-2 rounded-full bg-rose-500/80" />
+                              <span className="h-2 w-2 rounded-full bg-amber-500/80" />
+                              <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
+                              <span className="text-[10px] text-muted/70 pl-1 font-sans font-medium">
                                 {item.snippet.filename}
                               </span>
                             </div>
-                            <span className="text-[9px] uppercase font-sans text-cyan/70 font-semibold px-1.5 py-0.5 rounded bg-cyan/10">
+                            <span className="text-[9px] uppercase font-sans text-cyan font-bold px-1.5 py-0.5 rounded bg-cyan/10 border border-cyan/20">
                               {item.snippet.lang}
                             </span>
                           </div>
                           <div className="space-y-0.5 font-mono">
                             {item.snippet.code.map((line, lIdx) => (
                               <div key={lIdx} className="flex gap-2 min-w-0">
-                                <span className="text-muted/40 select-none text-[10px] w-3 shrink-0">
+                                <span className="text-muted/40 select-none text-[9.5px] w-3 shrink-0">
                                   {lIdx + 1}
                                 </span>
                                 <span className="truncate text-fg/90">
@@ -401,13 +402,13 @@ export const ThreeDMarquee = ({
                         </div>
 
                         {/* Bottom Tags & Pricing Footer */}
-                        <div className="flex items-center justify-between gap-2 pt-2 border-t border-line/40 z-10">
+                        <div className="flex items-center justify-between gap-2 pt-2 border-t border-line/50 z-10">
                           {/* Tech Pills */}
                           <div className="flex items-center gap-1 overflow-hidden">
                             {item.tech.slice(0, 3).map((t) => (
                               <span
                                 key={t}
-                                className="rounded-full bg-surface-hi/80 border border-line/60 px-2 py-0.5 text-[10px] text-muted font-medium shrink-0 whitespace-nowrap"
+                                className="rounded-full bg-surface-hi/90 border border-line/70 px-2 py-0.5 text-[10px] text-muted font-medium shrink-0 whitespace-nowrap"
                               >
                                 {t}
                               </span>
@@ -421,12 +422,12 @@ export const ThreeDMarquee = ({
                                 <span className="font-display font-bold text-fg text-xs sm:text-sm">
                                   {item.price}
                                 </span>
-                                <span className="rounded bg-emerald-500/15 px-1 py-0.5 text-[9px] font-bold text-emerald-400">
+                                <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">
                                   {item.discount} off
                                 </span>
                               </div>
                             </div>
-                            <div className="h-7 w-7 rounded-full bg-violet/10 border border-violet/30 flex items-center justify-center text-violet group-hover:bg-violet group-hover:text-white transition-colors">
+                            <div className="h-7 w-7 rounded-full bg-violet/15 border border-violet/30 flex items-center justify-center text-violet group-hover:bg-violet group-hover:text-white transition-colors">
                               <ArrowUpRight className="h-3.5 w-3.5" />
                             </div>
                           </div>
@@ -441,77 +442,5 @@ export const ThreeDMarquee = ({
         </div>
       </div>
     </div>
-  );
-};
-
-const GridLineHorizontal = ({
-  className,
-  offset,
-}: {
-  className?: string;
-  offset?: string;
-}) => {
-  return (
-    <div
-      style={
-        {
-          "--background": "#ffffff",
-          "--color": "rgba(0, 0, 0, 0.2)",
-          "--height": "1px",
-          "--width": "5px",
-          "--fade-stop": "90%",
-          "--offset": offset || "200px",
-          "--color-dark": "rgba(255, 255, 255, 0.2)",
-          maskComposite: "exclude",
-        } as React.CSSProperties
-      }
-      className={cn(
-        "absolute left-[calc(var(--offset)/2*-1)] h-[var(--height)] w-[calc(100%+var(--offset))]",
-        "bg-[linear-gradient(to_right,var(--color),var(--color)_50%,transparent_0,transparent)]",
-        "[background-size:var(--width)_var(--height)]",
-        "[mask:linear-gradient(to_left,var(--background)_var(--fade-stop),transparent),_linear-gradient(to_right,var(--background)_var(--fade-stop),transparent),_linear-gradient(black,black)]",
-        "[mask-composite:exclude]",
-        "z-30",
-        "dark:bg-[linear-gradient(to_right,var(--color-dark),var(--color-dark)_50%,transparent_0,transparent)]",
-        className
-      )}
-    ></div>
-  );
-};
-
-const GridLineVertical = ({
-  className,
-  offset,
-}: {
-  className?: string;
-  offset?: string;
-}) => {
-  return (
-    <div
-      style={
-        {
-          "--background": "#ffffff",
-          "--color": "rgba(0, 0, 0, 0.2)",
-          "--height": "5px",
-          "--width": "1px",
-          "--fade-stop": "90%",
-          "--offset": offset || "150px",
-          "--color-dark": "rgba(255, 255, 255, 0.2)",
-          maskComposite: "exclude",
-        } as React.CSSProperties
-      }
-      className={cn(
-        "absolute top-[calc(var(--offset)/2*-1)] h-[calc(100%+var(--offset))] w-[var(--width)]",
-        "bg-[linear-gradient(to_bottom,var(--color),var(--color)_50%,transparent_0,transparent)]",
-        "[background-size:var(--width)_var(--height)]",
-        "[mask:linear-gradient(to_bottom,var(--color),var(--color)_50%,transparent_0,transparent)]",
-        "[background-size:var(--width)_var(--height)]",
-        "[mask:linear-gradient(to_top,var(--background)_var(--fade-stop),transparent),_linear-gradient(to_bottom,var(--background)_var(--fade-stop),transparent),_linear-gradient(black,black)]",
-        "[mask-composite:exclude]",
-        "z-30",
-        "dark:bg-[linear-gradient(to_bottom,var(--color-dark),var(--color-dark)_50%,transparent_0,transparent)]",
-        className
-      )}
-    ></div>
   );
 };
