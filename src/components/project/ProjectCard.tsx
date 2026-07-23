@@ -34,7 +34,7 @@ export function ProjectCard({ project }: { project: Project }) {
       } else {
         addToCart(project);
         setJustAdded(true);
-        setTimeout(() => setJustAdded(false), 1200);
+        setTimeout(() => setJustAdded(false), 1400);
       }
     },
     [inCart, project, addToCart, removeFromCart]
@@ -55,7 +55,7 @@ export function ProjectCard({ project }: { project: Project }) {
           className="h-full group cursor-pointer"
         >
           <Card
-            className={`flex flex-col h-full relative overflow-hidden transition-colors duration-350 border-0 bg-transparent ${isPremium ? "glow-premium" : ""}`}
+            className={`flex flex-col h-full relative overflow-hidden transition-colors duration-350 border-0 bg-transparent p-3 sm:p-4 ${isPremium ? "glow-premium" : ""}`}
             style={{}}
           >
             {/* Shine Overlay for Premium items */}
@@ -78,17 +78,17 @@ export function ProjectCard({ project }: { project: Project }) {
             />
 
             {/* ── SECTION: Category + Tier badges ── */}
-            <div className="flex items-center justify-between gap-1.5 mb-3 pr-10 relative z-10 h-[24px] shrink-0">
+            <div className="flex items-center justify-between gap-1.5 mb-2 pr-8 relative z-10 shrink-0">
               <span className="min-w-0">
                 <CategoryPill name={project.category?.categoryName} short />
               </span>
               <TierBadge tier={project.sellabilityTier} />
             </div>
 
-            {/* ── SECTION: Title (Full Disclosure, responsive size text-xs sm:text-sm) ── */}
+            {/* ── SECTION: Title (no clamp — fully visible) ── */}
             <h3
               title={project.projectTitle}
-              className={`font-display text-xs sm:text-sm font-bold text-fg transition-colors mb-3 line-clamp-3 leading-snug relative z-10 min-h-[3.1rem] sm:min-h-[3.4rem] shrink-0 ${
+              className={`font-display text-[11px] sm:text-xs font-bold text-fg transition-colors mb-2 leading-snug relative z-10 ${
                 isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
               }`}
             >
@@ -96,11 +96,11 @@ export function ProjectCard({ project }: { project: Project }) {
             </h3>
 
             {/* ── SECTION: Tech Tags (wrapping, fully visible) ── */}
-            <div className="flex flex-wrap gap-1.5 mb-3 relative z-10 min-h-[20px]">
+            <div className="flex flex-wrap gap-1 mb-2 relative z-10">
               {techList.map((tech) => (
                 <span
                   key={tech}
-                  className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] text-muted font-medium transition-colors ${
+                  className={`whitespace-nowrap rounded-full border px-1.5 py-[1px] text-[10px] text-muted font-medium transition-colors ${
                     isPremium
                       ? "bg-amber-500/[0.02] border-amber-500/10 group-hover:border-amber-500/20"
                       : "bg-surface-hi border-line group-hover:border-line/80"
@@ -115,75 +115,101 @@ export function ProjectCard({ project }: { project: Project }) {
             <div className="flex-1" />
 
             {/* Divider */}
-            <div className="h-px bg-line/40 w-full mb-3 relative z-10 shrink-0" />
+            <div className="h-px bg-line/40 w-full mb-2 relative z-10 shrink-0" />
 
-            {/* ── SECTION: Footer (Complexity + Price) ── */}
-            <div className="flex items-end justify-between gap-2 relative z-10 shrink-0">
-              <div className="self-center shrink-0">
+            {/* ── SECTION: Footer (Complexity + Price + Cart) ── */}
+            <div className="flex items-center justify-between gap-1.5 relative z-10 shrink-0">
+              <div className="shrink-0">
                 <ComplexityBadge complexity={project.complexity} />
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0 min-w-0">
                 <PriceBlock
                   recommended={project.recommendedPrice}
                   discounted={project.discountedPrice}
                   original={project.originalPrice}
                   size="sm"
                 />
-                {/* ── Cart Button with spring click animation ── */}
+                {/* ── Cart Button — polished spring animation ── */}
                 <motion.button
                   type="button"
                   onClick={handleCartClick}
-                  className={`relative shrink-0 flex h-8 w-8 items-center justify-center rounded-full border shadow-lg z-20 overflow-hidden ${
+                  className={`relative shrink-0 flex h-7 w-7 items-center justify-center rounded-full border shadow-lg z-20 overflow-hidden ${
                     inCart
-                      ? "border-emerald-500/40 bg-emerald-500 text-white"
+                      ? "border-emerald-500/40 bg-emerald-500 text-white shadow-emerald-500/25"
                       : "border-line bg-bg/80 text-muted hover:text-fg hover:border-cyan/60"
                   }`}
-                  whileTap={{ scale: 0.8 }}
-                  whileHover={{ scale: 1.08 }}
-                  animate={justAdded ? { scale: [1, 1.35, 0.95, 1.08, 1] } : {}}
+                  whileTap={{ scale: 0.75 }}
+                  whileHover={{ scale: 1.12 }}
+                  animate={
+                    justAdded
+                      ? {
+                          scale: [1, 1.4, 0.85, 1.15, 0.95, 1.05, 1],
+                          rotate: [0, -8, 6, -4, 2, 0],
+                        }
+                      : {}
+                  }
                   transition={{
                     type: "spring",
-                    stiffness: 500,
-                    damping: 18,
-                    mass: 0.8,
+                    stiffness: 600,
+                    damping: 15,
+                    mass: 0.6,
                   }}
                   title={inCart ? "Remove from cart" : "Add to cart"}
                 >
-                  {/* Pulse ring on add */}
+                  {/* Ripple ring — expands outward on add */}
                   <AnimatePresence>
                     {justAdded && (
-                      <motion.span
-                        className="absolute inset-0 rounded-full bg-emerald-400"
-                        initial={{ scale: 0.4, opacity: 0.7 }}
-                        animate={{ scale: 2.8, opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.7, ease: "easeOut" }}
-                      />
+                      <>
+                        <motion.span
+                          className="absolute inset-0 rounded-full border-2 border-emerald-400"
+                          initial={{ scale: 0.5, opacity: 1 }}
+                          animate={{ scale: 3, opacity: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.7, ease: "easeOut" }}
+                        />
+                        <motion.span
+                          className="absolute inset-0 rounded-full bg-emerald-400"
+                          initial={{ scale: 0.3, opacity: 0.8 }}
+                          animate={{ scale: 2.2, opacity: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                        />
+                      </>
                     )}
                   </AnimatePresence>
-                  {/* Icon swap with spring */}
+                  {/* Icon swap with spring bounce */}
                   <AnimatePresence mode="wait" initial={false}>
                     {inCart ? (
                       <motion.span
                         key="check"
-                        initial={{ scale: 0, rotate: -90 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        exit={{ scale: 0, rotate: 90 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                        initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                        animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                        exit={{ scale: 0, rotate: 180, opacity: 0 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 18,
+                          mass: 0.5,
+                        }}
                         className="flex items-center justify-center"
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
                       </motion.span>
                     ) : (
                       <motion.span
                         key="cart"
-                        initial={{ scale: 0, rotate: 90 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        exit={{ scale: 0, rotate: -90 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                        initial={{ scale: 0, rotate: 180, opacity: 0 }}
+                        animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                        exit={{ scale: 0, rotate: -180, opacity: 0 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 18,
+                          mass: 0.5,
+                        }}
                         className="flex items-center justify-center"
                       >
-                        <ShoppingCart className="h-3.5 w-3.5" />
+                        <ShoppingCart className="h-3 w-3" />
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -195,7 +221,7 @@ export function ProjectCard({ project }: { project: Project }) {
       </Link>
 
       {/* Floating Wishlist Button */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-3 right-3 z-20">
         <WishlistButton project={project} />
       </div>
     </>
@@ -206,7 +232,7 @@ export function ProjectCard({ project }: { project: Project }) {
     onMouseLeave: () => setHovered(false),
   };
 
-  const transformClasses = "hover:-translate-y-1.5 hover:scale-[1.012] transition-all duration-350 ease-out";
+  const transformClasses = "hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 ease-out";
 
   if (reduced) {
     return (
@@ -220,10 +246,10 @@ export function ProjectCard({ project }: { project: Project }) {
     <motion.div
       className={`relative group h-full ${transformClasses}`}
       {...handlers}
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       {content}
     </motion.div>
