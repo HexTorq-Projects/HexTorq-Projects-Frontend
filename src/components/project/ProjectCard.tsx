@@ -129,68 +129,46 @@ export function ProjectCard({ project }: { project: Project }) {
                   original={project.originalPrice}
                   size="sm"
                 />
-                {/* ── Cart Button — polished spring animation ── */}
+                {/* ── Cart Button — visible bounce + ripple ── */}
                 <motion.button
                   type="button"
                   onClick={handleCartClick}
-                  className={`relative shrink-0 flex h-7 w-7 items-center justify-center rounded-full border shadow-lg z-20 overflow-hidden ${
+                  className={`relative shrink-0 flex h-7 w-7 items-center justify-center rounded-full border shadow-lg z-20 ${
                     inCart
                       ? "border-emerald-500/40 bg-emerald-500 text-white shadow-emerald-500/25"
                       : "border-line bg-bg/80 text-muted hover:text-fg hover:border-cyan/60"
                   }`}
-                  whileTap={{ scale: 0.75 }}
-                  whileHover={{ scale: 1.12 }}
+                  whileTap={{ scale: 0.8 }}
+                  whileHover={{ scale: 1.1 }}
                   animate={
                     justAdded
-                      ? {
-                          scale: [1, 1.4, 0.85, 1.15, 0.95, 1.05, 1],
-                          rotate: [0, -8, 6, -4, 2, 0],
-                        }
-                      : {}
+                      ? { scale: [1, 1.4, 0.9, 1.15, 1] }
+                      : { scale: 1 }
                   }
-                  transition={{
-                    type: "spring",
-                    stiffness: 600,
-                    damping: 15,
-                    mass: 0.6,
-                  }}
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
                   title={inCart ? "Remove from cart" : "Add to cart"}
                 >
-                  {/* Ripple ring — expands outward on add */}
+                  {/* Ripple ring — visible because overflow is not hidden */}
                   <AnimatePresence>
                     {justAdded && (
-                      <>
-                        <motion.span
-                          className="absolute inset-0 rounded-full border-2 border-emerald-400"
-                          initial={{ scale: 0.5, opacity: 1 }}
-                          animate={{ scale: 3, opacity: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.7, ease: "easeOut" }}
-                        />
-                        <motion.span
-                          className="absolute inset-0 rounded-full bg-emerald-400"
-                          initial={{ scale: 0.3, opacity: 0.8 }}
-                          animate={{ scale: 2.2, opacity: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-                        />
-                      </>
+                      <motion.span
+                        className="absolute inset-0 rounded-full bg-emerald-400/50"
+                        initial={{ scale: 0.2, opacity: 0.9 }}
+                        animate={{ scale: 3.5, opacity: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.65, ease: "easeOut" }}
+                      />
                     )}
                   </AnimatePresence>
-                  {/* Icon swap with spring bounce */}
+                  {/* Icon swap */}
                   <AnimatePresence mode="wait" initial={false}>
                     {inCart ? (
                       <motion.span
                         key="check"
-                        initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                        initial={{ scale: 0, rotate: -90 }}
                         animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                        exit={{ scale: 0, rotate: 180, opacity: 0 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 500,
-                          damping: 18,
-                          mass: 0.5,
-                        }}
+                        exit={{ scale: 0, rotate: 90, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 20, mass: 0.4 }}
                         className="flex items-center justify-center"
                       >
                         <Check className="h-3.5 w-3.5" strokeWidth={3} />
@@ -198,15 +176,10 @@ export function ProjectCard({ project }: { project: Project }) {
                     ) : (
                       <motion.span
                         key="cart"
-                        initial={{ scale: 0, rotate: 180, opacity: 0 }}
+                        initial={{ scale: 0, rotate: 90 }}
                         animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                        exit={{ scale: 0, rotate: -180, opacity: 0 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 500,
-                          damping: 18,
-                          mass: 0.5,
-                        }}
+                        exit={{ scale: 0, rotate: -90, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 20, mass: 0.4 }}
                         className="flex items-center justify-center"
                       >
                         <ShoppingCart className="h-3 w-3" />
