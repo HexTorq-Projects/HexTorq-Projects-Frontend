@@ -189,5 +189,292 @@
     "price": "₹6,500",
     "originalPrice": "₹7,000",
     "discount": "7%"
+  },
+  {
+    "id": "17f6afd5-83f8-4f7c-a27b-79e525dab420",
+    "image": "/marquee/17f6afd5-83f8-4f7c-a27b-79e525dab420.webp",
+    "title": "AI-POWERED PERSONAL HEALTH COMPANION ROBOT USING NLP AND IOT SENSORS",
+    "category": "IoT, Embedded & Robotics",
+    "tier": "High",
+    "tech": [
+      "Arduino/ESP32/Raspberry Pi",
+      "sensors",
+      "MQTT/HTTP",
+      "web dashboard"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "6a693b03-0de3-4030-a1c3-6e83d6e364df",
+    "image": "/marquee/6a693b03-0de3-4030-a1c3-6e83d6e364df.webp",
+    "title": "SMART E-HEALTH CARD WITH BLOCKCHAIN FOR TAMPER-PROOF MEDICAL RECORDS",
+    "category": "Biomedical & Healthcare",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "8f0aa40e-fc1b-4c4e-8aa8-e2afab52f36c",
+    "image": "/marquee/8f0aa40e-fc1b-4c4e-8aa8-e2afab52f36c.webp",
+    "title": "Blockchain-Enabled Federated Learning in Healthcare Survey and State-of-the-Art",
+    "category": "Blockchain & Decentralized Systems",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "49729cc4-de13-48e2-a169-234eb3c529e8",
+    "image": "/marquee/49729cc4-de13-48e2-a169-234eb3c529e8.webp",
+    "title": "Detection of Cyber bullying Using Machine Learning and Deep Learning Algorithms",
+    "category": "AI/ML & Data Science",
+    "tier": "Premium",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "14884ddc-c644-4617-b4e4-5db212ed12d6",
+    "image": "/marquee/14884ddc-c644-4617-b4e4-5db212ed12d6.webp",
+    "title": "A Security and Privacy Preserving Consortium Blockchain Based Accessing Control In Mobile Crowd sensing",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "c203043a-e74c-49c4-982c-ee76e9d5d106",
+    "image": "/marquee/c203043a-e74c-49c4-982c-ee76e9d5d106.webp",
+    "title": "SMART BIO-MEDICAL SIGNAL CLASSIFIER FOR MULTI-DISEASE DETECTION USING AI AND IOT",
+    "category": "IoT, Embedded & Robotics",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "f826b6cd-85f2-48d0-b1a6-37f6122d67ec",
+    "image": "/marquee/f826b6cd-85f2-48d0-b1a6-37f6122d67ec.webp",
+    "title": "Improving Sleep Disorder Diagnosis Through Optimized Machine Learning Approaches",
+    "category": "Biomedical & Healthcare",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹5,500",
+    "originalPrice": "₹6,500",
+    "discount": "15%"
+  },
+  {
+    "id": "ccf57bd3-1ab8-4849-bfcc-616e44a1f900",
+    "image": "/marquee/ccf57bd3-1ab8-4849-bfcc-616e44a1f900.webp",
+    "title": "IOT-ENABLED NETWORK INTRUSION DETECTION SYSTEM POWERED BY MACHINE LEARNING",
+    "category": "AI/ML & Data Science",
+    "tier": "Premium",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "10288a76-2ed5-4546-a4ad-0c4bbed49493",
+    "image": "/marquee/10288a76-2ed5-4546-a4ad-0c4bbed49493.webp",
+    "title": "A Federated Learning Framework for Enhanced Data Security and Cyber Intrusion Detection",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "cryptography libraries",
+      "Flask",
+      "cloud database"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "74cf0fa1-9686-4916-9d80-d5155d73f2a3",
+    "image": "/marquee/74cf0fa1-9686-4916-9d80-d5155d73f2a3.webp",
+    "title": "SMART IOT-ENABLED KART SYSTEM FOR AUTONOMOUS NAVIGATION AND INVENTORY MANAGEMENT",
+    "category": "IoT, Embedded & Robotics",
+    "tier": "High",
+    "tech": [
+      "React/HTML/CSS",
+      "Node.js/PHP/ASP.NET",
+      "MySQL"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "71d71787-c1b2-41eb-8999-3180f3e3b283",
+    "image": "/marquee/71d71787-c1b2-41eb-8999-3180f3e3b283.webp",
+    "title": "Enhancing Mobile App Recommendations With Crowdsourced Educational Data Using Machine Learning and Deep Learning",
+    "category": "AI/ML & Data Science",
+    "tier": "Premium",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "87963497-de55-4a94-a05c-3c1c7ff4d47f",
+    "image": "/marquee/87963497-de55-4a94-a05c-3c1c7ff4d47f.webp",
+    "title": "Blockchain-Enabled Secure Data Sharing in Smart Healthcare",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "e732a6ef-148a-4ce7-8d07-fcfd7d5666d1",
+    "image": "/marquee/e732a6ef-148a-4ce7-8d07-fcfd7d5666d1.webp",
+    "title": "IOT-ENABLED SMART FISH FARMING SYSTEM WITH AI-BASED FEED OPTIMIZATION",
+    "category": "IoT, Embedded & Robotics",
+    "tier": "High",
+    "tech": [
+      "Arduino/ESP32/Raspberry Pi",
+      "sensors",
+      "MQTT/HTTP",
+      "web dashboard"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "614cb65c-61f6-49e0-92f3-d12f7e8c66eb",
+    "image": "/marquee/614cb65c-61f6-49e0-92f3-d12f7e8c66eb.webp",
+    "title": "MACHINE LEARNING-BASED CLOUD NETWORK INTRUSION DETECTION PLATFORM",
+    "category": "AI/ML & Data Science",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "Flask/Django",
+      "scikit-learn/TensorFlow",
+      "SQLite/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "a2ae9d70-0949-4516-a579-a266a46fe436",
+    "image": "/marquee/a2ae9d70-0949-4516-a579-a266a46fe436.webp",
+    "title": "SECURE MEDICAL DATA STORAGE AND RETRIEVAL USING BLOCKCHAIN AND AI ACCESS CONTROLS",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "High",
+    "tech": [
+      "Solidity/Hyperledger",
+      "Web3",
+      "Node.js",
+      "IPFS/MySQL"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "ccab28d2-c73f-47e7-b2df-2b9f16ac15ae",
+    "image": "/marquee/ccab28d2-c73f-47e7-b2df-2b9f16ac15ae.webp",
+    "title": "AI AND IOT-ENABLED SMART HEALTH MONITORING SYSTEM FOR DAIRY COWS",
+    "category": "IoT, Embedded & Robotics",
+    "tier": "High",
+    "tech": [
+      "Arduino/ESP32/Raspberry Pi",
+      "sensors",
+      "MQTT/HTTP",
+      "web dashboard"
+    ],
+    "price": "₹6,000",
+    "originalPrice": "₹7,000",
+    "discount": "14%"
+  },
+  {
+    "id": "d52bedf1-89c8-4794-986c-7ff65e49fa53",
+    "image": "/marquee/d52bedf1-89c8-4794-986c-7ff65e49fa53.webp",
+    "title": "ANOMALY DETECTION SUITE USING DEEP LEARNING FOR INDUSTRIAL AND CYBERSECURITY APPLICATIONS",
+    "category": "AI/ML & Data Science",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "cryptography libraries",
+      "Flask",
+      "cloud database"
+    ],
+    "price": "₹6,500",
+    "originalPrice": "₹7,000",
+    "discount": "7%"
+  },
+  {
+    "id": "512e4349-12ad-42b4-833f-0e4f78b05f03",
+    "image": "/marquee/512e4349-12ad-42b4-833f-0e4f78b05f03.webp",
+    "title": "A Novel Farmwork For Secure Social Healthcare System over the Cloud",
+    "category": "Cybersecurity & Cloud Security",
+    "tier": "High",
+    "tech": [
+      "Python",
+      "cryptography libraries",
+      "Flask",
+      "cloud database"
+    ],
+    "price": "₹5,500",
+    "originalPrice": "₹6,500",
+    "discount": "15%"
   }
 ]

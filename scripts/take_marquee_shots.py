@@ -31,8 +31,14 @@ FRONTEND_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW_DIR = os.path.join(FRONTEND_ROOT, "public", "marquee", "raw")
 DATA_FILE = os.path.join(FRONTEND_ROOT, "src", "components", "ui", "marquee-data.json")
 
-TARGET_COUNT = 12          # cards in the marquee
-CLIP_HEIGHT = 640          # CSS px of the content column to capture (object-cover crops)
+TARGET_COUNT = 30          # tiles in the marquee (official demo uses ~30)
+
+# Landscape hero tile, aspect ~970/700 to match the Aceternity image tiles.
+VIEW_W = 1440
+VIEW_H = 1100
+CLIP_TOP = 90              # skip the fixed navbar
+CLIP_W = 1440
+CLIP_H = round(CLIP_W * 700 / 970)   # 1039 -> aspect 970/700
 
 os.makedirs(RAW_DIR, exist_ok=True)
 
@@ -147,7 +153,7 @@ def capture(projects):
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
         ctx = browser.new_context(
-            viewport={"width": 1440, "height": 900},
+            viewport={"width": VIEW_W, "height": VIEW_H},
             device_scale_factor=2,               # crisp 2x output
         )
         page = ctx.new_page()
@@ -159,20 +165,12 @@ def capture(projects):
             try:
                 page.goto(url, wait_until="networkidle", timeout=45000)
                 page.wait_for_timeout(2200)       # let reveal/anim settle
+                page.evaluate("window.scrollTo(0, 0)")
+                page.wait_for_timeout(300)
 
-                # The left content column holds title + description + modules.
-                el = page.query_selector("div.lg\\:col-span-2")
-                box = el.bounding_box() if el else None
-                if box and box["width"] > 200:
-                    clip = {
-                        "x": box["x"],
-                        "y": box["y"],
-                        "width": box["width"],
-                        "height": min(box["height"], CLIP_HEIGHT),
-                    }
-                else:
-                    # Fallback: fixed content region if selector shifts.
-                    clip = {"x": 320, "y": 150, "width": 800, "height": CLIP_HEIGHT}
+                # Landscape hero: category + title + description + price card,
+                # captured below the fixed navbar. Real website content.
+                clip = {"x": 0, "y": CLIP_TOP, "width": CLIP_W, "height": CLIP_H}
 
                 out = os.path.join(RAW_DIR, f"{pid}.png")
                 page.screenshot(path=out, clip=clip)

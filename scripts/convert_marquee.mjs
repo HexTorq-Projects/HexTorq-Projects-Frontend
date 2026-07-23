@@ -15,9 +15,9 @@ const ROOT = join(__dirname, "..");
 const RAW = join(ROOT, "public", "marquee", "raw");
 const OUT = join(ROOT, "public", "marquee");
 
-// Card renders at ~400px CSS wide; 2x = 800px. Cap width so files stay small
-// while remaining sharp on hi-dpi screens.
-const MAX_WIDTH = 800;
+// Tiles render at up to ~440px CSS wide on large screens; the Aceternity tile
+// is authored at 970px, so we keep native width for crisp hi-dpi output.
+const MAX_WIDTH = 970;
 
 async function main() {
   await mkdir(OUT, { recursive: true });
