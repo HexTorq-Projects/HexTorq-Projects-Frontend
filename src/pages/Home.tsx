@@ -10,7 +10,6 @@ import { FeaturedCarousel } from "@/components/project/FeaturedCarousel";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { BorderGlow } from "@/components/ui/BorderGlow";
-import { ThreeDMarquee } from "@/components/ui/3d-marquee";
 import { categoryMeta } from "@/lib/constants";
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -405,66 +404,45 @@ export default function Home() {
       {/* Stats ribbon */}
       <section className="relative z-10 mx-auto max-w-7xl px-4 md:px-8 -mt-10 sm:-mt-12">
         <Reveal>
-        <div className="glass border border-line rounded-3xl p-6 md:p-8 bg-surface/65 shadow-2xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div className="space-y-1">
-            <CountUp
-              value={stats?.totalProjects || 3886}
-              duration={4.5}
-              className="block font-display text-2xl sm:text-4xl font-bold text-fg"
-              format={(n) => `${n.toLocaleString("en-IN")}+`}
-            />
-            <span className="text-xs sm:text-sm text-muted">Ready Source Codes</span>
+          <div className="glass border border-line rounded-3xl p-6 md:p-8 bg-surface/65 shadow-2xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="space-y-1">
+              <CountUp
+                value={stats?.totalProjects || 3886}
+                duration={4.5}
+                className="block font-display text-2xl sm:text-4xl font-bold text-fg"
+                format={(n) => `${n.toLocaleString("en-IN")}+`}
+              />
+              <span className="text-xs sm:text-sm text-muted">Ready Source Codes</span>
+            </div>
+            <div className="space-y-1">
+              <CountUp
+                value={stats?.categories || 14}
+                duration={4.5}
+                className="block font-display text-2xl sm:text-4xl font-bold text-fg"
+              />
+              <span className="text-xs sm:text-sm text-muted">Academic Streams</span>
+            </div>
+            <div className="space-y-1">
+              <CountUp
+                value={stats?.applicationAreas || 9}
+                duration={4.5}
+                className="block font-display text-2xl sm:text-4xl font-bold text-fg"
+              />
+              <span className="text-xs sm:text-sm text-muted">Application Domains</span>
+            </div>
+            <div className="space-y-1">
+              <CountUp
+                value={stats?.premiumCount || 21}
+                duration={4.5}
+                className="block font-display text-2xl sm:text-4xl font-bold text-fg"
+              />
+              <span className="text-xs sm:text-sm text-muted">Premium Spotlights</span>
+            </div>
           </div>
-          <div className="space-y-1">
-            <CountUp
-              value={stats?.categories || 14}
-              duration={4.5}
-              className="block font-display text-2xl sm:text-4xl font-bold text-fg"
-            />
-            <span className="text-xs sm:text-sm text-muted">Academic Streams</span>
-          </div>
-          <div className="space-y-1">
-            <CountUp
-              value={stats?.applicationAreas || 9}
-              duration={4.5}
-              className="block font-display text-2xl sm:text-4xl font-bold text-fg"
-            />
-            <span className="text-xs sm:text-sm text-muted">Application Domains</span>
-          </div>
-          <div className="space-y-1">
-            <CountUp
-              value={stats?.premiumCount || 21}
-              duration={4.5}
-              className="block font-display text-2xl sm:text-4xl font-bold text-fg"
-            />
-            <span className="text-xs sm:text-sm text-muted">Premium Spotlights</span>
-          </div>
-        </div>
         </Reveal>
       </section>
 
-      {/* 3D Marquee Showcase */}
-      <section className="py-16 mx-auto max-w-7xl px-4 md:px-8">
-        <Reveal>
-          <div className="text-center space-y-3 mb-10">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/5 px-3 py-1 text-xs font-semibold text-violet select-none">
-              <Sparkles className="h-3.5 w-3.5" />
-              Visual Showcase
-            </div>
-            <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
-              Built with Modern Tech Stacks
-            </h2>
-            <p className="text-sm text-muted max-w-lg mx-auto">
-              Every project features production-grade architectures, clean UI patterns, and industry-standard frameworks.
-            </p>
-          </div>
-        </Reveal>
-        <Reveal delay={0.2}>
-          <div className="rounded-3xl bg-surface/30 p-2 ring-1 ring-line/50 glass overflow-hidden">
-            <ThreeDMarquee />
-          </div>
-        </Reveal>
-      </section>
+
 
       {/* What We Assure Section */}
       <section className="py-20 mx-auto max-w-7xl px-4 md:px-8 space-y-12">
@@ -597,14 +575,14 @@ export default function Home() {
       {/* Stream Showcase Grid */}
       <section className="py-20 mx-auto max-w-7xl px-4 md:px-8 space-y-12">
         <Reveal>
-        <div className="text-center space-y-3">
-          <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
-            Select Your Stream
-          </h2>
-          <p className="text-sm text-muted max-w-lg mx-auto">
-            Pick a specific department stream to find standard or high-complexity source codes tailored to your curriculum.
-          </p>
-        </div>
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
+              Select Your Stream
+            </h2>
+            <p className="text-sm text-muted max-w-lg mx-auto">
+              Pick a specific department stream to find standard or high-complexity source codes tailored to your curriculum.
+            </p>
+          </div>
         </Reveal>
 
         <div
@@ -683,26 +661,26 @@ export default function Home() {
 
           <div className="relative z-10 mx-auto max-w-7xl px-4 md:px-8 space-y-12">
             <Reveal>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-tier-premium tracking-wider uppercase">
-                  <Star className="h-4 w-4 fill-current animate-spin-slow" />
-                  Premium Catalogs
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-tier-premium tracking-wider uppercase">
+                    <Star className="h-4 w-4 fill-current animate-spin-slow" />
+                    Premium Catalogs
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold font-display text-fg tracking-tight">
+                    Spotlight Projects
+                  </h2>
+                  <p className="text-sm text-muted max-w-md">
+                    Explore high-depth architectures ideal for advanced student submissions and top tier reviews.
+                  </p>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold font-display text-fg tracking-tight">
-                  Spotlight Projects
-                </h2>
-                <p className="text-sm text-muted max-w-md">
-                  Explore high-depth architectures ideal for advanced student submissions and top tier reviews.
-                </p>
+                <Link to="/explore?tier=Premium">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    Explore All Premium
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
-              <Link to="/explore?tier=Premium">
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  Explore All Premium
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
             </Reveal>
 
             <div
@@ -734,18 +712,18 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <Reveal>
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-1 text-xs font-bold text-cyan uppercase tracking-wide">
-                <Laptop className="h-3.5 w-3.5" />
-                Interactive Showcase
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-1 text-xs font-bold text-cyan uppercase tracking-wide">
+                  <Laptop className="h-3.5 w-3.5" />
+                  Interactive Showcase
+                </div>
+                <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
+                  Get Up & Running In Seconds.
+                </h2>
+                <p className="text-sm text-muted">
+                  Hextorq projects are packaged for seamless deployments. We handle full database setups, script configs, and environment wiring so you get a functional local demo environment instantly.
+                </p>
               </div>
-              <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
-                Get Up & Running In Seconds.
-              </h2>
-              <p className="text-sm text-muted">
-                Hextorq projects are packaged for seamless deployments. We handle full database setups, script configs, and environment wiring so you get a functional local demo environment instantly.
-              </p>
-            </div>
             </Reveal>
 
             {/* Simple Step Milestones */}
@@ -844,18 +822,18 @@ export default function Home() {
       <section className="py-20 bg-surface-hi/5 border-y border-line/40 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 md:px-8 space-y-16">
           <Reveal>
-          <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan/30 bg-cyan/5 px-3 py-1 text-xs font-semibold text-cyan select-none">
-              <CheckCircle className="h-3.5 w-3.5" />
-              100% Verified Student Reviews
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan/30 bg-cyan/5 px-3 py-1 text-xs font-semibold text-cyan select-none">
+                <CheckCircle className="h-3.5 w-3.5" />
+                100% Verified Student Reviews
+              </div>
+              <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
+                What Our Alumni Say
+              </h2>
+              <p className="text-sm text-muted max-w-lg mx-auto">
+                Read how final-year students from top universities successfully deployed their code and aced their assessments.
+              </p>
             </div>
-            <h2 className="text-3xl font-bold font-display text-fg tracking-tight">
-              What Our Alumni Say
-            </h2>
-            <p className="text-sm text-muted max-w-lg mx-auto">
-              Read how final-year students from top universities successfully deployed their code and aced their assessments.
-            </p>
-          </div>
           </Reveal>
 
           {/* Infinite auto-scrolling vertical columns of review cards (keeps moving on hover). */}
@@ -1017,30 +995,30 @@ export default function Home() {
       {/* Final CTA */}
       <section className="py-16 mx-auto max-w-5xl px-4 text-center">
         <Reveal>
-        <div className="relative overflow-hidden rounded-3xl border border-violet/30 bg-surface p-8 md:p-12 shadow-2xl glow-violet">
-          <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-violet/15 blur-[60px]" />
-          <div className="relative z-10 max-w-2xl mx-auto space-y-5">
-            <h2 className="text-2xl md:text-3.5xl font-bold font-display text-fg tracking-tight">
-              Ready to Secure Your Project Deliverables?
-            </h2>
-            <p className="text-sm text-muted leading-relaxed">
-              Explore our exhaustive list of 3,800+ projects or contact Hextorq IT architects to design custom solutions. Pay only after aligning on exact details.
-            </p>
-            <div className="pt-2 flex flex-wrap gap-4 justify-center">
-              <Link to="/explore">
-                <Button variant="purple-accent" size="md" className="flex items-center gap-2">
-                  Browse Catalog Grid
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/contact">
-                <Button variant="outline" size="md">
-                  Contact Development Center
-                </Button>
-              </Link>
+          <div className="relative overflow-hidden rounded-3xl border border-violet/30 bg-surface p-8 md:p-12 shadow-2xl glow-violet">
+            <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-violet/15 blur-[60px]" />
+            <div className="relative z-10 max-w-2xl mx-auto space-y-5">
+              <h2 className="text-2xl md:text-3.5xl font-bold font-display text-fg tracking-tight">
+                Ready to Secure Your Project Deliverables?
+              </h2>
+              <p className="text-sm text-muted leading-relaxed">
+                Explore our exhaustive list of 3,800+ projects or contact Hextorq IT architects to design custom solutions. Pay only after aligning on exact details.
+              </p>
+              <div className="pt-2 flex flex-wrap gap-4 justify-center">
+                <Link to="/explore">
+                  <Button variant="purple-accent" size="md" className="flex items-center gap-2">
+                    Browse Catalog Grid
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link to="/contact">
+                  <Button variant="outline" size="md">
+                    Contact Development Center
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
         </Reveal>
       </section>
     </div>
