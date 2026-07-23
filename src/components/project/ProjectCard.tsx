@@ -95,18 +95,12 @@ export function ProjectCard({ project }: { project: Project }) {
               {project.projectTitle}
             </h3>
 
-            {/* ── SECTION: Tech Tags (single row, overflow faded) ── */}
-            <div
-              className="flex flex-nowrap gap-1.5 mb-3 relative z-10 overflow-hidden h-[24px] items-center shrink-0"
-              style={{
-                maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
-              }}
-            >
+            {/* ── SECTION: Tech Tags (wrapping, fully visible) ── */}
+            <div className="flex flex-wrap gap-1.5 mb-3 relative z-10 min-h-[20px]">
               {techList.map((tech) => (
                 <span
                   key={tech}
-                  className={`whitespace-nowrap shrink-0 rounded-full border px-2 py-0.5 text-[11px] text-muted font-medium transition-colors ${
+                  className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] text-muted font-medium transition-colors ${
                     isPremium
                       ? "bg-amber-500/[0.02] border-amber-500/10 group-hover:border-amber-500/20"
                       : "bg-surface-hi border-line group-hover:border-line/80"
@@ -124,29 +118,35 @@ export function ProjectCard({ project }: { project: Project }) {
             <div className="h-px bg-line/40 w-full mb-3 relative z-10 shrink-0" />
 
             {/* ── SECTION: Footer (Complexity + Price) ── */}
-            <div className="flex items-center justify-between gap-2 relative z-10 shrink-0">
-              <div className="shrink-0">
+            <div className="flex items-end justify-between gap-2 relative z-10 shrink-0">
+              <div className="self-center shrink-0">
                 <ComplexityBadge complexity={project.complexity} />
               </div>
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-2 shrink-0">
                 <PriceBlock
                   recommended={project.recommendedPrice}
                   discounted={project.discountedPrice}
                   original={project.originalPrice}
                   size="sm"
                 />
-                {/* ── Cart Button: inline in the footer for proper alignment ── */}
+                {/* ── Cart Button with spring click animation ── */}
                 <motion.button
                   type="button"
                   onClick={handleCartClick}
-                  className={`relative shrink-0 flex h-8 w-8 items-center justify-center rounded-full border shadow-lg transition-colors z-20 overflow-hidden ${
+                  className={`relative shrink-0 flex h-8 w-8 items-center justify-center rounded-full border shadow-lg z-20 overflow-hidden ${
                     inCart
                       ? "border-emerald-500/40 bg-emerald-500 text-white"
                       : "border-line bg-bg/80 text-muted hover:text-fg hover:border-cyan/60"
                   }`}
-                  whileTap={{ scale: 0.85 }}
-                  animate={justAdded ? { scale: [1, 1.3, 1] } : {}}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  whileTap={{ scale: 0.8 }}
+                  whileHover={{ scale: 1.08 }}
+                  animate={justAdded ? { scale: [1, 1.35, 0.95, 1.08, 1] } : {}}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 18,
+                    mass: 0.8,
+                  }}
                   title={inCart ? "Remove from cart" : "Add to cart"}
                 >
                   {/* Pulse ring on add */}
@@ -154,14 +154,14 @@ export function ProjectCard({ project }: { project: Project }) {
                     {justAdded && (
                       <motion.span
                         className="absolute inset-0 rounded-full bg-emerald-400"
-                        initial={{ scale: 0.5, opacity: 0.6 }}
-                        animate={{ scale: 2.5, opacity: 0 }}
+                        initial={{ scale: 0.4, opacity: 0.7 }}
+                        animate={{ scale: 2.8, opacity: 0 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
                       />
                     )}
                   </AnimatePresence>
-                  {/* Icon swap */}
+                  {/* Icon swap with spring */}
                   <AnimatePresence mode="wait" initial={false}>
                     {inCart ? (
                       <motion.span
@@ -169,7 +169,7 @@ export function ProjectCard({ project }: { project: Project }) {
                         initial={{ scale: 0, rotate: -90 }}
                         animate={{ scale: 1, rotate: 0 }}
                         exit={{ scale: 0, rotate: 90 }}
-                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
                         className="flex items-center justify-center"
                       >
                         <Check className="h-4 w-4" />
@@ -180,7 +180,7 @@ export function ProjectCard({ project }: { project: Project }) {
                         initial={{ scale: 0, rotate: 90 }}
                         animate={{ scale: 1, rotate: 0 }}
                         exit={{ scale: 0, rotate: -90 }}
-                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
                         className="flex items-center justify-center"
                       >
                         <ShoppingCart className="h-3.5 w-3.5" />
