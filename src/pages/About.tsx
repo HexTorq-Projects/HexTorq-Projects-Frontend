@@ -149,9 +149,9 @@ export default function About() {
       </section>
 
       {/* Why final-year projects matter */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         <Reveal delay={0.1}>
-          <div className="space-y-4">
+          <div className="space-y-4 lg:sticky lg:top-24">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/5 px-3 py-1 text-xs font-semibold text-violet-txt">
               <GraduationCap className="h-3.5 w-3.5" />
               Why It Matters
@@ -159,13 +159,13 @@ export default function About() {
             <h2 className="text-2xl md:text-3xl font-bold font-display text-fg tracking-tight leading-tight">
               Your final-year project is the single biggest score on your degree.
             </h2>
-            <p className="text-sm text-muted leading-relaxed">
+            <p className="text-sm text-muted leading-relaxed text-justify">
               Unlike a written exam, your final-year project is judged on what you can build, explain, and defend
               in front of a panel. A polished, working system with clean documentation doesn't just earn top marks —
               it becomes the strongest talking point in your placement interviews. We make sure the project is
               genuinely <span className="text-fg font-medium">yours</span>: understood end to end, not merely submitted.
             </p>
-            <p className="text-sm text-muted leading-relaxed">
+            <p className="text-sm text-muted leading-relaxed text-justify">
               Every build follows real engineering practices — modular code, proper database design, and a clear
               architecture — so your work stands up to the toughest review and reflects industry standards instead
               of last-minute shortcuts.
