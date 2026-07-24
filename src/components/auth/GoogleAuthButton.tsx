@@ -52,6 +52,7 @@ function GoogleButtonInner({ onSuccess, onError }: GoogleAuthButtonProps) {
       {ready && (
         <GoogleLogin
           width={width}
+          ux_mode="redirect"
           onSuccess={handleSuccess}
           onError={() => onError("Google sign-in failed. Please try again.")}
           useOneTap={false}
