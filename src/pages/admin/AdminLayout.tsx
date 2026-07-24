@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Heart,
   Percent,
+  Gift,
   LogOut,
 } from "lucide-react";
 import { useAdminAuthStore } from "@/store/useAdminAuthStore";
@@ -22,6 +23,7 @@ const NAV = [
   { to: "/admin/enquiries", label: "Enquiries", icon: MessageSquare },
   { to: "/admin/wishlist", label: "Wishlist", icon: Heart },
   { to: "/admin/offers", label: "Offers", icon: Percent },
+  { to: "/admin/referrals", label: "Referrals", icon: Gift },
 ];
 
 export function AdminLayout() {

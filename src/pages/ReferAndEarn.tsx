@@ -1,21 +1,29 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Gift, Users, Share2, Wallet, Copy, Check, MessageCircle, ChevronRight, TrendingUp, Award, ShoppingCart, Loader2 } from "lucide-react";
+import { Gift, Users, Share2, Wallet, Copy, Check, MessageCircle, ChevronRight, TrendingUp, Award, ShoppingCart, Loader2, Banknote, ExternalLink, IndianRupee } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
+import { Field, Input } from "@/components/ui/Input";
 import { Reveal } from "@/components/motion/Reveal";
 import { BorderGlow } from "@/components/ui/BorderGlow";
 import { WHATSAPP_NUMBER } from "@/lib/constants";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useReferralCode, useReferralEarnings } from "@/api/referrals";
+import { useReferralCode, useReferralEarnings, useReferralBalance, useWithdrawReferral, useWithdrawalHistory } from "@/api/referrals";
 
 export default function ReferAndEarn() {
   const token = useAuthStore((s) => s.token);
   const { data: codeData, isLoading: codeLoading } = useReferralCode();
   const { data: earningsData } = useReferralEarnings();
+  const { data: balanceData } = useReferralBalance();
+  const withdraw = useWithdrawReferral();
+  const { data: withdrawalHistory } = useWithdrawalHistory();
   const referralCode = codeData?.code ?? "YOUR_CODE";
   const userLink = `https://projects.hextorq.tech/explore?ref=${referralCode}`;
   const [copied, setCopied] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [upiId, setUpiId] = useState("");
+  const [upiHolderName, setUpiHolderName] = useState("");
 
   const copyLink = () => {
     navigator.clipboard.writeText(userLink).then(() => {
@@ -202,7 +210,11 @@ export default function ReferAndEarn() {
               value: earningsData ? `₹${earningsData.totalEarned}` : "₹0",
               desc: earningsData ? `${earningsData.count} referral${earningsData.count !== 1 ? "s" : ""}` : "Track earnings",
             },
-            { label: "Payout Threshold", value: "₹1,000", desc: "UPI withdrawal" },
+            {
+              label: "Confirmed",
+              value: earningsData ? `₹${earningsData.confirmedAmount}` : "₹0",
+              desc: "Available for withdrawal",
+            },
             { label: "Referral Cap", value: "None", desc: "Unlimited" },
           ].map((stat) => (
             <div key={stat.label} className="glass border border-line rounded-2xl p-4 text-center space-y-0.5">
@@ -262,6 +274,138 @@ export default function ReferAndEarn() {
                 </tbody>
               </table>
             </div>
+          </section>
+        </Reveal>
+      )}
+
+      {/* Withdraw Section */}
+      {token && balanceData && (
+        <Reveal delay={0.1}>
+          <section className="max-w-4xl mx-auto glass border border-line rounded-2xl p-6 md:p-8 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Banknote className="h-5 w-5 text-emerald-400" />
+                <h2 className="text-xl font-bold font-display text-fg tracking-tight">
+                  Withdraw Earnings
+                </h2>
+              </div>
+              <span className="text-sm text-muted">
+                Balance: <span className="font-bold text-fg">₹{balanceData.availableBalance}</span>
+              </span>
+            </div>
+
+            {!showWithdraw ? (
+              <div className="flex justify-center">
+                <Button
+                  variant="primary"
+                  onClick={() => setShowWithdraw(true)}
+                  disabled={balanceData.availableBalance < 100}
+                  className="gap-2"
+                >
+                  <Banknote className="h-4 w-4" />
+                  {balanceData.availableBalance < 100 ? "Min ₹100 to withdraw" : "Request Withdrawal"}
+                </Button>
+              </div>
+            ) : (
+              <div className="max-w-md mx-auto space-y-4">
+                <Field label="Amount (₹)">
+                  <Input
+                    type="number"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    placeholder={`Max ₹${balanceData.availableBalance}`}
+                    min={100}
+                    max={balanceData.availableBalance}
+                  />
+                </Field>
+                <Field label="UPI ID">
+                  <Input
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="example@upi"
+                  />
+                </Field>
+                <Field label="UPI Holder Name">
+                  <Input
+                    value={upiHolderName}
+                    onChange={(e) => setUpiHolderName(e.target.value)}
+                    placeholder="Name on UPI account"
+                  />
+                </Field>
+                {withdraw.error && (
+                  <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-semibold text-rose-400">
+                    {(withdraw.error as Error).message}
+                  </div>
+                )}
+                {withdraw.isSuccess && (
+                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs font-semibold text-emerald-400">
+                    Withdrawal request submitted! Admin will process it shortly.
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      const amount = Number(withdrawAmount);
+                      if (amount < 100 || amount > balanceData.availableBalance) return;
+                      withdraw.mutate({ amount, upiId, upiHolderName });
+                    }}
+                    disabled={withdraw.isPending || !withdrawAmount || !upiId || !upiHolderName}
+                    className="flex-1 gap-2"
+                  >
+                    <Banknote className="h-4 w-4" />
+                    {withdraw.isPending ? "Submitting..." : "Submit"}
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowWithdraw(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Withdrawal History */}
+            {withdrawalHistory && withdrawalHistory.length > 0 && (
+              <div className="space-y-3 pt-4 border-t border-line">
+                <h3 className="text-sm font-semibold text-fg flex items-center gap-2">
+                  <ExternalLink className="h-4 w-4 text-cyan" />
+                  Withdrawal History
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-muted text-[10px] border-b border-line/50">
+                        <th className="px-3 py-2 font-medium">Amount</th>
+                        <th className="px-3 py-2 font-medium">UPI</th>
+                        <th className="px-3 py-2 font-medium">Status</th>
+                        <th className="px-3 py-2 font-medium">Note</th>
+                        <th className="px-3 py-2 font-medium">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {withdrawalHistory.map((w) => (
+                        <tr key={w.id} className="border-b border-line/30 last:border-0">
+                          <td className="px-3 py-2 text-xs font-mono text-fg">₹{w.amount}</td>
+                          <td className="px-3 py-2 text-xs text-muted">{w.upiId}</td>
+                          <td className="px-3 py-2">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                              w.status === "PENDING" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                              : w.status === "APPROVED" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                            }`}>
+                              {w.status}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2 text-[10px] text-muted italic">{w.adminNote || "—"}</td>
+                          <td className="px-3 py-2 text-[10px] text-muted">
+                            {new Date(w.createdAt).toLocaleDateString("en-IN")}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </section>
         </Reveal>
       )}

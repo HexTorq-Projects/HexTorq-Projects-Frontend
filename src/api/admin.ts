@@ -310,3 +310,92 @@ export function useAdminStats() {
     queryFn: () => adminApiFetch<AdminStats>("/admin/stats", { auth: true }),
   });
 }
+
+// ---- referral types ----
+interface AdminReferralEarning {
+  id: string;
+  referrerName: string;
+  referrerEmail: string;
+  referredName: string;
+  referredEmail: string;
+  projectTitle: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+}
+
+interface AdminReferralWithdrawal {
+  id: string;
+  userName: string;
+  userEmail: string;
+  amount: number;
+  upiId: string;
+  upiHolderName: string;
+  status: string;
+  adminNote: string | null;
+  createdAt: string;
+}
+
+interface AdminReferralStats {
+  totalCodes: number;
+  totalEarnings: number;
+  pendingAmount: number;
+  confirmedAmount: number;
+  totalWithdrawn: number;
+}
+
+// ---- admin referrals ----
+export function useAdminReferralStats() {
+  return useQuery({
+    queryKey: ["admin", "referrals", "stats"],
+    queryFn: () => adminApiFetch<AdminReferralStats>("/admin/referrals/stats", { auth: true }),
+  });
+}
+
+export function useAdminReferralEarnings(page: number, status?: string) {
+  const qs = new URLSearchParams({
+    page: String(page),
+    ...(status ? { status } : {}),
+  }).toString();
+  return useQuery({
+    queryKey: ["admin", "referrals", "earnings", page, status],
+    queryFn: () => adminApiFetch<AdminPaginated<AdminReferralEarning>>(`/admin/referrals/earnings?${qs}`, { auth: true }),
+  });
+}
+
+export function useUpdateAdminReferralEarning() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      adminApiFetch<AdminReferralEarning>(`/admin/referrals/earnings/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+        auth: true,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "referrals"] }),
+  });
+}
+
+export function useAdminReferralWithdrawals(page: number, status?: string) {
+  const qs = new URLSearchParams({
+    page: String(page),
+    ...(status ? { status } : {}),
+  }).toString();
+  return useQuery({
+    queryKey: ["admin", "referrals", "withdrawals", page, status],
+    queryFn: () => adminApiFetch<AdminPaginated<AdminReferralWithdrawal>>(`/admin/referrals/withdrawals?${qs}`, { auth: true }),
+  });
+}
+
+export function useUpdateAdminReferralWithdrawal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status, adminNote }: { id: string; status: string; adminNote?: string }) =>
+      adminApiFetch<AdminReferralWithdrawal>(`/admin/referrals/withdrawals/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status, ...(adminNote ? { adminNote } : {}) }),
+        auth: true,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "referrals"] }),
+  });
+}

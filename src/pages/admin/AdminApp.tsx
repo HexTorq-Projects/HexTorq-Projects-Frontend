@@ -10,6 +10,7 @@ import AdminOrders from "./AdminOrders";
 import AdminEnquiries from "./AdminEnquiries";
 import AdminWishlist from "./AdminWishlist";
 import AdminOffers from "./AdminOffers";
+import AdminReferrals from "./AdminReferrals";
 
 export default function AdminApp() {
   return (
@@ -25,6 +26,7 @@ export default function AdminApp() {
           <Route path="enquiries" element={<AdminEnquiries />} />
           <Route path="wishlist" element={<AdminWishlist />} />
           <Route path="offers" element={<AdminOffers />} />
+          <Route path="referrals" element={<AdminReferrals />} />
         </Route>
       </Route>
     </Routes>
