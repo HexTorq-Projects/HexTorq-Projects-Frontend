@@ -52,6 +52,7 @@ export function Navbar() {
   const links = [
     { name: "Home", path: "/" },
     { name: "Explore Projects", path: "/explore" },
+    { name: "Refer & Earn", path: "/refer-and-earn" },
     { name: "Cart", path: "/cart" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },

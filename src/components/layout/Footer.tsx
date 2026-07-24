@@ -82,6 +82,11 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/refer-and-earn" className="group inline-flex items-center hover:text-cyan transition-colors">
+                    <HoverRoll duration={320}>Refer & Earn</HoverRoll>
+                  </Link>
+                </li>
+                <li>
                   <Link to="/contact" className="group inline-flex items-center hover:text-cyan transition-colors">
                     <HoverRoll duration={320}>Contact Us</HoverRoll>
                   </Link>

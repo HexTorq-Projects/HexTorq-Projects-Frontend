@@ -11,6 +11,7 @@ import Explore from "./pages/Explore";
 import CategoryPage from "./pages/CategoryPage";
 import ProjectDetail from "./pages/ProjectDetail";
 import About from "./pages/About";
+import ReferAndEarn from "./pages/ReferAndEarn";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -40,6 +41,7 @@ function AnimatedRoutes() {
       <Route path="/category/:name" element={<CategoryPage />} />
       <Route path="/project/:id" element={<ProjectDetail />} />
       <Route path="/about" element={<About />} />
+      <Route path="/refer-and-earn" element={<ReferAndEarn />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
