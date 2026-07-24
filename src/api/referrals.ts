@@ -64,6 +64,13 @@ export function useReferralCode() {
   });
 }
 
+export function useGenerateReferralCode() {
+  return useMutation({
+    mutationFn: () =>
+      apiFetch<ReferralCodeResponse>("/referrals/my-code", { auth: true }),
+  });
+}
+
 export function useReferralEarnings() {
   const token = useAuthStore((s) => s.token);
   return useQuery({
