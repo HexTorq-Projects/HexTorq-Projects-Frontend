@@ -397,7 +397,7 @@ export default function Explore() {
   };
 
   return (
-    <div className="relative min-h-screen pt-20 pb-16 px-4 md:px-8 max-w-7xl mx-auto aurora grain">
+    <div className="relative min-h-screen pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto aurora grain">
       <div className="flex flex-col lg:flex-row gap-8 mt-6">
         {/* Left Column: Desktop Sidebar Filter (Hidden on Mobile) — stays pinned on screen while the grid scrolls */}
         <motion.aside
