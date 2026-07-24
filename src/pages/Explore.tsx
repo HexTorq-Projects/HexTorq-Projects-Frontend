@@ -345,8 +345,8 @@ export default function Explore() {
     return result;
   }, [allItems, filters]);
 
-  // 8. Pagination local slicing
-  const itemsPerPage = 20;
+  // 8. Pagination local slicing (24 items per page = fully fills 2-col, 3-col & 4-col grids)
+  const itemsPerPage = 24;
   const totalItems = filteredItems.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const currentPage = Math.max(1, Math.min(totalPages, filters.page || 1));
