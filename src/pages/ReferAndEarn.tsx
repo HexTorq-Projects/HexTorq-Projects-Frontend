@@ -17,8 +17,8 @@ export default function ReferAndEarn() {
   const { data: balanceData } = useReferralBalance();
   const withdraw = useWithdrawReferral();
   const { data: withdrawalHistory } = useWithdrawalHistory();
-  const referralCode = codeData?.code ?? "YOUR_CODE";
-  const userLink = `https://projects.hextorq.tech/explore?ref=${referralCode}`;
+  const referralCode = codeData?.code ?? earningsData?.code ?? null;
+  const userLink = referralCode ? `https://projects.hextorq.tech/explore?ref=${referralCode}` : null;
   const [copied, setCopied] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -26,6 +26,7 @@ export default function ReferAndEarn() {
   const [upiHolderName, setUpiHolderName] = useState("");
 
   const copyLink = () => {
+    if (!userLink) return;
     navigator.clipboard.writeText(userLink).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -143,10 +144,13 @@ export default function ReferAndEarn() {
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                       Loading...
                     </span>
-                  ) : (
+                  ) : referralCode ? (
                     userLink
+                  ) : (
+                    <span className="text-muted text-xs">Unable to generate referral code. Please refresh.</span>
                   )}
                 </code>
+                {referralCode && (
                 <motion.button
                   onClick={copyLink}
                   whileTap={{ scale: 0.9 }}
@@ -182,6 +186,7 @@ export default function ReferAndEarn() {
                     )}
                   </AnimatePresence>
                 </motion.button>
+                )}
               </div>
               <div className="flex items-center justify-center gap-4 text-xs text-muted">
                 <div className="flex items-center gap-1.5">
