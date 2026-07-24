@@ -75,19 +75,8 @@ export function Navbar() {
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo - Sleek Hexagon Icon + Orbitron Typography */}
+          {/* Logo - Orbitron Typography */}
           <Link to="/" className="flex items-center gap-2.5 group select-none py-1">
-            {/* Sleek Hexagon Icon */}
-            <div className="relative flex items-center justify-center">
-              <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-cyan-500/20 via-indigo-500/20 to-violet-500/20 blur-sm group-hover:opacity-100 opacity-60 transition-opacity" />
-              <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-surface border border-line group-hover:border-violet/40 transition-colors">
-                <svg className="h-4.5 w-4.5 text-cyan group-hover:rotate-60 transition-transform duration-700 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" />
-                  <circle cx="12" cy="12" r="2" fill="currentColor" className="text-violet" />
-                </svg>
-              </div>
-            </div>
-
             {/* Futuristic Orbitron Brand Name */}
             <div className="flex items-center font-tech text-xl md:text-2xl font-black tracking-[0.16em] uppercase leading-none">
               <span className="text-fg group-hover:text-cyan transition-colors duration-300">HE</span>
