@@ -32,6 +32,7 @@ export function useCreateCheckout() {
       customerName?: string;
       customerEmail?: string;
       customerMobile?: string;
+      referralCode?: string;
     }) =>
       apiFetch<{ order: Order; checkoutUrl: string }>("/orders/checkout", {
         method: "POST",

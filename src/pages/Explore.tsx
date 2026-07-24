@@ -17,6 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useFilterStore, selectFilters, activeFilterCount } from "@/store/useFilterStore";
 import { useUiStore } from "@/store/useUiStore";
+import { useReferralStore } from "@/store/useReferralStore";
 import { useProjects, useCategories, useApplicationAreas } from "@/api/catalog";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { Button } from "@/components/ui/Button";
@@ -251,6 +252,7 @@ export default function Explore() {
   const ui = useUiStore();
   const filters = selectFilters(store);
   const [searchParams] = useSearchParams();
+  const setReferralCode = useReferralStore((s) => s.setCode);
 
   useEffect(() => {
     const category = searchParams.get("category");
@@ -258,12 +260,14 @@ export default function Explore() {
     const search = searchParams.get("search");
     const applicationArea = searchParams.get("applicationArea");
     const complexity = searchParams.get("complexity");
+    const ref = searchParams.get("ref");
 
     if (category) store.setCategory(category);
     if (tier) store.setTier(tier);
     if (search) store.setSearch(search);
     if (applicationArea) store.setApplicationArea(applicationArea);
     if (complexity) store.setComplexity(complexity);
+    if (ref) setReferralCode(ref);
   }, []);
 
   // Queries: fetch all 10000 projects once at page load

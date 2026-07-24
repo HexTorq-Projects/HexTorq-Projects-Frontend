@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { CreditCard, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
+import { useReferralStore } from "@/store/useReferralStore";
 import { useCreateCheckout } from "@/api/orders";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Input";
@@ -11,6 +12,8 @@ import { formatINR } from "@/lib/format";
 export default function Checkout() {
   const { user } = useAuthStore();
   const { items, clear } = useCartStore();
+  const referralCode = useReferralStore((s) => s.code);
+  const clearReferral = useReferralStore((s) => s.clear);
   const navigate = useNavigate();
   const checkout = useCreateCheckout();
   const [customerName, setCustomerName] = useState(user?.name ?? "");
@@ -38,10 +41,12 @@ export default function Checkout() {
         customerName,
         customerEmail,
         customerMobile,
+        ...(referralCode ? { referralCode } : {}),
       },
       {
         onSuccess: (data) => {
           clear();
+          clearReferral();
           window.location.href = data.checkoutUrl;
         },
       }
