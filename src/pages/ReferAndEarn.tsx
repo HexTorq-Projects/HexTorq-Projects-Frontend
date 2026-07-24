@@ -214,6 +214,58 @@ export default function ReferAndEarn() {
         </section>
       </Reveal>
 
+      {/* Referral History */}
+      {token && earningsData && earningsData.earnings.length > 0 && (
+        <Reveal delay={0.1}>
+          <section className="max-w-4xl mx-auto space-y-6">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-violet" />
+              <h2 className="text-xl font-bold font-display text-fg tracking-tight">
+                Your Referrals
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm glass border border-line rounded-2xl overflow-hidden">
+                <thead>
+                  <tr className="border-b border-line bg-surface/50 text-muted text-left">
+                    <th className="px-4 py-3 font-medium">Name</th>
+                    <th className="px-4 py-3 font-medium">Email</th>
+                    <th className="px-4 py-3 font-medium">Project</th>
+                    <th className="px-4 py-3 font-medium">Amount</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {earningsData.earnings.map((ref) => (
+                    <tr key={ref.id} className="border-b border-line/50 last:border-0 hover:bg-surface/30 transition-colors">
+                      <td className="px-4 py-3 text-fg">{ref.referredName}</td>
+                      <td className="px-4 py-3 text-muted">{ref.referredEmail}</td>
+                      <td className="px-4 py-3 text-fg">{ref.projectTitle}</td>
+                      <td className="px-4 py-3 text-fg font-mono">₹{ref.amount}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          ref.status === "PENDING"
+                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                            : ref.status === "CONFIRMED"
+                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            : "bg-red-500/10 text-red-400 border border-red-500/20"
+                        }`}>
+                          {ref.status === "PENDING" ? "Pending" : ref.status === "CONFIRMED" ? "Confirmed" : "Cancelled"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted text-xs">
+                        {new Date(ref.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </Reveal>
+      )}
+
       {/* How It Works */}
       <section className="space-y-8">
         <Reveal delay={0.1} className="text-center space-y-2">
