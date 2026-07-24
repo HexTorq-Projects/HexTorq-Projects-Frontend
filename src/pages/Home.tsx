@@ -1011,9 +1011,9 @@ export default function Home() {
                   Share your referral link with friends. When they buy a project through your link,
                   you get ₹100 credited to your account. Unlimited referrals, no caps.
                 </p>
-                <div className="flex items-center gap-2 bg-bg/60 border border-emerald-500/20 rounded-xl px-3 py-2 text-xs font-mono text-faint">
-                  <span className="text-emerald-400 font-semibold text-[10px]">SAMPLE:</span>
-                  projects.hextorq.tech/explore?ref=<span className="text-cyan">YOUR_CODE</span>
+                <div className="flex items-center gap-2 text-xs text-muted">
+                  <Gift className="h-3.5 w-3.5 text-emerald-400" />
+                  Sign in to get your unique referral link
                 </div>
               </div>
               <div className="shrink-0">
