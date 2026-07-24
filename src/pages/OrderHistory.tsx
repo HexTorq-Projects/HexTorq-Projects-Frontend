@@ -46,24 +46,42 @@ export default function OrderHistory() {
           <Link to="/explore"><Button variant="primary">Explore Projects</Button></Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {orders.map((order) => (
-            <div key={order.id} className="rounded-2xl border border-line bg-surface/60 p-5 space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-display font-semibold text-fg">{order.orderNumber}</h2>
+            <div key={order.id} className="glass rounded-2xl border border-line p-6 space-y-5 hover:border-violet/30 transition-all">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-line/60">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-sm font-bold text-fg tracking-wider bg-surface-hi border border-line px-2.5 py-1 rounded-lg">
+                      {order.orderNumber}
+                    </span>
                     <Badge color={badgeColor(order.paymentStatus)}>
-                      {order.status === "BOOKED" ? "BOOKED" : order.paymentStatus}
+                      {order.status === "BOOKED" ? "PARTIAL PAID (BOOKED)" : order.paymentStatus}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted mt-1">
-                    {formatDate(order.rowCreatedTime)} · {order.items.length} item(s)
-                    {order.status === "BOOKED" && ` · ${formatINR(order.balanceDue)} balance due`}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-faint pt-1">
+                    <span>Date: <strong className="text-muted">{formatDate(order.rowCreatedTime)}</strong></span>
+                    <span>•</span>
+                    <span>Items: <strong className="text-muted">{order.items.length} package(s)</strong></span>
+                    {order.customerEmail && (
+                      <>
+                        <span>•</span>
+                        <span>Billing: <strong className="text-muted">{order.customerEmail}</strong></span>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="font-display text-xl font-bold text-fg">{formatINR(order.totalAmount)}</span>
+
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="text-right">
+                    <span className="block font-display text-2xl font-black text-fg">{formatINR(order.totalAmount)}</span>
+                    {order.status === "BOOKED" && order.balanceDue > 0 && (
+                      <span className="text-xs text-rose-400 font-semibold">
+                        Balance due: {formatINR(order.balanceDue)}
+                      </span>
+                    )}
+                  </div>
+
                   {order.status === "BOOKED" && order.balanceDue > 0 && (
                     <Button
                       variant="primary"
@@ -72,30 +90,43 @@ export default function OrderHistory() {
                         payBalance.mutate(order.id, { onSuccess: (data) => (window.location.href = data.checkoutUrl) })
                       }
                       disabled={payBalance.isPending}
+                      className="shadow-md shadow-violet-500/20"
                     >
                       <Wallet className="h-4 w-4" />
-                      Pay Balance {formatINR(order.balanceDue)}
+                      Pay Due {formatINR(order.balanceDue)}
                     </Button>
                   )}
+
                   {order.checkoutUrl && order.paymentStatus !== "SUCCESS" && order.paymentStatus !== "PARTIAL" && (
                     <a href={order.checkoutUrl} target="_blank" rel="noreferrer">
-                      <Button variant="outline" size="sm">Pay</Button>
+                      <Button variant="primary" size="sm">Pay Now</Button>
                     </a>
                   )}
+
                   {order.paymentStatus !== "SUCCESS" && order.paymentStatus !== "PARTIAL" && (
-                    <Button variant="ghost" size="sm" onClick={() => verify.mutate(order.id)} disabled={verify.isPending}>
-                      <RefreshCw className="h-4 w-4" />
-                      Verify
+                    <Button variant="outline" size="sm" onClick={() => verify.mutate(order.id)} disabled={verify.isPending}>
+                      <RefreshCw className={`h-4 w-4 ${verify.isPending ? "animate-spin" : ""}`} />
+                      Re-Verify Status
                     </Button>
                   )}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {order.items.map((item) => (
-                  <Link key={item.id} to={`/project/${item.projectId}`} className="text-sm text-muted hover:text-cyan border border-line/50 rounded-xl px-3 py-2">
-                    {item.projectTitleSnapshot}
-                  </Link>
-                ))}
+
+              {/* Items Grid */}
+              <div className="space-y-2">
+                <span className="text-xs font-semibold text-faint uppercase tracking-wider">Purchased Packages</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {order.items.map((item) => (
+                    <Link
+                      key={item.id}
+                      to={`/project/${item.projectId}`}
+                      className="flex items-center justify-between gap-3 text-sm text-fg bg-surface/50 border border-line/60 rounded-xl px-4 py-3 hover:border-violet/40 hover:bg-surface-hi transition-all group"
+                    >
+                      <span className="font-semibold line-clamp-1 group-hover:text-cyan transition-colors">{item.projectTitleSnapshot}</span>
+                      <span className="text-xs font-bold text-muted shrink-0">{formatINR(item.unitPrice)}</span>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           ))}

@@ -45,17 +45,22 @@ function GoogleButtonInner({ onSuccess, onError }: GoogleAuthButtonProps) {
   const ready = scriptLoadedSuccessfully && width > 0;
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="w-full flex justify-center">
       {!ready && (
-        <div className="h-11 w-full animate-pulse rounded-xl border border-line bg-bg-soft" />
+        <div className="h-11 w-full animate-pulse rounded-full border border-line bg-bg-soft" />
       )}
       {ready && (
-        <GoogleLogin
-          width={width}
-          onSuccess={handleSuccess}
-          onError={() => onError("Google sign-in failed. Please try again.")}
-          useOneTap={false}
-        />
+        <div className="w-full rounded-full p-0.5 border border-line/70 bg-surface/80 shadow-md flex justify-center hover:border-violet/40 transition-colors">
+          <GoogleLogin
+            width={width}
+            theme="filled_black"
+            shape="pill"
+            text="continue_with"
+            onSuccess={handleSuccess}
+            onError={() => onError("Google sign-in failed. Please try again.")}
+            useOneTap={false}
+          />
+        </div>
       )}
     </div>
   );

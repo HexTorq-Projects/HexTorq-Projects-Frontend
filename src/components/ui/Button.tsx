@@ -15,11 +15,11 @@ const sizes: Record<ButtonSize, string> = {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand text-white shadow-lg shadow-violet/20 hover:shadow-violet/40 hover:-translate-y-0.5",
+    "bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 border border-violet-400/30 hover:shadow-violet-500/40 hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] transition-all",
   solid: "bg-surface-hi text-fg hover:bg-line",
   outline: "border border-line text-fg hover:border-violet/60 hover:bg-surface",
   ghost: "text-muted hover:text-fg hover:bg-surface",
-  auth: "bg-gradient-to-r from-violet-txt to-cyan-txt text-white dark:text-bg shadow-md hover:shadow-lg hover:-translate-y-0.5 border border-line/40 transition-all font-semibold",
+  auth: "bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-600 text-white font-semibold shadow-md shadow-violet-500/20 border border-violet-400/30 hover:shadow-violet-500/35 hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] transition-all",
   "purple-accent": "bg-violet/10 backdrop-blur-md border border-violet/30 hover:bg-violet/20 hover:border-violet/60 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] text-violet-txt shadow-sm",
 };
 

@@ -1,29 +1,55 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Heart, MessageSquare, ArrowRight, ExternalLink } from "lucide-react";
+import { Heart, MessageSquare, ArrowRight, Edit3, Check, X, User as UserIcon, ExternalLink } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useUpdateProfile } from "@/api/auth";
 import { useWishlist } from "@/api/wishlist";
 import { useMyEnquiries } from "@/api/enquiries";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Input, Field } from "@/components/ui/Input";
 import { formatDate, formatINR } from "@/lib/format";
 import { WHATSAPP_NUMBER } from "@/lib/constants";
 
 export default function Dashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const updateProfile = useUpdateProfile();
   const { data: wishlist = [], isLoading: loadingWishlist } = useWishlist();
   const { data: enquiries = [], isLoading: loadingEnquiries } = useMyEnquiries();
   const [activeTab, setActiveTab] = useState<"wishlist" | "enquiries">("wishlist");
 
+  // Profile Edit State
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editName, setEditName] = useState(user?.name || "");
+  const [editPhone, setEditPhone] = useState(user?.phone || "");
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   useEffect(() => {
     if (!user) {
       navigate(`/login?redirect=${encodeURIComponent("/dashboard")}`);
+    } else {
+      setEditName(user.name);
+      setEditPhone(user.phone || "");
     }
   }, [user, navigate]);
 
   if (!user) return null;
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfile.mutate(
+      { name: editName, phone: editPhone || null },
+      {
+        onSuccess: () => {
+          setIsEditingProfile(false);
+          setSaveSuccess(true);
+          setTimeout(() => setSaveSuccess(false), 3000);
+        },
+      }
+    );
+  };
 
   const handleResumeChat = (enq: any) => {
     const projectTitle = enq.project?.projectTitle || "Custom Project";
@@ -52,9 +78,25 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight text-fg font-display">
             Student Dashboard
           </h1>
-          <p className="text-muted mt-1.5 text-sm">
-            Welcome back, <span className="text-cyan font-semibold">{user.name}</span>. Track your saved projects and custom requests here.
-          </p>
+          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+            <p className="text-muted text-sm">
+              Welcome back, <span className="text-cyan font-bold">{user.name}</span>.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditingProfile(true)}
+              className="h-7 text-xs px-2.5 flex items-center gap-1.5"
+            >
+              <Edit3 className="h-3 w-3 text-cyan" />
+              Edit Profile
+            </Button>
+            {saveSuccess && (
+              <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Check className="h-3 w-3" /> Profile Updated
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex gap-3 text-xs text-faint">
           <div className="rounded-xl border border-line bg-surface p-3 text-center min-w-28">
@@ -67,6 +109,54 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditingProfile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-sm">
+          <div className="glass rounded-2xl border border-line p-6 max-w-md w-full space-y-5 relative shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-line">
+              <h3 className="font-display font-bold text-lg text-fg flex items-center gap-2">
+                <UserIcon className="h-5 w-5 text-cyan" />
+                Edit Profile
+              </h3>
+              <button
+                onClick={() => setIsEditingProfile(false)}
+                className="text-muted hover:text-fg transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <Field label="Full Name">
+                <Input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Enter your full name"
+                  required
+                />
+              </Field>
+              <Field label="Phone Number (WhatsApp Updates)">
+                <Input
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  placeholder="+91 9876543210"
+                />
+              </Field>
+              <Field label="Email Address">
+                <Input value={user.email} disabled className="opacity-60 cursor-not-allowed" />
+              </Field>
+              <div className="flex justify-end gap-3 pt-2">
+                <Button variant="ghost" size="sm" type="button" onClick={() => setIsEditingProfile(false)}>
+                  Cancel
+                </Button>
+                <Button variant="primary" size="sm" type="submit" disabled={updateProfile.isPending}>
+                  {updateProfile.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex border-b border-line mb-8">

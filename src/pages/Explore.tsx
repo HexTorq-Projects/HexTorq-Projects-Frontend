@@ -562,34 +562,34 @@ export default function Explore() {
               </Button>
             </div>
           ) : (
-            <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${getGridColsClass()} transition-opacity duration-200 ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
-              {projectsData.items.map((project, idx) => (
-                <Reveal key={project.id} delay={(idx % 6) * 0.04} className="h-full">
+            <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${getGridColsClass()} transition-opacity duration-200 min-h-[400px] pb-4 ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
+              {projectsData.items.map((project) => (
+                <div key={project.id} className="h-full">
                   <ProjectCard project={project} />
-                </Reveal>
+                </div>
               ))}
             </div>
           )}
 
-          {/* Pagination Controls — numbered pages for quick jumping */}
+          {/* Pagination Controls */}
           {projectsData && projectsData.pages > 1 && (
-            <div className="border-t border-line/40 pt-8 mt-12 space-y-3">
+            <div className="border-t border-line/40 pt-8 mt-14 mb-10 space-y-4">
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handlePrevPage}
                   disabled={currentPage <= 1}
-                  className="flex items-center gap-1.5 h-10"
+                  className="flex items-center gap-1.5 h-10 px-4 rounded-xl border-line/80 bg-surface/80 hover:bg-surface-hi hover:border-violet/40 text-fg"
                 >
-                  <ChevronLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Previous</span>
+                  <ChevronLeft className="h-4 w-4 text-cyan" />
+                  <span className="hidden sm:inline font-medium">Previous</span>
                 </Button>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 bg-surface/60 border border-line/60 p-1.5 rounded-2xl backdrop-blur-md shadow-inner">
                   {buildPageList(currentPage, projectsData.pages).map((p, i) =>
                     p === "ellipsis" ? (
-                      <span key={`gap-${i}`} className="px-1.5 text-faint select-none">
+                      <span key={`gap-${i}`} className="px-2 text-faint select-none font-bold">
                         …
                       </span>
                     ) : (
@@ -597,10 +597,10 @@ export default function Explore() {
                         key={p}
                         onClick={() => store.setPage(p)}
                         aria-current={p === currentPage ? "page" : undefined}
-                        className={`h-10 min-w-[2.5rem] px-3 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
+                        className={`h-9 min-w-[2.4rem] px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           p === currentPage
-                            ? "bg-violet border-violet text-white shadow-md shadow-violet/20"
-                            : "border-line text-muted hover:text-fg hover:border-violet/40 hover:bg-surface-hi"
+                            ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/25 border border-violet-400/30 scale-[1.05]"
+                            : "text-muted hover:text-fg hover:bg-surface-hi border border-transparent"
                         }`}
                       >
                         {p}
@@ -614,16 +614,19 @@ export default function Explore() {
                   size="sm"
                   onClick={handleNextPage}
                   disabled={currentPage >= projectsData.pages}
-                  className="flex items-center gap-1.5 h-10"
+                  className="flex items-center gap-1.5 h-10 px-4 rounded-xl border-line/80 bg-surface/80 hover:bg-surface-hi hover:border-violet/40 text-fg"
                 >
-                  <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <span className="hidden sm:inline font-medium">Next</span>
+                  <ChevronRight className="h-4 w-4 text-cyan" />
                 </Button>
               </div>
-              <p className="text-center text-xs text-muted">
-                Page <strong className="text-fg">{currentPage}</strong> of{" "}
-                <strong className="text-fg">{projectsData.pages}</strong>
-              </p>
+              <div className="flex items-center justify-center gap-2 text-xs text-faint">
+                <span>Showing page</span>
+                <span className="inline-flex items-center justify-center rounded-md bg-violet/10 border border-violet/20 px-2 py-0.5 font-bold text-violet-txt">
+                  {currentPage} of {projectsData.pages}
+                </span>
+                <span>({projectsData.total} total projects)</span>
+              </div>
             </div>
           )}
         </main>

@@ -129,26 +129,21 @@ export function ProjectCard({ project }: { project: Project }) {
                   original={project.originalPrice}
                   size="sm"
                 />
-                {/* ── Cart Button — visible bounce + ripple ── */}
+                {/* ── Cart Button ── */}
                 <motion.button
                   type="button"
                   onClick={handleCartClick}
-                  className={`relative shrink-0 flex h-7 w-7 items-center justify-center rounded-full border shadow-lg z-20 ${
+                  whileTap={{ scale: 0.82 }}
+                  whileHover={{ scale: 1.12 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                  className={`relative shrink-0 flex h-7.5 w-7.5 items-center justify-center rounded-full border shadow-lg z-20 transition-all duration-300 ${
                     inCart
-                      ? "border-emerald-500/40 bg-emerald-500 text-white shadow-emerald-500/25"
-                      : "border-line bg-bg/80 text-muted hover:text-fg hover:border-cyan/60"
+                      ? "border-emerald-500/40 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-500/30"
+                      : "border-line bg-surface-hi text-muted hover:text-cyan hover:border-cyan/50 hover:shadow-cyan-500/20"
                   }`}
-                  whileTap={{ scale: 0.8 }}
-                  whileHover={{ scale: 1.1 }}
-                  animate={
-                    justAdded
-                      ? { scale: [1, 1.4, 0.9, 1.15, 1] }
-                      : { scale: 1 }
-                  }
-                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  title={inCart ? "Remove from cart" : "Add to cart"}
+                  aria-label={inCart ? "Remove from cart" : "Add to cart"}
                 >
-                  {/* Ripple ring — visible because overflow is not hidden */}
+                  {/* Ripple ring */}
                   <AnimatePresence>
                     {justAdded && (
                       <motion.span
@@ -182,7 +177,7 @@ export function ProjectCard({ project }: { project: Project }) {
                         transition={{ type: "spring", stiffness: 500, damping: 20, mass: 0.4 }}
                         className="flex items-center justify-center"
                       >
-                        <ShoppingCart className="h-3 w-3" />
+                        <ShoppingCart className="h-3.5 w-3.5" />
                       </motion.span>
                     )}
                   </AnimatePresence>

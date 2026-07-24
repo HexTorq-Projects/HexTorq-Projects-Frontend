@@ -88,3 +88,20 @@ export function useResetPassword() {
     },
   });
 }
+
+export function useUpdateProfile() {
+  const setUser = useAuthStore((s) => s.setUser);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { name?: string; phone?: string | null }) =>
+      apiFetch<User>("/auth/profile", {
+        method: "PUT",
+        auth: true,
+        body: JSON.stringify(body),
+      }),
+    onSuccess: (updatedUser) => {
+      setUser(updatedUser);
+      qc.setQueryData(["me"], updatedUser);
+    },
+  });
+}

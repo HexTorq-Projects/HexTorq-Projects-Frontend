@@ -50,15 +50,27 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {items.map((project) => (
-              <div key={project.id} className="rounded-2xl border border-line bg-surface/60 p-5 flex flex-col md:flex-row gap-4 justify-between">
-                <div className="space-y-2">
-                  <Link to={`/project/${project.id}`} className="font-display font-semibold text-fg hover:text-cyan transition-colors">
+              <div key={project.id} className="glass rounded-2xl border border-line p-5 flex flex-col md:flex-row gap-5 justify-between items-start hover:border-violet/30 transition-all">
+                <div className="space-y-2.5 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-cyan tracking-wider uppercase bg-cyan/10 border border-cyan/20 px-2 py-0.5 rounded-md">
+                      {project.category?.categoryName || "Engineering"}
+                    </span>
+                    {project.sellabilityTier && (
+                      <span className="text-[10px] font-bold text-violet-txt tracking-wider uppercase bg-violet/10 border border-violet/20 px-2 py-0.5 rounded-md">
+                        {project.sellabilityTier}
+                      </span>
+                    )}
+                  </div>
+                  <Link to={`/project/${project.id}`} className="font-display font-bold text-fg hover:text-cyan transition-colors text-base leading-snug block">
                     {project.projectTitle}
                   </Link>
-                  <p className="text-sm text-muted line-clamp-2">{project.brief}</p>
-                  <PriceBlock recommended={project.recommendedPrice} discounted={project.discountedPrice} original={project.originalPrice} size="sm" />
+                  <p className="text-xs text-muted leading-relaxed line-clamp-2">{project.brief}</p>
+                  <div className="pt-1">
+                    <PriceBlock recommended={project.recommendedPrice} discounted={project.discountedPrice} original={project.originalPrice} size="sm" />
+                  </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => remove(project.id)} className="self-start text-rose-400">
+                <Button variant="ghost" size="sm" onClick={() => remove(project.id)} className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 shrink-0 self-start">
                   <Trash2 className="h-4 w-4" />
                   Remove
                 </Button>
@@ -66,19 +78,44 @@ export default function Cart() {
             ))}
           </div>
 
-          <aside className="lg:sticky lg:top-24 self-start rounded-2xl border border-line bg-surface/70 p-6 space-y-5">
-            <div className="flex items-center justify-between text-sm text-muted">
-              <span>Items</span>
-              <span className="text-fg font-semibold">{items.length}</span>
+          <aside className="lg:sticky lg:top-24 self-start glass rounded-2xl border border-line p-6 space-y-6">
+            <h2 className="font-display text-lg font-bold text-fg pb-3 border-b border-line">Order Summary</h2>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between text-muted">
+                <span>Selected Items</span>
+                <span className="text-fg font-semibold">{items.length} package(s)</span>
+              </div>
+              <div className="flex justify-between text-muted">
+                <span>Code Verification</span>
+                <span className="text-emerald-400 font-semibold">Included</span>
+              </div>
+              <div className="flex justify-between text-muted">
+                <span>Documentation & SRS</span>
+                <span className="text-emerald-400 font-semibold">Included</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between border-t border-line pt-5">
-              <span className="text-sm text-muted">Total</span>
-              <span className="font-display text-2xl font-bold text-fg">{formatINR(total)}</span>
+
+            <div className="border-t border-line pt-4 flex items-baseline justify-between">
+              <span className="text-sm font-semibold text-muted">Total Amount</span>
+              <span className="font-display text-2xl font-black text-fg">{formatINR(total)}</span>
             </div>
-            <Button variant="primary" onClick={checkout} className="w-full">
-              {user ? <ArrowRight className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+
+            <Button variant="primary" onClick={checkout} className="w-full h-12 text-base shadow-lg shadow-violet-500/25">
+              {user ? <ArrowRight className="h-4.5 w-4.5" /> : <LogIn className="h-4.5 w-4.5" />}
               {user ? "Proceed to Checkout" : "Sign in to Checkout"}
             </Button>
+
+            {/* Trust Badges */}
+            <div className="pt-2 border-t border-line/60 space-y-2 text-[11px] text-faint">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>256-Bit SSL Encrypted & Pay-Panda Verified</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 rounded-full bg-cyan" />
+                <span>Instant Digital Handoff & Viva Assistance</span>
+              </div>
+            </div>
           </aside>
         </div>
       )}

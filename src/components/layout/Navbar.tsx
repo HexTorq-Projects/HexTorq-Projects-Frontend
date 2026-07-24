@@ -79,16 +79,20 @@ export function Navbar() {
           {/* Logo - Orbitron Typography */}
           <Link to="/" className="flex items-center gap-2.5 group select-none py-1">
             {/* Futuristic Orbitron Brand Name */}
-            <div className="flex items-center font-tech text-xl md:text-2xl font-black tracking-[0.16em] uppercase leading-none">
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="flex items-center font-tech text-xl md:text-2xl font-black tracking-[0.16em] uppercase leading-none"
+            >
               <span className="text-fg group-hover:text-cyan transition-colors duration-300">HE</span>
-              <span className="relative bg-gradient-to-r from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent font-black drop-shadow-[0_0_10px_rgba(56,189,248,0.4)] group-hover:scale-105 transition-all duration-300">
+              <span className="relative bg-gradient-to-r from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent font-black drop-shadow-[0_0_12px_rgba(56,189,248,0.5)] group-hover:drop-shadow-[0_0_18px_rgba(168,85,247,0.8)] transition-all duration-300">
                 X
               </span>
               <span className="text-fg group-hover:text-cyan transition-colors duration-300">TOR</span>
               <span className="bg-gradient-to-br from-fg via-fg to-violet-400 bg-clip-text text-transparent font-black">
                 Q
               </span>
-            </div>
+            </motion.div>
           </Link>
 
           {/* Desktop Navigation */}

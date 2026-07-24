@@ -61,76 +61,119 @@ export default function Checkout() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <section className="lg:col-span-3 rounded-2xl border border-line bg-surface/60 p-6 space-y-5">
-          <Field label="Name">
-            <Input value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+        <section className="lg:col-span-3 glass rounded-2xl border border-line p-6 space-y-6">
+          <div className="flex items-center justify-between pb-3 border-b border-line">
+            <h2 className="font-display text-lg font-bold text-fg">Student Information</h2>
+            <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Verified Encrypted Checkout
+            </span>
+          </div>
+
+          <Field label="Full Name">
+            <Input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Your full name" />
           </Field>
-          <Field label="Email">
-            <Input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} />
+          <Field label="Email Address (Order Confirmation)">
+            <Input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder="your.email@example.com" />
           </Field>
-          <Field label="Mobile">
-            <Input value={customerMobile} onChange={(e) => setCustomerMobile(e.target.value)} />
+          <Field label="Mobile Number (WhatsApp Support Updates)">
+            <Input value={customerMobile} onChange={(e) => setCustomerMobile(e.target.value)} placeholder="+91 9876543210" />
           </Field>
 
           {advanceOffer && (
-            <div className="space-y-2">
-              <span className="text-sm font-medium text-fg">How would you like to pay?</span>
-              <label className="flex items-start gap-3 rounded-xl border border-line bg-bg-soft p-3 cursor-pointer">
-                <input
-                  type="radio"
-                  className="mt-1"
-                  checked={paymentType === "FULL"}
-                  onChange={() => setPaymentType("FULL")}
-                />
-                <span className="text-sm text-fg">
-                  Pay full amount now — <span className="font-semibold">{formatINR(total)}</span>
-                </span>
-              </label>
-              <label className="flex items-start gap-3 rounded-xl border border-line bg-bg-soft p-3 cursor-pointer">
-                <input
-                  type="radio"
-                  className="mt-1"
-                  checked={paymentType === "ADVANCE"}
-                  onChange={() => setPaymentType("ADVANCE")}
-                />
-                <span className="text-sm text-fg">
-                  Pre-book for <span className="font-semibold">{formatINR(advanceAmount)}</span> now — remaining{" "}
-                  <span className="font-semibold">{formatINR(balanceAmount)}</span> due later
-                </span>
-              </label>
+            <div className="space-y-3 pt-2">
+              <span className="text-sm font-semibold text-fg">Payment Option</span>
+              <div className="space-y-2.5">
+                <label className={`flex items-start gap-3 rounded-xl border p-3.5 cursor-pointer transition-all ${
+                  paymentType === "FULL" ? "border-violet bg-violet/10 text-fg" : "border-line bg-surface/40 text-muted"
+                }`}>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    className="mt-1 accent-violet"
+                    checked={paymentType === "FULL"}
+                    onChange={() => setPaymentType("FULL")}
+                  />
+                  <div>
+                    <span className="text-sm font-bold text-fg block">
+                      Pay Full Amount Now — {formatINR(total)}
+                    </span>
+                    <span className="text-xs text-muted">Complete access immediately upon payment verification.</span>
+                  </div>
+                </label>
+                <label className={`flex items-start gap-3 rounded-xl border p-3.5 cursor-pointer transition-all ${
+                  paymentType === "ADVANCE" ? "border-violet bg-violet/10 text-fg" : "border-line bg-surface/40 text-muted"
+                }`}>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    className="mt-1 accent-violet"
+                    checked={paymentType === "ADVANCE"}
+                    onChange={() => setPaymentType("ADVANCE")}
+                  />
+                  <div>
+                    <span className="text-sm font-bold text-fg block">
+                      Pre-book with Advance Deposit — {formatINR(advanceAmount)}
+                    </span>
+                    <span className="text-xs text-muted">Lock project slot today. Remaining {formatINR(balanceAmount)} due before handoff.</span>
+                  </div>
+                </label>
+              </div>
             </div>
           )}
 
           {checkout.error && (
-            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-400">
               {(checkout.error as Error).message}
             </div>
           )}
-          <Button variant="primary" onClick={submit} disabled={checkout.isPending} className="w-full">
-            <ShieldCheck className="h-4 w-4" />
+
+          <Button variant="primary" onClick={submit} disabled={checkout.isPending} className="w-full h-12 text-base shadow-xl shadow-violet-500/25">
+            <ShieldCheck className="h-5 w-5" />
             {checkout.isPending
-              ? "Creating Pay-Panda checkout..."
+              ? "Securing Pay-Panda Checkout..."
               : advanceOffer && paymentType === "ADVANCE"
-              ? `Pre-book for ${formatINR(advanceAmount)}`
-              : "Pay with Pay-Panda"}
+              ? `Pre-book Now for ${formatINR(advanceAmount)}`
+              : `Pay ${formatINR(total)} via Pay-Panda`}
           </Button>
+
+          <p className="text-center text-[11px] text-faint flex items-center justify-center gap-1.5">
+            <span>Guaranteed 100% money-back verification protection by Pay-Panda</span>
+          </p>
         </section>
 
-        <aside className="lg:col-span-2 rounded-2xl border border-line bg-surface/70 p-6 space-y-4 self-start">
-          <h2 className="font-display font-semibold text-fg">Order Summary</h2>
-          <div className="space-y-3">
+        <aside className="lg:col-span-2 glass rounded-2xl border border-line p-6 space-y-5 self-start">
+          <h2 className="font-display font-bold text-fg text-lg pb-3 border-b border-line">Order Summary</h2>
+          <div className="space-y-4">
             {items.map((item) => (
-              <div key={item.id} className="border-b border-line/50 pb-3">
-                <Link to={`/project/${item.id}`} className="text-sm font-medium text-fg hover:text-cyan line-clamp-2">
+              <div key={item.id} className="border-b border-line/50 pb-3 space-y-1">
+                <Link to={`/project/${item.id}`} className="text-sm font-bold text-fg hover:text-cyan line-clamp-2 leading-snug">
                   {item.projectTitle}
                 </Link>
-                <p className="text-xs text-muted mt-1">{formatINR(item.discountedPrice ?? item.recommendedPrice ?? item.originalPrice)}</p>
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-faint">{item.category?.categoryName || "Full Project Package"}</span>
+                  <span className="font-bold text-fg">{formatINR(item.discountedPrice ?? item.recommendedPrice ?? item.originalPrice)}</span>
+                </div>
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-between pt-2">
-            <span className="text-sm text-muted">Total</span>
-            <span className="font-display text-2xl font-bold text-fg">{formatINR(total)}</span>
+
+          <div className="space-y-2 pt-2 text-xs text-muted">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span className="text-fg font-semibold">{formatINR(total)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Code Setup & Support</span>
+              <span className="text-emerald-400 font-semibold">Free</span>
+            </div>
+          </div>
+
+          <div className="border-t border-line pt-4 flex items-baseline justify-between">
+            <span className="text-sm font-semibold text-muted">Total Due</span>
+            <span className="font-display text-2xl font-black text-fg">
+              {advanceOffer && paymentType === "ADVANCE" ? formatINR(advanceAmount) : formatINR(total)}
+            </span>
           </div>
         </aside>
       </div>
