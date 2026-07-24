@@ -69,6 +69,8 @@
  * Hextorq design tokens (Tailwind v4 @theme mapping)
  * ------------------------------------------------------------------ */
 @theme {
+  --font-tech: "Orbitron", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-brand: "Rajdhani", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
