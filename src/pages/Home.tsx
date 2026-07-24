@@ -1011,10 +1011,10 @@ export default function Home() {
                   Share your referral link with friends. When they buy a project through your link,
                   you get ₹100 credited to your account. Unlimited referrals, no caps.
                 </p>
-                <div className="flex items-center gap-2 text-xs text-muted">
+                <Link to="/login?redirect=/refer-and-earn" className="flex items-center gap-2 text-xs text-cyan hover:text-emerald-400 transition-colors">
                   <Gift className="h-3.5 w-3.5 text-emerald-400" />
-                  Sign in to get your unique referral link
-                </div>
+                  Sign in to get your unique referral link →
+                </Link>
               </div>
               <div className="shrink-0">
                 <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-5 py-2.5 text-sm transition-all group-hover:shadow-lg group-hover:shadow-emerald-500/25 group-hover:scale-105 cursor-pointer">
