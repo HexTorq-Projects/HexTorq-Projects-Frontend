@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Laptop, MessageCircle, Star, Sparkles, Code2, Users, Shield, CheckCircle, GraduationCap, TrendingUp } from "lucide-react";
+import { ArrowRight, BookOpen, Laptop, MessageCircle, Star, Sparkles, Code2, Users, Shield, CheckCircle, GraduationCap, TrendingUp, Gift } from "lucide-react";
 import { ThreeHero } from "@/components/project/ThreeHero";
 import { CountUp } from "@/components/motion/CountUp";
 import { Reveal } from "@/components/motion/Reveal";
@@ -990,6 +990,37 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Refer & Earn */}
+      <section className="py-8 mx-auto max-w-5xl px-4">
+        <Reveal>
+          <Link to="/refer-and-earn" className="group block relative overflow-hidden rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/5 via-surface to-violet/5 p-8 md:p-10 shadow-2xl hover:border-emerald-400/40 transition-all duration-500">
+            <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-emerald-500/10 blur-[80px] group-hover:bg-emerald-400/15 transition-colors duration-700" />
+            <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-violet/10 blur-[80px] group-hover:bg-violet/15 transition-colors duration-700" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-2 text-center md:text-left">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
+                  <Gift className="h-3.5 w-3.5" />
+                  Refer & Earn ₹100
+                </div>
+                <h2 className="text-xl md:text-2xl font-bold font-display text-fg tracking-tight">
+                  Refer a Friend, <span className="text-gradient">Earn ₹100</span>
+                </h2>
+                <p className="text-xs md:text-sm text-muted max-w-md leading-relaxed">
+                  Share your referral link with friends. When they buy a project through your link,
+                  you get ₹100 credited to your account. Unlimited referrals, no caps.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-5 py-2.5 text-sm transition-all group-hover:shadow-lg group-hover:shadow-emerald-500/25 group-hover:scale-105 cursor-pointer">
+                  Start Earning
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </div>
+            </div>
+          </Link>
+        </Reveal>
       </section>
 
       {/* Final CTA */}
