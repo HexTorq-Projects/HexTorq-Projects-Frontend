@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Gift, Users, Share2, Wallet, Copy, Check, MessageCircle, ChevronRight, TrendingUp, Award, ShoppingCart } from "lucide-react";
+import { Gift, Users, Share2, Wallet, Copy, Check, MessageCircle, ChevronRight, TrendingUp, Award, ShoppingCart, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { BorderGlow } from "@/components/ui/BorderGlow";
 import { WHATSAPP_NUMBER } from "@/lib/constants";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useReferralCode, useReferralEarnings } from "@/api/referrals";
 
 export default function ReferAndEarn() {
-  const userLink = "https://projects.hextorq.tech/explore?ref=YOUR_CODE";
+  const token = useAuthStore((s) => s.token);
+  const { data: codeData, isLoading: codeLoading } = useReferralCode();
+  const { data: earningsData } = useReferralEarnings();
+  const referralCode = codeData?.code ?? "YOUR_CODE";
+  const userLink = `https://projects.hextorq.tech/explore?ref=${referralCode}`;
   const [copied, setCopied] = useState(false);
 
   const copyLink = () => {
@@ -119,11 +125,20 @@ export default function ReferAndEarn() {
             <div className="glass border border-line/70 rounded-2xl p-6 md:p-8 text-center space-y-4">
               <h2 className="font-display font-semibold text-fg text-lg">Your Referral Link</h2>
               <p className="text-sm text-muted">
-                Share this link with your friends to start earning
+                {token
+                  ? "Share this link with your friends to start earning"
+                  : "Sign in to get your unique referral link"}
               </p>
               <div className="flex items-center gap-2 bg-bg/80 border border-line rounded-xl p-1.5">
                 <code className="flex-1 text-xs sm:text-sm text-fg font-mono truncate px-2 select-all">
-                  {userLink}
+                  {codeLoading ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      Loading...
+                    </span>
+                  ) : (
+                    userLink
+                  )}
                 </code>
                 <motion.button
                   onClick={copyLink}
@@ -182,9 +197,13 @@ export default function ReferAndEarn() {
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {[
             { label: "Per Referral", value: "₹200", desc: "Flat rate" },
+            {
+              label: "Your Earnings",
+              value: earningsData ? `₹${earningsData.totalEarned}` : "₹0",
+              desc: earningsData ? `${earningsData.count} referral${earningsData.count !== 1 ? "s" : ""}` : "Track earnings",
+            },
             { label: "Payout Threshold", value: "₹1,000", desc: "UPI withdrawal" },
             { label: "Referral Cap", value: "None", desc: "Unlimited" },
-            { label: "Credit Time", value: "Instant", desc: "On delivery" },
           ].map((stat) => (
             <div key={stat.label} className="glass border border-line rounded-2xl p-4 text-center space-y-0.5">
               <div className="text-xs text-muted">{stat.label}</div>
