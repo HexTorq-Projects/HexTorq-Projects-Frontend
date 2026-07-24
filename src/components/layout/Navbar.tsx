@@ -75,7 +75,7 @@ export function Navbar() {
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo - Ultra-Stylish Tech Typography */}
+          {/* Logo - Sleek Hexagon Icon + Orbitron Typography */}
           <Link to="/" className="flex items-center gap-2.5 group select-none py-1">
             {/* Sleek Hexagon Icon */}
             <div className="relative flex items-center justify-center">
@@ -88,20 +88,15 @@ export function Navbar() {
               </div>
             </div>
 
-            {/* Futuristic Orbitron Typography */}
-            <div className="flex items-baseline gap-1.5">
-              <div className="flex items-center font-tech text-lg md:text-xl font-extrabold tracking-[0.14em] uppercase leading-none">
-                <span className="text-fg group-hover:text-cyan transition-colors duration-300">HE</span>
-                <span className="relative bg-gradient-to-r from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent font-black drop-shadow-[0_0_10px_rgba(56,189,248,0.4)] group-hover:scale-105 transition-all duration-300">
-                  X
-                </span>
-                <span className="text-fg group-hover:text-cyan transition-colors duration-300">TOR</span>
-                <span className="bg-gradient-to-br from-fg via-fg to-violet-400 bg-clip-text text-transparent font-black">
-                  Q
-                </span>
-              </div>
-              <span className="hidden sm:inline-flex items-center rounded-md bg-violet/10 border border-violet/20 px-1.5 py-0.5 text-[9px] font-brand font-bold text-violet tracking-widest uppercase group-hover:bg-violet/20 group-hover:border-violet/40 transition-all">
-                Projects
+            {/* Futuristic Orbitron Brand Name */}
+            <div className="flex items-center font-tech text-xl md:text-2xl font-black tracking-[0.16em] uppercase leading-none">
+              <span className="text-fg group-hover:text-cyan transition-colors duration-300">HE</span>
+              <span className="relative bg-gradient-to-r from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent font-black drop-shadow-[0_0_10px_rgba(56,189,248,0.4)] group-hover:scale-105 transition-all duration-300">
+                X
+              </span>
+              <span className="text-fg group-hover:text-cyan transition-colors duration-300">TOR</span>
+              <span className="bg-gradient-to-br from-fg via-fg to-violet-400 bg-clip-text text-transparent font-black">
+                Q
               </span>
             </div>
           </Link>
