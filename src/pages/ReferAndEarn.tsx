@@ -37,8 +37,8 @@ export default function ReferAndEarn() {
     },
     {
       icon: <Wallet className="h-6 w-6 text-emerald-400" />,
-      title: "You Earn ₹200",
-      desc: "You get ₹200 credited to your account for every project purchased through your referral.",
+      title: "You Earn ₹100",
+      desc: "You get ₹100 credited to your account for every project purchased through your referral.",
     },
     {
       icon: <Award className="h-6 w-6 text-amber-400" />,
@@ -50,13 +50,13 @@ export default function ReferAndEarn() {
   const benefits = [
     {
       icon: <TrendingUp className="h-5 w-5 text-emerald-400" />,
-      title: "₹200 per referral",
-      desc: "Earn a flat ₹200 for every project bought through your link — no minimum threshold.",
+      title: "₹100 per referral",
+      desc: "Earn a flat ₹100 for every project bought through your link — no minimum threshold.",
     },
     {
       icon: <Users className="h-5 w-5 text-violet" />,
       title: "Unlimited referrals",
-      desc: "Refer unlimited friends. Each successful referral adds ₹200 to your earnings.",
+      desc: "Refer unlimited friends. Each successful referral adds ₹100 to your earnings.",
     },
     {
       icon: <Gift className="h-5 w-5 text-cyan" />,
@@ -77,7 +77,7 @@ export default function ReferAndEarn() {
     },
     {
       q: "When do I get paid?",
-      a: "₹200 is credited to your Hextorq wallet once your referral's project purchase is confirmed and delivered.",
+      a: "₹100 is credited to your Hextorq wallet once your referral's project purchase is confirmed and delivered.",
     },
     {
       q: "Can I refer myself?",
@@ -99,11 +99,11 @@ export default function ReferAndEarn() {
             Refer & Earn
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-display tracking-tight text-fg leading-snug">
-            Refer a Friend, <span className="text-gradient">Earn ₹200</span>
+            Refer a Friend, <span className="text-gradient">Earn ₹100</span>
           </h1>
           <p className="text-muted text-base md:text-lg leading-relaxed font-sans max-w-2xl mx-auto">
             Share your referral link with friends. When they buy a project through your link, you get
-            ₹200 credited to your account. Unlimited referrals, no caps.
+            ₹100 credited to your account. Unlimited referrals, no caps.
           </p>
         </section>
       </Reveal>
@@ -196,7 +196,7 @@ export default function ReferAndEarn() {
       <Reveal delay={0.1}>
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {[
-            { label: "Per Referral", value: "₹200", desc: "Flat rate" },
+            { label: "Per Referral", value: "₹100", desc: "Flat rate" },
             {
               label: "Your Earnings",
               value: earningsData ? `₹${earningsData.totalEarned}` : "₹0",
@@ -279,7 +279,7 @@ export default function ReferAndEarn() {
             </h2>
             <p className="text-sm text-muted leading-relaxed">
               You already know how valuable a good final-year project is. Share that advantage with
-              your friends and earn ₹200 every time they buy through your link. It is a win-win —
+              your friends and earn ₹100 every time they buy through your link. It is a win-win —
               they get a production-grade project, you get rewarded.
             </p>
           </div>
