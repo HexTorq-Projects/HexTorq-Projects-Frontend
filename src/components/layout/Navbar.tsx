@@ -8,7 +8,6 @@ import { useWishlist } from "@/api/wishlist";
 import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/Button";
 import { HoverRoll } from "@/components/motion/HoverRoll";
-import logoImg from "@/assests/logo.png";
 
 export function Navbar() {
   const { user, clear } = useAuthStore();
@@ -76,16 +75,21 @@ export function Navbar() {
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <motion.img
-              src={logoImg}
-              alt="Hextorq Logo"
-              className="h-7 md:h-8 w-auto select-none"
-              animate={{ scale: [1, 1.02, 1] }}
-              transition={{ duration: 2.8, ease: [0.45, 0, 0.55, 1], repeat: Infinity }}
-              style={{ transformOrigin: "left center" }}
-            />
+          {/* Logo - Styled Text matching original logo */}
+          <Link to="/" className="flex items-center gap-2.5 group select-none">
+            <div className="flex items-center font-display text-xl md:text-2xl font-black tracking-[0.16em] leading-none">
+              <span className="text-fg group-hover:text-cyan transition-colors duration-300">HE</span>
+              <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-violet-500 bg-clip-text text-transparent font-black group-hover:brightness-125 transition-all duration-300">
+                X
+              </span>
+              <span className="text-fg group-hover:text-cyan transition-colors duration-300">TOR</span>
+              <span className="bg-gradient-to-br from-fg via-fg to-violet-400 bg-clip-text text-transparent font-black">
+                Q
+              </span>
+            </div>
+            <span className="hidden sm:inline-flex items-center rounded-full bg-violet/10 border border-violet/20 px-2 py-0.5 text-[10px] font-bold text-violet tracking-widest uppercase group-hover:bg-violet/20 transition-colors">
+              Projects
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
