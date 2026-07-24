@@ -119,6 +119,7 @@ export default function ReferAndEarn() {
       {/* Referral Link Box */}
       <Reveal delay={0.15}>
         <section className="max-w-2xl mx-auto">
+          {token ? (
           <BorderGlow
             edgeSensitivity={30}
             glowColor="#10b981"
@@ -133,9 +134,7 @@ export default function ReferAndEarn() {
             <div className="glass border border-line/70 rounded-2xl p-6 md:p-8 text-center space-y-4">
               <h2 className="font-display font-semibold text-fg text-lg">Your Referral Link</h2>
               <p className="text-sm text-muted">
-                {token
-                  ? "Share this link with your friends to start earning"
-                  : "Sign in to get your unique referral link"}
+                Share this link with your friends to start earning
               </p>
               <div className="flex items-center gap-2 bg-bg/80 border border-line rounded-xl p-1.5">
                 <code className="flex-1 text-xs sm:text-sm text-fg font-mono truncate px-2 select-all">
@@ -197,6 +196,23 @@ export default function ReferAndEarn() {
               </div>
             </div>
           </BorderGlow>
+          ) : (
+          <div className="glass border border-line rounded-2xl p-8 md:p-10 text-center space-y-5">
+            <Gift className="h-10 w-10 text-emerald-400 mx-auto" />
+            <h2 className="font-display text-xl font-bold text-fg tracking-tight">
+              Want to Earn <span className="text-gradient">₹100 Per Referral?</span>
+            </h2>
+            <p className="text-sm text-muted max-w-md mx-auto leading-relaxed">
+              Sign in to get your unique referral link. Share it with friends and earn ₹100 for every project they buy.
+            </p>
+            <Link to="/login?redirect=/refer-and-earn">
+              <Button variant="primary" size="lg" className="gap-2">
+                <Gift className="h-4 w-4" />
+                Sign In to Start Earning
+              </Button>
+            </Link>
+          </div>
+          )}
         </section>
       </Reveal>
 
