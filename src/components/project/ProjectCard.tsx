@@ -13,6 +13,7 @@ import { useState, useCallback } from "react";
 import { BorderGlow } from "@/components/ui/BorderGlow";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useFlyingCartStore } from "@/store/useFlyingCartStore";
 
 export function ProjectCard({ project }: { project: Project }) {
   const techList = splitList(project.suggestedTech).slice(0, 3);
@@ -24,6 +25,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const removeFromCart = useCartStore((s) => s.remove);
   const inCart = useCartStore((s) => s.has(project.id));
   const [justAdded, setJustAdded] = useState(false);
+  const triggerFly = useFlyingCartStore((s) => s.triggerFly);
 
   const handleCartClick = useCallback(
     (e: React.MouseEvent) => {
@@ -35,9 +37,22 @@ export function ProjectCard({ project }: { project: Project }) {
         addToCart(project);
         setJustAdded(true);
         setTimeout(() => setJustAdded(false), 1400);
+
+        // Trigger Flying Badge to Cart Icon
+        const rect = e.currentTarget.getBoundingClientRect();
+        const startX = rect.left + rect.width / 2;
+        const startY = rect.top + rect.height / 2;
+
+        triggerFly({
+          startX,
+          startY,
+          title: project.projectTitle,
+          tier: project.sellabilityTier,
+          color: isPremium ? "#f5b944" : catColor || "#38bdf8",
+        });
       }
     },
-    [inCart, project, addToCart, removeFromCart]
+    [inCart, project, addToCart, removeFromCart, triggerFly, isPremium, catColor]
   );
 
   const content = (

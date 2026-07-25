@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useUiStore } from "@/store/useUiStore";
 import { useWishlist } from "@/api/wishlist";
 import { useCartStore } from "@/store/useCartStore";
+import { useFlyingCartStore } from "@/store/useFlyingCartStore";
 import { Button } from "@/components/ui/Button";
 import { HoverRoll } from "@/components/motion/HoverRoll";
 
@@ -15,6 +16,7 @@ export function Navbar() {
   const location = useLocation();
   const { data: wishlist = [] } = useWishlist();
   const cartItems = useCartStore((s) => s.items);
+  const cartBumpSignal = useFlyingCartStore((s) => s.cartBumpSignal);
 
   // Load preferences from localStorage or default to Dark Mode
   const [isDark, setIsDark] = useState(() => {
@@ -119,19 +121,26 @@ export function Navbar() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Theme Toggle Button */}
-            <Link
-              to="/cart"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full bg-surface-hi border border-line text-muted hover:text-fg hover:border-violet/40 transition-all"
-              title="Cart"
+            {/* Cart Icon Button with Flying Target ID & Spring Impact Animation */}
+            <motion.div
+              key={cartBumpSignal}
+              animate={cartBumpSignal > 0 ? { scale: [1, 1.45, 0.9, 1.15, 1], rotate: [0, -10, 10, -5, 0] } : {}}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              <ShoppingCart className="h-4.5 w-4.5" />
-              {cartItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan text-[10px] font-bold text-bg ring-2 ring-bg px-1">
-                  {cartItems.length}
-                </span>
-              )}
-            </Link>
+              <Link
+                id="navbar-cart-icon"
+                to="/cart"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full bg-surface-hi border border-line text-muted hover:text-fg hover:border-violet/40 transition-all group"
+                title="Cart"
+              >
+                <ShoppingCart className="h-4.5 w-4.5 group-hover:scale-110 transition-transform" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan text-[10px] font-bold text-bg ring-2 ring-bg px-1 shadow-md animate-pulse">
+                    {cartItems.length}
+                  </span>
+                )}
+              </Link>
+            </motion.div>
 
             {user && (
               <Link
@@ -204,6 +213,7 @@ export function Navbar() {
 
             {user && (
               <Link
+                id="navbar-cart-icon-mobile"
                 to="/cart"
                 className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface-hi border border-line"
               >
