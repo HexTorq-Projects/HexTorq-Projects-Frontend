@@ -47,7 +47,7 @@ export function ProjectCard({ project }: { project: Project }) {
           startX,
           startY,
           title: project.projectTitle,
-          tier: project.sellabilityTier,
+          tier: project.sellabilityTier ?? undefined,
           color: isPremium ? "#f5b944" : catColor || "#38bdf8",
         });
       }

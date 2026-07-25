@@ -46,7 +46,7 @@ export default function ProjectDetail() {
         startX,
         startY,
         title: project.projectTitle,
-        tier: project.sellabilityTier,
+        tier: project.sellabilityTier ?? undefined,
         color: project.sellabilityTier === "Premium" ? "#f5b944" : "#38bdf8",
       });
     }

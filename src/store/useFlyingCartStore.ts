@@ -5,7 +5,7 @@ export interface FlyingParticle {
   startX: number;
   startY: number;
   title?: string;
-  tier?: string;
+  tier?: string | null;
   color?: string;
 }
 
