@@ -29,7 +29,7 @@ export async function adminApiFetch<T>(path: string, opts: RequestOptions = {}):
   const data = text ? JSON.parse(text) : null;
 
   if (!res.ok) {
-    const message = (data && (data.error || data.message)) || res.statusText;
+    const message = (data && (data.message || data.error)) || res.statusText;
     throw new ApiError(res.status, message, data && data.details);
   }
 

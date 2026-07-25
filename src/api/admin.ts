@@ -344,6 +344,17 @@ interface AdminReferralStats {
   totalWithdrawn: number;
 }
 
+// /admin/referrals/* returns `totalPages`, unlike every other admin list
+// endpoint's `pages` (see AdminPaginated<T>) — kept as its own shape rather
+// than papering over the mismatch.
+interface ReferralPaginated<T> {
+  items: T[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
 // ---- admin referrals ----
 export function useAdminReferralStats() {
   return useQuery({
@@ -359,7 +370,7 @@ export function useAdminReferralEarnings(page: number, status?: string) {
   }).toString();
   return useQuery({
     queryKey: ["admin", "referrals", "earnings", page, status],
-    queryFn: () => adminApiFetch<AdminPaginated<AdminReferralEarning>>(`/admin/referrals/earnings?${qs}`, { auth: true }),
+    queryFn: () => adminApiFetch<ReferralPaginated<AdminReferralEarning>>(`/admin/referrals/earnings?${qs}`, { auth: true }),
   });
 }
 
@@ -383,7 +394,7 @@ export function useAdminReferralWithdrawals(page: number, status?: string) {
   }).toString();
   return useQuery({
     queryKey: ["admin", "referrals", "withdrawals", page, status],
-    queryFn: () => adminApiFetch<AdminPaginated<AdminReferralWithdrawal>>(`/admin/referrals/withdrawals?${qs}`, { auth: true }),
+    queryFn: () => adminApiFetch<ReferralPaginated<AdminReferralWithdrawal>>(`/admin/referrals/withdrawals?${qs}`, { auth: true }),
   });
 }
 

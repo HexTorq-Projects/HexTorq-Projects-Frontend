@@ -48,7 +48,9 @@ export async function apiFetch<T>(path: string, opts: RequestOptions = {}): Prom
   const data = text ? JSON.parse(text) : null;
 
   if (!res.ok) {
-    const message = (data && (data.error || data.message)) || res.statusText;
+    // prefer `message` (the specific cause, e.g. a wrapped Pay-Panda error) over
+    // `error` (a generic label like "Could not create Pay-Panda checkout")
+    const message = (data && (data.message || data.error)) || res.statusText;
     throw new ApiError(res.status, message, data && data.details);
   }
 
