@@ -124,8 +124,8 @@ export function Navbar() {
             {/* Cart Icon Button with Flying Target ID & Spring Impact Animation */}
             <motion.div
               key={cartBumpSignal}
-              animate={cartBumpSignal > 0 ? { scale: [1, 1.45, 0.9, 1.15, 1], rotate: [0, -10, 10, -5, 0] } : {}}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              animate={cartBumpSignal > 0 ? { scale: [1, 1.55, 0.88, 1.2, 0.95, 1], rotate: [0, -12, 12, -6, 0] } : {}}
+              transition={{ duration: 0.65, ease: [0.34, 1.56, 0.64, 1] }}
             >
               <Link
                 id="navbar-cart-icon"

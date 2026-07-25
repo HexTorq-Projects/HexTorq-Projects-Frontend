@@ -26,9 +26,8 @@ function FlyingBadge({ particle }: { particle: FlyingParticle }) {
   const deltaX = targetPos.x - particle.startX;
   const deltaY = targetPos.y - particle.startY;
 
-  // Arc control offset
-  const midX = deltaX * 0.45;
-  const midY = Math.min(0, deltaY) - 130;
+  // Arc control offset (higher apex arc for a graceful flight curve)
+  const midY = Math.min(-140, deltaY - 100);
 
   const accentColor = particle.color || "#38bdf8";
 
@@ -37,20 +36,21 @@ function FlyingBadge({ particle }: { particle: FlyingParticle }) {
       initial={{
         x: 0,
         y: 0,
-        scale: 0.3,
+        scale: 0.1,
         opacity: 0,
-        rotate: -15,
+        rotate: -20,
       }}
       animate={{
-        x: [0, midX, deltaX],
-        y: [0, midY, deltaY],
-        scale: [0.4, 1.35, 1.1, 0.2],
-        opacity: [0, 1, 1, 0],
-        rotate: [0, -12, 12, 360],
+        x: [0, deltaX * 0.2, deltaX * 0.55, deltaX * 0.88, deltaX],
+        y: [0, midY, midY * 0.85, deltaY * 0.5, deltaY],
+        scale: [0.2, 1.45, 1.2, 0.9, 0.15],
+        opacity: [0, 1, 1, 0.95, 0],
+        rotate: [0, -18, 12, -6, 360],
       }}
       transition={{
-        duration: 0.75,
-        ease: [0.22, 1, 0.36, 1],
+        duration: 1.3, // Slower, smooth 1.3-second flight duration
+        ease: [0.16, 1, 0.3, 1], // Smooth decelerating cubic-bezier curve
+        times: [0, 0.22, 0.55, 0.88, 1],
       }}
       onAnimationComplete={() => {
         bumpCart();
@@ -64,25 +64,25 @@ function FlyingBadge({ particle }: { particle: FlyingParticle }) {
         zIndex: 9999,
         transformOrigin: "center center",
       }}
-      className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold text-white shadow-2xl backdrop-blur-md border border-white/30"
+      className="flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-bold text-white shadow-2xl backdrop-blur-md border border-white/40 ring-2 ring-white/20"
     >
       <div
-        className="relative flex items-center justify-center rounded-full p-1 text-black shadow-lg"
+        className="relative flex items-center justify-center rounded-full p-1.5 text-black shadow-lg transition-transform"
         style={{ backgroundColor: accentColor }}
       >
-        <ShoppingCart className="h-3.5 w-3.5 stroke-[3]" />
-        <Sparkles className="absolute -top-1 -right-1 h-2.5 w-2.5 text-yellow-300 animate-spin" />
+        <ShoppingCart className="h-4 w-4 stroke-[3]" />
+        <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-yellow-300 animate-spin" />
       </div>
 
       {particle.title && (
-        <span className="max-w-[130px] truncate text-[11px] tracking-tight drop-shadow-md">
+        <span className="max-w-[140px] truncate text-xs font-bold tracking-tight drop-shadow-md">
           {particle.title}
         </span>
       )}
 
       {/* Glowing ring trail */}
       <span
-        className="absolute -inset-1 rounded-full opacity-60 blur-md pointer-events-none"
+        className="absolute -inset-1.5 rounded-full opacity-70 blur-md pointer-events-none animate-pulse"
         style={{ backgroundColor: accentColor }}
       />
     </motion.div>
