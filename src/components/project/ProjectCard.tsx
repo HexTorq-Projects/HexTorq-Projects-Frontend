@@ -100,22 +100,22 @@ export function ProjectCard({ project }: { project: Project }) {
               <TierBadge tier={project.sellabilityTier} />
             </div>
 
-            {/* ── SECTION: Title (no clamp — fully visible) ── */}
+            {/* ── SECTION: Title (line-clamped for clean uniform grid height) ── */}
             <h3
               title={project.projectTitle}
-              className={`font-display text-[11px] sm:text-xs font-bold text-fg transition-colors mb-2 leading-snug relative z-10 ${
+              className={`font-display text-[11px] sm:text-xs font-bold text-fg transition-colors mb-2 leading-snug relative z-10 line-clamp-3 min-h-[2.7rem] sm:min-h-[3rem] ${
                 isPremium ? "group-hover:text-amber-500" : "group-hover:text-cyan"
               }`}
             >
               {project.projectTitle}
             </h3>
 
-            {/* ── SECTION: Tech Tags (wrapping, fully visible) ── */}
-            <div className="flex flex-wrap gap-1 mb-2 relative z-10">
+            {/* ── SECTION: Tech Tags (single row, clean overflow) ── */}
+            <div className="flex flex-wrap gap-1 mb-2 relative z-10 max-h-[1.5rem] overflow-hidden">
               {techList.map((tech) => (
                 <span
                   key={tech}
-                  className={`whitespace-nowrap rounded-full border px-1.5 py-[1px] text-[10px] text-muted font-medium transition-colors ${
+                  className={`whitespace-nowrap rounded-full border px-1.5 py-[1px] text-[10px] text-muted font-medium transition-colors truncate max-w-[130px] ${
                     isPremium
                       ? "bg-amber-500/[0.02] border-amber-500/10 group-hover:border-amber-500/20"
                       : "bg-surface-hi border-line group-hover:border-line/80"

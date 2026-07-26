@@ -566,7 +566,7 @@ export default function Explore() {
               </Button>
             </div>
           ) : (
-            <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${getGridColsClass()} transition-opacity duration-200 min-h-[400px] pb-4 ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
+            <div className={`grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 ${getGridColsClass()} items-stretch transition-opacity duration-200 min-h-[400px] pb-4 ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
               {projectsData.items.map((project) => (
                 <div key={project.id} className="h-full">
                   <ProjectCard project={project} />
