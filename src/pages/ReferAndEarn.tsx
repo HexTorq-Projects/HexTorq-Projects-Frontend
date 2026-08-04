@@ -8,7 +8,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { BorderGlow } from "@/components/ui/BorderGlow";
 import { WHATSAPP_NUMBER } from "@/lib/constants";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useGenerateReferralCode, useReferralEarnings, useReferralBalance, useWithdrawReferral, useWithdrawalHistory } from "@/api/referrals";
+import { useGenerateReferralCode, useReferralEarnings, useReferralBalance, useWithdrawReferral, useWithdrawalHistory, useReferredUsers } from "@/api/referrals";
 
 export default function ReferAndEarn() {
   const token = useAuthStore((s) => s.token);
@@ -18,6 +18,7 @@ export default function ReferAndEarn() {
   const { data: balanceData } = useReferralBalance();
   const withdraw = useWithdrawReferral();
   const { data: withdrawalHistory } = useWithdrawalHistory();
+  const { data: referredUsersData } = useReferredUsers();
   const referralCode = myCode ?? earningsData?.code ?? null;
   const userLink = referralCode ? `https://projects.hextorq.tech/explore?ref=${referralCode}` : null;
   const [copied, setCopied] = useState(false);
@@ -313,6 +314,56 @@ export default function ReferAndEarn() {
                       </td>
                       <td className="px-4 py-3 text-muted text-xs">
                         {new Date(ref.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </Reveal>
+      )}
+
+      {/* Referred Friends (signups) */}
+      {token && referredUsersData && referredUsersData.users.length > 0 && (
+        <Reveal delay={0.1}>
+          <section className="max-w-4xl mx-auto space-y-6">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-cyan" />
+              <h2 className="text-xl font-bold font-display text-fg tracking-tight">
+                Friends Who Signed Up With Your Link
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm glass border border-line rounded-2xl overflow-hidden">
+                <thead>
+                  <tr className="border-b border-line bg-surface/50 text-muted text-left">
+                    <th className="px-4 py-3 font-medium">Name</th>
+                    <th className="px-4 py-3 font-medium">Email</th>
+                    <th className="px-4 py-3 font-medium">Signed Up</th>
+                    <th className="px-4 py-3 font-medium">Purchase Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {referredUsersData.users.map((u) => (
+                    <tr key={u.id} className="border-b border-line/50 last:border-0 hover:bg-surface/30 transition-colors">
+                      <td className="px-4 py-3 text-fg">{u.name}</td>
+                      <td className="px-4 py-3 text-muted">{u.email}</td>
+                      <td className="px-4 py-3 text-muted text-xs">
+                        {new Date(u.signedUpAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                      </td>
+                      <td className="px-4 py-3">
+                        {u.purchased ? (
+                          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <Check className="h-3 w-3" />
+                            Purchased — ₹100 added to your wallet
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            <ShoppingCart className="h-3 w-3" />
+                            Not purchased yet
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}

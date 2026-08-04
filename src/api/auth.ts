@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "./client";
 import type { AuthResponse, User } from "./types";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useReferralStore } from "@/store/useReferralStore";
 
 export function useMe() {
   const token = useAuthStore((s) => s.token);
@@ -37,7 +38,10 @@ export function useRegister() {
     mutationFn: (body: { name: string; email: string; password: string; phone?: string }) =>
       apiFetch<AuthResponse>("/auth/register", {
         method: "POST",
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          ...body,
+          referralCode: useReferralStore.getState().code ?? undefined,
+        }),
       }),
     onSuccess: (data) => {
       setAuth(data.token, data.user);
@@ -53,7 +57,10 @@ export function useGoogleLogin() {
     mutationFn: (credential: string) =>
       apiFetch<AuthResponse>("/auth/google", {
         method: "POST",
-        body: JSON.stringify({ credential }),
+        body: JSON.stringify({
+          credential,
+          referralCode: useReferralStore.getState().code ?? undefined,
+        }),
       }),
     onSuccess: (data) => {
       setAuth(data.token, data.user);

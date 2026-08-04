@@ -54,6 +54,18 @@ interface WithdrawalHistoryItem {
   createdAt: string;
 }
 
+interface ReferredUser {
+  id: string;
+  name: string;
+  email: string;
+  signedUpAt: string;
+  purchased: boolean;
+}
+
+interface ReferredUsersResponse {
+  users: ReferredUser[];
+}
+
 export function useReferralCode() {
   const token = useAuthStore((s) => s.token);
   return useQuery({
@@ -118,6 +130,16 @@ export function useWithdrawReferral() {
       qc.invalidateQueries({ queryKey: ["referral-balance"] });
       qc.invalidateQueries({ queryKey: ["referral-withdrawals"] });
     },
+  });
+}
+
+export function useReferredUsers() {
+  const token = useAuthStore((s) => s.token);
+  return useQuery({
+    queryKey: ["referral-referred-users"],
+    queryFn: () => apiFetch<ReferredUsersResponse>("/referrals/referred-users", { auth: true }),
+    enabled: !!token,
+    staleTime: 30_000,
   });
 }
 
