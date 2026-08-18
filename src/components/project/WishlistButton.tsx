@@ -44,8 +44,8 @@ export function WishlistButton({ project, className }: { project: Project; class
       onClick={handleToggle}
       disabled={loading}
       className={cn(
-        "relative flex h-9 w-9 items-center justify-center rounded-full bg-surface/80 border border-line backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110 active:scale-95",
-        isLiked ? "border-rose-500/30 text-rose-500" : "text-muted hover:text-fg hover:border-line",
+        "relative flex h-7 w-7 items-center justify-center rounded-full bg-surface/70 border border-line/60 backdrop-blur-md shadow-sm transition-all duration-200 hover:scale-110 active:scale-95",
+        isLiked ? "border-rose-500/40 text-rose-500 bg-rose-500/10" : "text-muted hover:text-fg hover:border-line hover:bg-surface-hi",
         className
       )}
       aria-label={isLiked ? "Remove from wishlist" : "Add to wishlist"}
@@ -55,13 +55,14 @@ export function WishlistButton({ project, className }: { project: Project; class
       )}
       <motion.span
         key={isLiked ? "liked" : "unliked"}
-        initial={{ scale: 0.55, rotate: isLiked ? -25 : 0 }}
+        initial={{ scale: 0.6, rotate: isLiked ? -20 : 0 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 480, damping: 14 }}
         className="inline-flex"
       >
-        <Heart className={cn("h-4.5 w-4.5", isLiked && "fill-current")} />
+        <Heart className={cn("h-3.5 w-3.5", isLiked && "fill-current")} />
       </motion.span>
     </button>
   );
 }
+export default WishlistButton;
