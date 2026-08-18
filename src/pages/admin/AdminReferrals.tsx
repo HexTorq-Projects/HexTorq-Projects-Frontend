@@ -436,7 +436,7 @@ function ProcessWithdrawalModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-sm">
-      <div className="glass rounded-2xl border border-line p-6 max-w-lg w-full space-y-5 relative shadow-2xl">
+      <div className="glass rounded-2xl border border-line p-5 sm:p-6 max-w-lg w-full space-y-4 max-h-[90vh] overflow-y-auto relative shadow-2xl">
         <div className="flex items-center justify-between pb-3 border-b border-line">
           <h3 className="font-display font-bold text-lg text-fg flex items-center gap-2">
             <CreditCard className="h-5 w-5 text-emerald-400" />

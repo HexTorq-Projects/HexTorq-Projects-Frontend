@@ -98,23 +98,28 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1.5">
+          <div className="hidden md:flex items-center gap-1">
             {links.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`group relative px-3.5 py-2 text-sm font-medium transition-colors hover:text-cyan-txt ${
+                className={`group relative px-3 py-2 text-sm font-medium transition-colors hover:text-cyan-txt flex items-center gap-1.5 ${
                   active(link.path) ? "text-cyan-txt" : "text-muted"
                 }`}
               >
                 {active(link.path) && (
                   <motion.span
                     layoutId="nav-underline"
-                    className="absolute bottom-0 left-3.5 right-3.5 h-[2px] bg-gradient-to-r from-violet via-indigo to-cyan rounded-full"
+                    className="absolute bottom-0 left-3 right-3 h-[2px] bg-gradient-to-r from-violet via-indigo to-cyan rounded-full"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
                 <HoverRoll duration={380}>{link.name}</HoverRoll>
+                {link.path === "/refer-and-earn" && (
+                  <span className="hidden xl:inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400 leading-none">
+                    ₹100
+                  </span>
+                )}
               </Link>
             ))}
           </div>
@@ -256,11 +261,16 @@ export function Navbar() {
                   <Link
                     to={link.path}
                     onClick={() => setMobileNav(false)}
-                    className={`block text-base font-medium py-2.5 transition-colors ${
+                    className={`flex items-center justify-between text-base font-medium py-2.5 transition-colors ${
                       active(link.path) ? "text-cyan-txt" : "text-muted hover:text-fg"
                     }`}
                   >
-                    {link.name}
+                    <span>{link.name}</span>
+                    {link.path === "/refer-and-earn" && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold text-emerald-400">
+                        Earn ₹100
+                      </span>
+                    )}
                   </Link>
                 </motion.div>
               ))}
