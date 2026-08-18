@@ -12,6 +12,7 @@ import { splitList } from "@/lib/format";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Reveal } from "@/components/motion/Reveal";
+import { CargoDropButton } from "@/components/ui/CargoDropButton";
 import { useCartStore } from "@/store/useCartStore";
 import { useFlyingCartStore } from "@/store/useFlyingCartStore";
 
@@ -248,14 +249,14 @@ export default function ProjectDetail() {
                   Buy with Pay-Panda
                 </Button>
 
-                <Button
-                  variant="outline"
-                  onClick={handleAddToCart}
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <ShoppingCart className="h-4.5 w-4.5" />
-                  {inCart ? "Added to Cart" : "Add to Cart"}
-                </Button>
+                {/* Cargo Drop Interactive Button */}
+                <div className="w-full flex justify-center">
+                  <CargoDropButton
+                    size="full"
+                    inCart={inCart}
+                    onAddToCart={handleAddToCart}
+                  />
+                </div>
 
                 <Button
                   variant="solid"
