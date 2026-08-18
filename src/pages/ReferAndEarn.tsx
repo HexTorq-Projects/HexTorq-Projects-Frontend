@@ -28,6 +28,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { BorderGlow } from "@/components/ui/BorderGlow";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
+  useReferralCode,
   useGenerateReferralCode,
   useReferralEarnings,
   useReferralBalance,
@@ -38,6 +39,7 @@ import {
 
 export default function ReferAndEarn() {
   const token = useAuthStore((s) => s.token);
+  const { data: referralCodeData, isLoading: codeLoading } = useReferralCode();
   const generateCode = useGenerateReferralCode();
   const [myCode, setMyCode] = useState<string | null>(null);
   const { data: earningsData } = useReferralEarnings();
@@ -46,7 +48,7 @@ export default function ReferAndEarn() {
   const { data: withdrawalHistory } = useWithdrawalHistory();
   const { data: referredUsersData } = useReferredUsers();
 
-  const referralCode = myCode ?? earningsData?.code ?? null;
+  const referralCode = referralCodeData?.code ?? myCode ?? earningsData?.code ?? null;
   const userLink = referralCode ? `https://projects.hextorq.tech/explore?ref=${referralCode}` : null;
   const [copied, setCopied] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
@@ -208,7 +210,28 @@ export default function ReferAndEarn() {
       {/* Referral Link Box */}
       <Reveal delay={0.15}>
         <section className="max-w-2xl mx-auto">
-          {token && referralCode ? (
+          {!token ? (
+            <div className="glass border border-line rounded-2xl p-8 md:p-10 text-center space-y-5">
+              <Gift className="h-10 w-10 text-emerald-400 mx-auto" />
+              <h2 className="font-display text-xl font-bold text-fg tracking-tight">
+                Want to Earn <span className="text-gradient">₹100 Per Referral?</span>
+              </h2>
+              <p className="text-sm text-muted max-w-md mx-auto leading-relaxed">
+                Sign in to get your unique referral link. Share it with friends and earn ₹100 for every project they buy.
+              </p>
+              <Link to="/login?redirect=/refer-and-earn">
+                <Button variant="primary" size="lg" className="gap-2">
+                  <Gift className="h-4 w-4" />
+                  Sign In to Start Earning
+                </Button>
+              </Link>
+            </div>
+          ) : codeLoading && !referralCode ? (
+            <div className="glass border border-line rounded-2xl p-8 text-center space-y-3">
+              <Loader2 className="h-7 w-7 text-emerald-400 animate-spin mx-auto" />
+              <p className="text-xs text-muted">Loading your referral link...</p>
+            </div>
+          ) : referralCode ? (
             <BorderGlow
               edgeSensitivity={30}
               glowColor="#10b981"
@@ -301,22 +324,6 @@ export default function ReferAndEarn() {
                 </div>
               </div>
             </BorderGlow>
-          ) : !token ? (
-            <div className="glass border border-line rounded-2xl p-8 md:p-10 text-center space-y-5">
-              <Gift className="h-10 w-10 text-emerald-400 mx-auto" />
-              <h2 className="font-display text-xl font-bold text-fg tracking-tight">
-                Want to Earn <span className="text-gradient">₹100 Per Referral?</span>
-              </h2>
-              <p className="text-sm text-muted max-w-md mx-auto leading-relaxed">
-                Sign in to get your unique referral link. Share it with friends and earn ₹100 for every project they buy.
-              </p>
-              <Link to="/login?redirect=/refer-and-earn">
-                <Button variant="primary" size="lg" className="gap-2">
-                  <Gift className="h-4 w-4" />
-                  Sign In to Start Earning
-                </Button>
-              </Link>
-            </div>
           ) : (
             <div className="glass border border-line rounded-2xl p-8 md:p-10 text-center space-y-5">
               <Gift className="h-10 w-10 text-emerald-400 mx-auto" />
@@ -330,7 +337,11 @@ export default function ReferAndEarn() {
                 variant="primary"
                 size="lg"
                 className="gap-2"
-                onClick={() => generateCode.mutateAsync().then((res) => setMyCode(res.code))}
+                onClick={() =>
+                  generateCode.mutateAsync().then((res) => {
+                    setMyCode(res.code);
+                  })
+                }
                 disabled={generateCode.isPending}
               >
                 {generateCode.isPending ? (

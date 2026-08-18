@@ -79,9 +79,15 @@ export function useReferralCode() {
 }
 
 export function useGenerateReferralCode() {
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: () =>
       apiFetch<ReferralCodeResponse>("/referrals/my-code", { auth: true }),
+    onSuccess: (data) => {
+      qc.setQueryData(["referral-code"], data);
+      qc.invalidateQueries({ queryKey: ["referral-code"] });
+      qc.invalidateQueries({ queryKey: ["referral-earnings"] });
+    },
   });
 }
 

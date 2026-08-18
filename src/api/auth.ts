@@ -4,6 +4,8 @@ import type { AuthResponse, User } from "./types";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useReferralStore } from "@/store/useReferralStore";
 
+import { ApiError } from "./client";
+
 export function useMe() {
   const token = useAuthStore((s) => s.token);
   return useQuery({
@@ -11,7 +13,10 @@ export function useMe() {
     queryFn: () => apiFetch<User>("/auth/me", { auth: true }),
     enabled: !!token,
     staleTime: 5 * 60_000,
-    retry: false,
+    retry: (failureCount, error) => {
+      if (error instanceof ApiError && error.status === 401) return false;
+      return failureCount < 2;
+    },
   });
 }
 
