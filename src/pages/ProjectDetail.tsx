@@ -14,7 +14,6 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Reveal } from "@/components/motion/Reveal";
 import { CargoDropButton } from "@/components/ui/CargoDropButton";
 import { useCartStore } from "@/store/useCartStore";
-import { useFlyingCartStore } from "@/store/useFlyingCartStore";
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -29,28 +28,13 @@ export default function ProjectDetail() {
   const removeWishlist = useRemoveWishlist();
   const addToCart = useCartStore((s) => s.add);
   const inCart = useCartStore((s) => (project ? s.has(project.id) : false));
-  const triggerFly = useFlyingCartStore((s) => s.triggerFly);
 
   const isLiked = wishlist.some((p) => p.id === id);
   const wishlistPending = addWishlist.isPending || removeWishlist.isPending;
 
-  const handleAddToCart = (e?: React.MouseEvent) => {
+  const handleAddToCart = () => {
     if (!project) return;
     addToCart(project);
-
-    if (e) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const startX = rect.left + rect.width / 2;
-      const startY = rect.top + rect.height / 2;
-
-      triggerFly({
-        startX,
-        startY,
-        title: project.projectTitle,
-        tier: project.sellabilityTier ?? undefined,
-        color: project.sellabilityTier === "Premium" ? "#f5b944" : "#38bdf8",
-      });
-    }
   };
 
   const handleWishlistToggle = () => {

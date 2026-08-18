@@ -4,7 +4,7 @@ import "./CargoDropButton.css";
 export interface CargoDropButtonProps {
   onAddToCart?: () => void;
   inCart?: boolean;
-  size?: "sm" | "card" | "md" | "full";
+  size?: "card" | "sm" | "md" | "full";
   className?: string;
   idleLabel?: string;
   doneLabel?: string;
@@ -76,7 +76,7 @@ export function CargoDropButton({
     const btn = btnRef.current;
     if (!btn) return;
 
-    // Trigger parent cart action
+    // Trigger parent add-to-cart logic
     if (onAddToCart) {
       onAddToCart();
     }

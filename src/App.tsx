@@ -5,7 +5,6 @@ import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { AuthModal } from "./components/modals/AuthModal";
 import { EnquiryModal } from "./components/modals/EnquiryModal";
-import { FlyingCartOverlay } from "./components/motion/FlyingCartOverlay";
 import { useRotatingTitle } from "./hooks/useRotatingTitle";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
@@ -132,7 +131,6 @@ export function App() {
       <Footer />
       <AuthModal />
       <EnquiryModal />
-      <FlyingCartOverlay />
     </div>
   );
 }

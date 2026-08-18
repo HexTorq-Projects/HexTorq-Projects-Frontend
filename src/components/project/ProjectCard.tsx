@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Project } from "@/api/types";
 import { TierBadge } from "./TierBadge";
 import { ComplexityBadge } from "./ComplexityBadge";
@@ -8,9 +8,8 @@ import { CategoryPill } from "./CategoryPill";
 import { WishlistButton } from "./WishlistButton";
 import { splitList } from "@/lib/format";
 import { categoryMeta } from "@/lib/constants";
-import { ShoppingCart, Check } from "lucide-react";
+import { CargoDropButton } from "@/components/ui/CargoDropButton";
 import { useCartStore } from "@/store/useCartStore";
-import { useFlyingCartStore } from "@/store/useFlyingCartStore";
 
 export function ProjectCard({ project }: { project: Project }) {
   const techList = splitList(project.suggestedTech).slice(0, 3);
@@ -18,30 +17,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const catColor = categoryMeta(project.category?.categoryName).color;
   const reduced = useReducedMotion();
   const addToCart = useCartStore((s) => s.add);
-  const removeFromCart = useCartStore((s) => s.remove);
   const inCart = useCartStore((s) => s.has(project.id));
-  const triggerFly = useFlyingCartStore((s) => s.triggerFly);
-
-  const handleCartClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (inCart) {
-      removeFromCart(project.id);
-    } else {
-      addToCart(project);
-
-      // Trigger Flying Particle Animation
-      const rect = e.currentTarget.getBoundingClientRect();
-      triggerFly({
-        startX: rect.left + rect.width / 2,
-        startY: rect.top + rect.height / 2,
-        title: project.projectTitle,
-        tier: project.sellabilityTier ?? undefined,
-        color: isPremium ? "#f5b944" : catColor || "#38bdf8",
-      });
-    }
-  };
 
   const cardContent = (
     <div
@@ -99,7 +75,7 @@ export function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
 
-      {/* ── BOTTOM SECTION: Divider + Pricing + Full-Width Cart Button ── */}
+      {/* ── BOTTOM SECTION: Divider + Pricing + Full-Width Cargo Drop Button ── */}
       <div className="mt-auto pt-1">
         {/* Subtle divider */}
         <div className="h-px bg-white/[0.06] w-full mb-3.5" />
@@ -119,53 +95,21 @@ export function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
 
-        {/* Full-width Add to Cart button */}
+        {/* Full-width Add to Cart button row */}
         <div
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
           }}
-          className="w-full"
+          className="w-full flex justify-center pt-0.5"
         >
-          <motion.button
-            type="button"
-            onClick={handleCartClick}
-            whileTap={{ scale: 0.98 }}
-            whileHover={{ scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 450, damping: 25 }}
-            className={`w-full h-10 flex items-center justify-center gap-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer shadow-sm ${
-              inCart
-                ? "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border border-emerald-400/40 shadow-emerald-500/20"
-                : "bg-surface-hi/90 hover:bg-surface-hi border border-line hover:border-violet/40 text-fg hover:text-white"
-            }`}
-            aria-label={inCart ? "In Cart - Click to remove" : "Add to Cart"}
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              {inCart ? (
-                <motion.span
-                  key="incart"
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -2 }}
-                  className="flex items-center gap-1.5 text-emerald-100 font-semibold"
-                >
-                  <Check className="h-4 w-4 text-emerald-300 stroke-[2.5]" />
-                  <span>In Cart</span>
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="addtocart"
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -2 }}
-                  className="flex items-center gap-1.5 text-fg font-medium"
-                >
-                  <ShoppingCart className="h-4 w-4 text-muted group-hover:text-cyan transition-colors" />
-                  <span>Add to Cart</span>
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.button>
+          <CargoDropButton
+            size="card"
+            inCart={inCart}
+            onAddToCart={() => {
+              addToCart(project);
+            }}
+          />
         </div>
       </div>
     </div>
