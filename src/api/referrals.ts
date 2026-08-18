@@ -1,6 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, ApiError } from "./client";
 import { useAuthStore } from "@/store/useAuthStore";
+
+// Retry transient failures (network hiccups, proxy timeouts) but never retry
+// a real 401 — otherwise a dead session retries into an endless loop.
+const transientRetry = (failureCount: number, error: unknown) => {
+  if (error instanceof ApiError && error.status === 401) return false;
+  return failureCount < 2;
+};
 
 interface ReferralCodeResponse {
   code: string;
@@ -74,7 +81,9 @@ export function useReferralCode() {
     queryKey: ["referral-code"],
     queryFn: () => apiFetch<ReferralCodeResponse>("/referrals/my-code", { auth: true }),
     enabled: !!token,
-    staleTime: 10 * 60_000,
+    retry: transientRetry,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -83,6 +92,7 @@ export function useGenerateReferralCode() {
   return useMutation({
     mutationFn: () =>
       apiFetch<ReferralCodeResponse>("/referrals/my-code", { auth: true }),
+    retry: transientRetry,
     onSuccess: (data) => {
       qc.setQueryData(["referral-code"], data);
       qc.invalidateQueries({ queryKey: ["referral-code"] });
@@ -97,7 +107,8 @@ export function useReferralEarnings() {
     queryKey: ["referral-earnings"],
     queryFn: () => apiFetch<ReferralEarningsResponse>("/referrals/earnings", { auth: true }),
     enabled: !!token,
-    staleTime: 30_000,
+    staleTime: 10_000,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -121,7 +132,8 @@ export function useReferralBalance() {
     queryKey: ["referral-balance"],
     queryFn: () => apiFetch<BalanceResponse>("/referrals/balance", { auth: true }),
     enabled: !!token,
-    staleTime: 30_000,
+    staleTime: 10_000,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -147,7 +159,8 @@ export function useReferredUsers() {
     queryKey: ["referral-referred-users"],
     queryFn: () => apiFetch<ReferredUsersResponse>("/referrals/referred-users", { auth: true }),
     enabled: !!token,
-    staleTime: 30_000,
+    staleTime: 5_000,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -157,5 +170,7 @@ export function useWithdrawalHistory() {
     queryKey: ["referral-withdrawals"],
     queryFn: () => apiFetch<WithdrawalHistoryItem[]>("/referrals/withdrawals", { auth: true }),
     enabled: !!token,
+    staleTime: 10_000,
+    refetchOnWindowFocus: true,
   });
 }

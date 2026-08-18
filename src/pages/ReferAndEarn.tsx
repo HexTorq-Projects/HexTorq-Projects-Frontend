@@ -22,6 +22,7 @@ import {
   Send,
   HelpCircle,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
@@ -41,7 +42,12 @@ import {
 
 export default function ReferAndEarn() {
   const token = useAuthStore((s) => s.token);
-  const { data: referralCodeData, isLoading: codeLoading } = useReferralCode();
+  const {
+    data: referralCodeData,
+    isLoading: codeLoading,
+    isError: codeError,
+    refetch: refetchCode,
+  } = useReferralCode();
   const generateCode = useGenerateReferralCode();
   const [myCode, setMyCode] = useState<string | null>(null);
   const { data: earningsData } = useReferralEarnings();
@@ -356,6 +362,33 @@ export default function ReferAndEarn() {
                 </div>
               </div>
             </BorderGlow>
+          ) : codeError && !referralCode ? (
+            <div className="glass border border-line rounded-2xl p-6 sm:p-8 md:p-10 text-center space-y-5 shadow-xl">
+              <AlertCircle className="h-10 w-10 text-amber-400 mx-auto" />
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-fg tracking-tight">
+                Couldn't Load Your <span className="text-gradient">Referral Link</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-muted max-w-md mx-auto leading-relaxed">
+                Something went wrong while fetching your referral link. Check your connection and try again.
+              </p>
+              <Button
+                variant="primary"
+                size="lg"
+                className="gap-2"
+                onClick={() => refetchCode()}
+                disabled={codeLoading}
+              >
+                {codeLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Retrying...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4" /> Retry
+                  </>
+                )}
+              </Button>
+            </div>
           ) : (
             <div className="glass border border-line rounded-2xl p-6 sm:p-8 md:p-10 text-center space-y-5 shadow-xl">
               <Gift className="h-10 w-10 text-emerald-400 mx-auto" />
