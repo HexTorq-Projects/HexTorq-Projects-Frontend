@@ -133,45 +133,48 @@ export function ProjectCard({ project }: { project: Project }) {
             {/* Divider */}
             <div className="h-px bg-line/40 w-full mb-2 relative z-10 shrink-0" />
 
-            {/* ── SECTION: Footer (Complexity + Price + CargoDropButton) ── */}
-            <div className="flex items-center justify-between gap-1.5 relative z-10 shrink-0">
-              <div className="shrink-0">
-                <ComplexityBadge complexity={project.complexity} />
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0 min-w-0">
-                <PriceBlock
-                  recommended={project.recommendedPrice}
-                  discounted={project.discountedPrice}
-                  original={project.originalPrice}
-                  size="sm"
-                />
-                {/* ── Cargo Drop Button ── */}
-                <div
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  className="shrink-0"
-                >
-                  <CargoDropButton
+            {/* ── SECTION: Footer (Complexity + Price on top, CargoDropButton centered below) ── */}
+            <div className="space-y-2 relative z-10 shrink-0">
+              <div className="flex items-center justify-between gap-1.5">
+                <div className="shrink-0">
+                  <ComplexityBadge complexity={project.complexity} />
+                </div>
+                <div className="shrink-0 min-w-0">
+                  <PriceBlock
+                    recommended={project.recommendedPrice}
+                    discounted={project.discountedPrice}
+                    original={project.originalPrice}
                     size="sm"
-                    inCart={inCart}
-                    onAddToCart={() => {
-                      if (inCart) {
-                        removeFromCart(project.id);
-                      } else {
-                        addToCart(project);
-                        triggerFly({
-                          startX: window.innerWidth / 2,
-                          startY: window.innerHeight / 2,
-                          title: project.projectTitle,
-                          tier: project.sellabilityTier ?? undefined,
-                          color: isPremium ? "#f5b944" : catColor || "#38bdf8",
-                        });
-                      }
-                    }}
                   />
                 </div>
+              </div>
+
+              {/* ── Cargo Drop Button ── */}
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                className="w-full flex justify-center pt-0.5"
+              >
+                <CargoDropButton
+                  size="card"
+                  inCart={inCart}
+                  onAddToCart={() => {
+                    if (inCart) {
+                      removeFromCart(project.id);
+                    } else {
+                      addToCart(project);
+                      triggerFly({
+                        startX: window.innerWidth / 2,
+                        startY: window.innerHeight / 2,
+                        title: project.projectTitle,
+                        tier: project.sellabilityTier ?? undefined,
+                        color: isPremium ? "#f5b944" : catColor || "#38bdf8",
+                      });
+                    }
+                  }}
+                />
               </div>
             </div>
           </Card>

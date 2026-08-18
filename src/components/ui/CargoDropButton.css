@@ -59,49 +59,54 @@
 
 /* ---------- Size Variants for Project Cards & Responsive Layouts ---------- */
 
-/* Card / compact size scaling container */
+/* Card / dedicated card footer size (centered, clean scaling) */
 .acp-wrap-card {
   width: 100%;
-  max-width: 155px;
-  height: 38px;
+  height: 44px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  overflow: visible;
 }
 
 .acp-wrap-card .acp-btn {
-  transform: scale(0.58);
-  transform-origin: right center;
+  width: 250px;
+  height: 66px;
+  transform: scale(0.68);
+  transform-origin: center center;
 }
 
 .acp-wrap-card .acp-btn:hover:not(.is-playing):not(.is-rm-done) {
-  transform: scale(0.58) translateY(-1px);
+  transform: scale(0.68) translateY(-1px);
 }
 
 .acp-wrap-card .acp-btn:active {
-  transform: scale(0.56);
+  transform: scale(0.65);
 }
 
-/* Compact size (fit in project card button row) */
+/* Compact size (fit in tight inline rows) */
 .acp-wrap-sm {
-  width: 130px;
+  width: 120px;
   height: 34px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  overflow: visible;
 }
 
 .acp-wrap-sm .acp-btn {
-  transform: scale(0.52);
-  transform-origin: right center;
+  width: 250px;
+  height: 66px;
+  transform: scale(0.48);
+  transform-origin: center center;
 }
 
 .acp-wrap-sm .acp-btn:hover:not(.is-playing):not(.is-rm-done) {
-  transform: scale(0.52) translateY(-1px);
+  transform: scale(0.48) translateY(-1px);
 }
 
 .acp-wrap-sm .acp-btn:active {
-  transform: scale(0.50);
+  transform: scale(0.46);
 }
 
 /* Full Width size (for detail pages / modals) */
