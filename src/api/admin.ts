@@ -333,6 +333,8 @@ interface AdminReferralWithdrawal {
   upiHolderName: string;
   status: string;
   adminNote: string | null;
+  transactionId?: string | null;
+  paidAt?: string | null;
   createdAt: string;
 }
 
@@ -401,10 +403,10 @@ export function useAdminReferralWithdrawals(page: number, status?: string) {
 export function useUpdateAdminReferralWithdrawal() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status, adminNote }: { id: string; status: string; adminNote?: string }) =>
+    mutationFn: ({ id, status, transactionId, adminNote }: { id: string; status: string; transactionId?: string; adminNote?: string }) =>
       adminApiFetch<AdminReferralWithdrawal>(`/admin/referrals/withdrawals/${id}`, {
         method: "PATCH",
-        body: JSON.stringify({ status, ...(adminNote ? { adminNote } : {}) }),
+        body: JSON.stringify({ status, ...(transactionId ? { transactionId } : {}), ...(adminNote ? { adminNote } : {}) }),
         auth: true,
       }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "referrals"] }),

@@ -44,13 +44,15 @@ interface WithdrawalResponse {
   status: string;
 }
 
-interface WithdrawalHistoryItem {
+export interface WithdrawalHistoryItem {
   id: string;
   amount: number;
   upiId: string;
   upiHolderName: string;
   status: string;
   adminNote: string | null;
+  transactionId?: string | null;
+  paidAt?: string | null;
   createdAt: string;
 }
 

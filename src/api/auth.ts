@@ -112,3 +112,15 @@ export function useUpdateProfile() {
     },
   });
 }
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (body: { currentPassword?: string; newPassword: string }) =>
+      apiFetch<{ ok: boolean; message: string }>("/auth/change-password", {
+        method: "PUT",
+        auth: true,
+        body: JSON.stringify(body),
+      }),
+  });
+}
+
