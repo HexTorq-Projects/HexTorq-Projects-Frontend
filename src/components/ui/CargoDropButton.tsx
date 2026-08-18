@@ -76,11 +76,6 @@ export function CargoDropButton({
     const btn = btnRef.current;
     if (!btn) return;
 
-    // Trigger parent add-to-cart logic
-    if (onAddToCart) {
-      onAddToCart();
-    }
-
     // Check prefers-reduced-motion
     let reduced = false;
     try {
@@ -92,6 +87,9 @@ export function CargoDropButton({
     if (reduced) {
       btn.classList.add("is-rm-done");
       if (liveRef.current) liveRef.current.textContent = "Added to cart";
+      if (onAddToCart) {
+        onAddToCart();
+      }
       addTimer(() => {
         resetAnimationClasses();
       }, 1600);
@@ -122,11 +120,14 @@ export function CargoDropButton({
       btn.classList.remove("belt-run");
     }, 3530);
 
-    /* Beat 5: confirmation */
+    /* Beat 5: confirmation & item added to cart */
     addTimer(() => {
       btn.classList.add("s-done");
       if (liveRef.current) {
         liveRef.current.textContent = "Added to cart";
+      }
+      if (onAddToCart) {
+        onAddToCart();
       }
     }, 4300);
 

@@ -62,7 +62,7 @@
 /* Card / dedicated card footer size (centered, clean scaling) */
 .acp-wrap-card {
   width: 100%;
-  height: 44px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,18 +70,18 @@
 }
 
 .acp-wrap-card .acp-btn {
-  width: 250px;
+  width: 260px;
   height: 66px;
-  transform: scale(0.68);
+  transform: scale(0.72);
   transform-origin: center center;
 }
 
 .acp-wrap-card .acp-btn:hover:not(.is-playing):not(.is-rm-done) {
-  transform: scale(0.68) translateY(-1px);
+  transform: scale(0.72) translateY(-1px);
 }
 
 .acp-wrap-card .acp-btn:active {
-  transform: scale(0.65);
+  transform: scale(0.69);
 }
 
 /* Compact size (fit in tight inline rows) */

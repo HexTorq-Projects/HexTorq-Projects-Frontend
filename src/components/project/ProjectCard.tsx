@@ -38,21 +38,21 @@ export function ProjectCard({ project }: { project: Project }) {
       />
 
       {/* ── TOP SECTION: Header + Title + Tags ── */}
-      <div>
-        {/* Top row: Category on left, Premium badge near right, Heart at far right */}
-        <div className="flex items-center justify-between gap-2 mb-3 relative z-10">
-          <div className="flex items-center gap-2 min-w-0 flex-wrap">
+      <div className="flex flex-col">
+        {/* Top row: Category on left, Premium badge + Heart at right */}
+        <div className="flex items-center justify-between gap-2 mb-2.5 relative z-10 w-full">
+          <div className="min-w-0 shrink">
             <CategoryPill name={project.category?.categoryName} short />
-            {isPremium && <TierBadge tier={project.sellabilityTier} />}
           </div>
-          <div className="shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isPremium && <TierBadge tier={project.sellabilityTier} />}
             <WishlistButton project={project} />
           </div>
         </div>
 
         {/* Title: Fixed-height 3-line area with clean ellipsis */}
         <Link to={`/project/${project.id}`} className="block group/title">
-          <div className="h-[4.25rem] mb-2.5 flex items-start overflow-hidden">
+          <div className="h-[4.25rem] mb-2 flex items-start overflow-hidden">
             <h3
               title={project.projectTitle}
               className="font-display text-sm sm:text-[15px] font-bold text-fg leading-snug tracking-tight line-clamp-3 group-hover/title:text-cyan transition-colors"
@@ -62,7 +62,7 @@ export function ProjectCard({ project }: { project: Project }) {
           </div>
         </Link>
 
-        {/* Technology tags: compact pills in single row */}
+        {/* Technology tags: compact pills in fixed-height single row */}
         <div className="flex items-center gap-1.5 h-6 mb-3 overflow-hidden">
           {techList.map((tech) => (
             <span
@@ -75,13 +75,13 @@ export function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
 
-      {/* ── BOTTOM SECTION: Divider + Pricing + Full-Width Cargo Drop Button ── */}
-      <div className="mt-auto pt-1">
+      {/* ── BOTTOM SECTION: Divider + Pricing + Full-Width Cart Button ── */}
+      <div className="mt-auto pt-1 w-full">
         {/* Subtle divider */}
-        <div className="h-px bg-white/[0.06] w-full mb-3.5" />
+        <div className="h-px bg-white/[0.06] w-full mb-3" />
 
-        {/* Pricing row: Difficulty badge on left, Price + 7% OFF + Old Price on right */}
-        <div className="flex items-center justify-between gap-2 mb-3.5 min-w-0">
+        {/* Pricing row: Left (High badge) | Right (₹6,500 + 7% OFF + ₹7,000) - NEVER wraps */}
+        <div className="flex items-center justify-between gap-1.5 w-full whitespace-nowrap min-w-0 mb-3">
           <div className="shrink-0">
             <ComplexityBadge complexity={project.complexity} />
           </div>
@@ -101,7 +101,7 @@ export function ProjectCard({ project }: { project: Project }) {
             e.preventDefault();
             e.stopPropagation();
           }}
-          className="w-full flex justify-center pt-0.5"
+          className="w-full flex justify-center"
         >
           <CargoDropButton
             size="card"
