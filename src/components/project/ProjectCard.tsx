@@ -39,13 +39,13 @@ export function ProjectCard({ project }: { project: Project }) {
 
       {/* ── TOP SECTION: Header + Title + Tags ── */}
       <div className="flex flex-col">
-        {/* Top row: Category on left, Premium badge + Heart at right */}
+        {/* Top row: Left (Category + Premium badge) | Right (Heart/Favorite) */}
         <div className="flex items-center justify-between gap-2 mb-2.5 relative z-10 w-full">
-          <div className="min-w-0 shrink">
+          <div className="flex items-center gap-2 min-w-0 flex-wrap">
             <CategoryPill name={project.category?.categoryName} short />
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
             {isPremium && <TierBadge tier={project.sellabilityTier} />}
+          </div>
+          <div className="shrink-0">
             <WishlistButton project={project} />
           </div>
         </div>
@@ -81,11 +81,11 @@ export function ProjectCard({ project }: { project: Project }) {
         <div className="h-px bg-white/[0.06] w-full mb-3" />
 
         {/* Pricing row: Left (High badge) | Right (₹6,500 + 7% OFF + ₹7,000) - NEVER wraps */}
-        <div className="flex items-center justify-between gap-1.5 w-full whitespace-nowrap min-w-0 mb-3">
-          <div className="shrink-0">
+        <div className="flex items-center justify-between gap-2 w-full whitespace-nowrap min-w-0 mb-3">
+          <div className="shrink-0 flex items-center">
             <ComplexityBadge complexity={project.complexity} />
           </div>
-          <div className="shrink-0 min-w-0">
+          <div className="shrink-0 flex items-center min-w-0">
             <PriceBlock
               recommended={project.recommendedPrice}
               discounted={project.discountedPrice}
@@ -101,7 +101,7 @@ export function ProjectCard({ project }: { project: Project }) {
             e.preventDefault();
             e.stopPropagation();
           }}
-          className="w-full flex justify-center"
+          className="w-full block"
         >
           <CargoDropButton
             size="card"
