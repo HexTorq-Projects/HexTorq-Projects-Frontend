@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Trash2, Pencil, Plus, AlertCircle } from "lucide-react";
+import { Trash2, Pencil, Plus, AlertCircle, FolderKanban, Search, Star, Code, Layers, Sparkles, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   useAdminProjects,
   useCreateAdminProject,
@@ -90,7 +91,7 @@ export default function AdminProjects() {
     }
 
     if (!form.categoryId) {
-      setFormError("Please select a Category.");
+      setFormError("Please select an academic Category.");
       return;
     }
 
@@ -124,7 +125,7 @@ export default function AdminProjects() {
           setFormError(null);
         },
         onError: (err: any) => {
-          setFormError(err?.message || "Failed to create project. Please verify required fields.");
+          setFormError(err?.message || "Failed to create project. Please check required fields.");
         },
       });
     } else if (editing) {
@@ -144,7 +145,7 @@ export default function AdminProjects() {
   };
 
   const handleDelete = (project: Project) => {
-    if (!confirm(`Delete project "${project.projectTitle}"? This only works if it has no orders/wishlist/enquiries/offers.`))
+    if (!confirm(`Delete project "${project.projectTitle}"? This only works if it has no existing orders or enquiries.`))
       return;
     deleteMutation.mutate(project.id);
   };
@@ -152,31 +153,100 @@ export default function AdminProjects() {
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   const columns: Column<Project>[] = [
-    { key: "title", header: "Title", render: (p) => p.projectTitle },
-    { key: "category", header: "Category", render: (p) => p.category?.categoryName ?? "—" },
-    { key: "tier", header: "Tier", render: (p) => p.sellabilityTier ?? "—" },
     {
-      key: "price",
-      header: "Price",
+      key: "title",
+      header: "Project Title & Brief",
       render: (p) => (
-        <span>
-          ₹{p.discountedPrice ?? p.recommendedPrice ?? p.originalPrice ?? 0}
-          {p.recommendedPrice && p.discountedPrice && p.discountedPrice < p.recommendedPrice && (
-            <span className="ml-1 text-xs text-faint line-through">₹{p.recommendedPrice}</span>
-          )}
+        <div className="max-w-md">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-fg text-xs line-clamp-1 hover:text-cyan transition-colors" title={p.projectTitle}>
+              {p.projectTitle}
+            </span>
+            {p.sellabilityTier === "Premium" && (
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-extrabold text-amber-400">
+                <Star className="h-2.5 w-2.5 fill-current" />
+                PREMIUM
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] text-muted line-clamp-1 mt-0.5">{p.brief}</p>
+        </div>
+      ),
+    },
+    {
+      key: "category",
+      header: "Academic Stream",
+      render: (p) => (
+        <span className="text-xs font-semibold text-fg bg-surface-hi border border-line px-2.5 py-1 rounded-lg">
+          {p.category?.categoryName ?? "—"}
         </span>
       ),
+    },
+    {
+      key: "tier",
+      header: "Tier / Level",
+      render: (p) => (
+        <div className="flex flex-col gap-1">
+          {p.sellabilityTier ? (
+            <span className="text-[10px] font-bold text-violet px-2 py-0.5 rounded-md bg-violet/10 border border-violet/20 w-fit">
+              {p.sellabilityTier}
+            </span>
+          ) : (
+            <span className="text-muted text-xs">—</span>
+          )}
+          {p.complexity && (
+            <span className="text-[9px] font-mono text-muted">
+              {p.complexity}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "price",
+      header: "Effective Price",
+      render: (p) => {
+        const effective = p.discountedPrice ?? p.recommendedPrice ?? p.originalPrice ?? 0;
+        return (
+          <div>
+            <span className="font-mono font-bold text-sm text-emerald-400 block">
+              ₹{effective.toLocaleString("en-IN")}
+            </span>
+            {p.recommendedPrice && p.discountedPrice && p.discountedPrice < p.recommendedPrice && (
+              <span className="text-[10px] text-muted line-through font-mono">
+                ₹{p.recommendedPrice.toLocaleString("en-IN")}
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       key: "actions",
       header: "",
       render: (p) => (
-        <div className="flex gap-2 justify-end">
-          <button onClick={() => openEdit(p)} className="text-muted hover:text-violet">
-            <Pencil className="h-4 w-4" />
+        <div className="flex gap-1.5 justify-end">
+          <Link
+            to={`/project/${p.id}`}
+            target="_blank"
+            className="p-1.5 rounded-lg text-muted hover:text-cyan hover:bg-cyan/10 border border-transparent hover:border-cyan/20 transition-all"
+            title="View Live Page"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+          </Link>
+          <button
+            onClick={() => openEdit(p)}
+            className="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet/10 border border-transparent hover:border-violet/20 transition-all cursor-pointer"
+            title="Edit project"
+          >
+            <Pencil className="h-3.5 w-3.5" />
           </button>
-          <button onClick={() => handleDelete(p)} className="text-muted hover:text-rose-400">
-            <Trash2 className="h-4 w-4" />
+          <button
+            onClick={() => handleDelete(p)}
+            className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all cursor-pointer"
+            title="Delete project"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),
@@ -189,21 +259,35 @@ export default function AdminProjects() {
   );
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6 gap-3">
-        <h1 className="font-display text-2xl font-bold text-fg">Projects</h1>
-        <div className="flex gap-3">
-          <Input
-            placeholder="Search title/brief..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="max-w-xs"
-          />
-          <Button variant="auth" onClick={openNew}>
-            <Plus className="h-4 w-4" /> New
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
+        <div className="space-y-1">
+          <h1 className="font-display text-2xl font-bold text-fg flex items-center gap-2.5">
+            <FolderKanban className="h-6 w-6 text-cyan" />
+            Engineering Projects Catalog
+          </h1>
+          <p className="text-xs text-muted">
+            Manage repository titles, descriptions, pricing tiers, technology stacks, and system modules.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative max-w-xs w-full">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+            <Input
+              placeholder="Search title/brief..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="pl-9 bg-surface-hi/60 text-xs"
+            />
+          </div>
+          <Button variant="primary" onClick={openNew} className="gap-1.5 shadow-md shadow-violet-500/20">
+            <Plus className="h-4 w-4" />
+            Add New Project
           </Button>
         </div>
       </div>
@@ -216,54 +300,65 @@ export default function AdminProjects() {
         page={data?.page}
         pages={data?.pages}
         onPageChange={setPage}
+        emptyMessage="No engineering projects match the search filter."
       />
 
-      <FormModal open={!!editing} title={editing === "new" ? "New Project" : "Edit Project"} onClose={() => setEditing(null)} wide>
-        <div className="space-y-4">
+      {/* Project Create/Edit Modal */}
+      <FormModal
+        open={!!editing}
+        title={editing === "new" ? "Add New Project Deliverable" : "Edit Project Package"}
+        onClose={() => setEditing(null)}
+        wide
+      >
+        <div className="space-y-5 text-xs">
           {formError && (
-            <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-400">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              <span>{formError}</span>
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-400 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {formError}
             </div>
           )}
 
-          <Field label="Title *" htmlFor="p-title">
+          <Field label="Project Title" htmlFor="p-title" required>
             <Input
               id="p-title"
-              placeholder="e.g. Smart IoT Weather Monitoring System"
               value={form.projectTitle}
               onChange={(e) => setForm({ ...form, projectTitle: e.target.value })}
+              placeholder="e.g. Privacy-Preserving Health Platform using Federated ML"
+              required
             />
           </Field>
 
-          <Field label="Brief Description" htmlFor="p-brief">
+          <Field label="Short Brief (Lead Intro)" htmlFor="p-brief">
             <Textarea
               id="p-brief"
-              placeholder="Short overview of the project..."
+              rows={2}
               value={form.brief}
               onChange={(e) => setForm({ ...form, brief: e.target.value })}
+              placeholder="1-2 sentences summarizing the project for catalog cards."
             />
           </Field>
 
-          <Field label="Detailed Description" htmlFor="p-detailed">
+          <Field label="Detailed Technical Description" htmlFor="p-detailed">
             <Textarea
               id="p-detailed"
-              placeholder="In-depth details, working principle, architecture..."
-              className="min-h-32"
+              rows={4}
               value={form.detailed}
               onChange={(e) => setForm({ ...form, detailed: e.target.value })}
+              placeholder="Full system overview, architecture description, and algorithms utilized."
             />
           </Field>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Category *" htmlFor="p-category">
+          {/* Categories & Domains */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Field label="Academic Category" htmlFor="p-cat" required>
               <select
-                id="p-category"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
+                id="p-cat"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
                 value={form.categoryId}
                 onChange={(e) => setForm({ ...form, categoryId: e.target.value, subCategoryId: null })}
+                required
               >
-                <option value="">Select Category</option>
+                <option value="">Select Stream...</option>
                 {categories?.items.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.categoryName}
@@ -272,14 +367,14 @@ export default function AdminProjects() {
               </select>
             </Field>
 
-            <Field label="Sub-category" htmlFor="p-subcategory">
+            <Field label="Sub-Category" htmlFor="p-subcat">
               <select
-                id="p-subcategory"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
+                id="p-subcat"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
                 value={form.subCategoryId ?? ""}
                 onChange={(e) => setForm({ ...form, subCategoryId: e.target.value || null })}
               >
-                <option value="">Select Sub-category (Optional)</option>
+                <option value="">None</option>
                 {filteredSubCategories.map((sc) => (
                   <option key={sc.id} value={sc.id}>
                     {sc.subCategoryName}
@@ -287,28 +382,93 @@ export default function AdminProjects() {
                 ))}
               </select>
             </Field>
+
+            <Field label="Application Domain" htmlFor="p-apparea">
+              <select
+                id="p-apparea"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+                value={form.applicationAreaId ?? ""}
+                onChange={(e) => setForm({ ...form, applicationAreaId: e.target.value || null })}
+              >
+                <option value="">None</option>
+                {appAreas?.items.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.applicationAreaName}
+                  </option>
+                ))}
+              </select>
+            </Field>
           </div>
 
-          <Field label="Application Area" htmlFor="p-apparea">
-            <select
-              id="p-apparea"
-              className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
-              value={form.applicationAreaId ?? ""}
-              onChange={(e) => setForm({ ...form, applicationAreaId: e.target.value || null })}
-            >
-              <option value="">Select Application Area (Optional)</option>
-              {appAreas?.items.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.applicationAreaName}
-                </option>
-              ))}
-            </select>
-          </Field>
+          {/* Pricing Grid */}
+          <div className="rounded-2xl border border-line bg-surface-hi/40 p-4 space-y-3">
+            <span className="text-xs font-bold text-fg block">Pricing Parameters (₹ INR)</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Field label="Discounted / Effective Price (₹)" htmlFor="p-disc">
+                <Input
+                  id="p-disc"
+                  type="number"
+                  value={form.discountedPrice ?? ""}
+                  onChange={(e) => setForm({ ...form, discountedPrice: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="e.g. 6500"
+                />
+              </Field>
+              <Field label="Recommended List Price (₹)" htmlFor="p-rec">
+                <Input
+                  id="p-rec"
+                  type="number"
+                  value={form.recommendedPrice ?? ""}
+                  onChange={(e) => setForm({ ...form, recommendedPrice: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="e.g. 7000"
+                />
+              </Field>
+              <Field label="Original Base Price (₹)" htmlFor="p-orig">
+                <Input
+                  id="p-orig"
+                  type="number"
+                  value={form.originalPrice ?? ""}
+                  onChange={(e) => setForm({ ...form, originalPrice: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="e.g. 8000"
+                />
+              </Field>
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Importance Score (0 - 100)" htmlFor="p-importance">
+          {/* Tiers & Score */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Field label="Sellability Tier" htmlFor="p-tier">
+              <select
+                id="p-tier"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+                value={form.sellabilityTier}
+                onChange={(e) => setForm({ ...form, sellabilityTier: e.target.value })}
+              >
+                {SELLABILITY_TIERS.map((t) => (
+                  <option key={t} value={t}>
+                    {t || "None"}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Complexity Level" htmlFor="p-comp">
+              <select
+                id="p-comp"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+                value={form.complexity}
+                onChange={(e) => setForm({ ...form, complexity: e.target.value })}
+              >
+                {COMPLEXITY_OPTIONS.map((c) => (
+                  <option key={c} value={c}>
+                    {c || "None"}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Quality Score (0-100)" htmlFor="p-score">
               <Input
-                id="p-importance"
+                id="p-score"
                 type="number"
                 min={0}
                 max={100}
@@ -316,111 +476,40 @@ export default function AdminProjects() {
                 onChange={(e) => setForm({ ...form, importanceScore: Number(e.target.value) })}
               />
             </Field>
-
-            <Field label="Score Band" htmlFor="p-scoreband">
-              <select
-                id="p-scoreband"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
-                value={form.scoreBand}
-                onChange={(e) => setForm({ ...form, scoreBand: e.target.value })}
-              >
-                {SCORE_BANDS.map((sb) => (
-                  <option key={sb} value={sb}>
-                    {sb}
-                  </option>
-                ))}
-              </select>
-            </Field>
           </div>
 
+          {/* Tech Stack & Modules */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Sellability Tier" htmlFor="p-tier">
-              <select
-                id="p-tier"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
-                value={form.sellabilityTier ?? ""}
-                onChange={(e) => setForm({ ...form, sellabilityTier: e.target.value })}
-              >
-                {SELLABILITY_TIERS.map((st) => (
-                  <option key={st} value={st}>
-                    {st === "" ? "Standard (Default)" : st}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Complexity" htmlFor="p-complexity">
-              <select
-                id="p-complexity"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
-                value={form.complexity ?? ""}
-                onChange={(e) => setForm({ ...form, complexity: e.target.value })}
-              >
-                {COMPLEXITY_OPTIONS.map((c) => (
-                  <option key={c} value={c}>
-                    {c === "" ? "Not Specified" : c}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Field label="Original Price (₹)" htmlFor="p-original">
+            <Field label="Suggested Tech Stack (Comma separated)" htmlFor="p-tech">
               <Input
-                id="p-original"
-                type="number"
-                placeholder="e.g. 5000"
-                value={form.originalPrice ?? ""}
-                onChange={(e) => setForm({ ...form, originalPrice: e.target.value ? Number(e.target.value) : null })}
+                id="p-tech"
+                value={form.suggestedTech}
+                onChange={(e) => setForm({ ...form, suggestedTech: e.target.value })}
+                placeholder="React, NodeJS, PyTorch, MongoDB"
               />
             </Field>
-
-            <Field label="Recommended Price (₹)" htmlFor="p-recommended">
+            <Field label="Suggested Modules (Comma separated)" htmlFor="p-mod">
               <Input
-                id="p-recommended"
-                type="number"
-                placeholder="e.g. 4500"
-                value={form.recommendedPrice ?? ""}
-                onChange={(e) => setForm({ ...form, recommendedPrice: e.target.value ? Number(e.target.value) : null })}
-              />
-            </Field>
-
-            <Field label="Discounted Price (₹)" htmlFor="p-discounted">
-              <Input
-                id="p-discounted"
-                type="number"
-                placeholder="e.g. 3999"
-                value={form.discountedPrice ?? ""}
-                onChange={(e) => setForm({ ...form, discountedPrice: e.target.value ? Number(e.target.value) : null })}
+                id="p-mod"
+                value={form.suggestedModules}
+                onChange={(e) => setForm({ ...form, suggestedModules: e.target.value })}
+                placeholder="Auth, Model Training, Payment Gateway"
               />
             </Field>
           </div>
 
-          <Field label="Suggested Tech" htmlFor="p-tech" hint="Comma-separated">
-            <Textarea
-              id="p-tech"
-              placeholder="e.g. ESP32, Arduino C++, React, Node.js"
-              value={form.suggestedTech ?? ""}
-              onChange={(e) => setForm({ ...form, suggestedTech: e.target.value })}
-            />
-          </Field>
-
-          <Field label="Suggested Modules" htmlFor="p-modules" hint="Comma-separated">
-            <Textarea
-              id="p-modules"
-              placeholder="e.g. DHT11 Sensor, OLED Display, Wi-Fi Module"
-              value={form.suggestedModules ?? ""}
-              onChange={(e) => setForm({ ...form, suggestedModules: e.target.value })}
-            />
-          </Field>
-
-          <Button className="w-full mt-2" variant="auth" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving Project..." : "Save Project"}
-          </Button>
+          <div className="pt-2">
+            <Button
+              className="w-full h-11 text-sm shadow-lg shadow-violet-500/25"
+              variant="primary"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving project package..." : editing === "new" ? "Create Project Deliverable" : "Save Project Package"}
+            </Button>
+          </div>
         </div>
       </FormModal>
     </div>
   );
 }
-

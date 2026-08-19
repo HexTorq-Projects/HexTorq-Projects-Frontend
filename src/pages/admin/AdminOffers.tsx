@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, Pencil, Plus, Check } from "lucide-react";
+import { Trash2, Pencil, Plus, Check, Percent, Tag, Calendar, Sparkles, Clock, AlertCircle } from "lucide-react";
 import {
   useAdminOffers,
   useCreateAdminOffer,
@@ -42,7 +42,7 @@ function ProjectPicker({
 }: {
   selected: { id: string; projectTitle: string }[];
   onChange: (next: { id: string; projectTitle: string }[]) => void;
-}) {
+  }) {
   const [search, setSearch] = useState("");
   const { data } = useAdminProjects(1, search || undefined);
 
@@ -52,22 +52,29 @@ function ProjectPicker({
   };
 
   return (
-    <div className="space-y-2">
-      <Input placeholder="Search projects to add..." value={search} onChange={(e) => setSearch(e.target.value)} />
+    <div className="space-y-3">
+      <Input
+        placeholder="Search projects by title..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="bg-surface-hi"
+      />
       {selected.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 p-2 rounded-xl bg-surface-hi/40 border border-line max-h-24 overflow-y-auto">
           {selected.map((p) => (
             <span
               key={p.id}
-              className="inline-flex items-center gap-1 rounded-full bg-violet/10 text-violet px-2.5 py-1 text-xs"
+              className="inline-flex items-center gap-1 rounded-full bg-violet/10 border border-violet/30 text-violet px-2.5 py-0.5 text-xs font-semibold"
             >
-              {p.projectTitle}
-              <button onClick={() => toggle(p.id, p.projectTitle)}>×</button>
+              <span className="truncate max-w-[180px]">{p.projectTitle}</span>
+              <button onClick={() => toggle(p.id, p.projectTitle)} className="hover:text-rose-400 font-bold ml-1">
+                ×
+              </button>
             </span>
           ))}
         </div>
       )}
-      <div className="max-h-48 overflow-y-auto rounded-lg border border-line divide-y divide-line/60">
+      <div className="max-h-48 overflow-y-auto rounded-2xl border border-line divide-y divide-line/40 bg-surface/40">
         {(data?.items ?? []).map((p) => {
           const isSelected = selected.some((s) => s.id === p.id);
           return (
@@ -76,12 +83,12 @@ function ProjectPicker({
               type="button"
               onClick={() => toggle(p.id, p.projectTitle)}
               className={cn(
-                "flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-bg-soft",
-                isSelected && "bg-violet/5"
+                "flex w-full items-center justify-between px-3.5 py-2.5 text-left text-xs transition-colors hover:bg-surface-hi",
+                isSelected && "bg-violet/10 text-violet"
               )}
             >
-              <span className="text-fg">{p.projectTitle}</span>
-              {isSelected && <Check className="h-4 w-4 text-violet" />}
+              <span className="font-semibold line-clamp-1 pr-2">{p.projectTitle}</span>
+              {isSelected && <Check className="h-4 w-4 text-violet shrink-0" />}
             </button>
           );
         })}
@@ -153,15 +160,15 @@ export default function AdminOffers() {
   );
 
   const scopeLabel = (offer: Offer) => {
-    if (offer.scopeType === "ALL") return "All projects";
-    if (offer.scopeType === "CATEGORY") return `Category: ${offer.category?.categoryName ?? "—"}`;
-    if (offer.scopeType === "SUBCATEGORY") return `Sub-category: ${offer.subCategory?.subCategoryName ?? "—"}`;
-    return `${offer.projects.length} selected project${offer.projects.length === 1 ? "" : "s"}`;
+    if (offer.scopeType === "ALL") return "All 3,800+ Projects";
+    if (offer.scopeType === "CATEGORY") return `Stream: ${offer.category?.categoryName ?? "—"}`;
+    if (offer.scopeType === "SUBCATEGORY") return `Branch: ${offer.subCategory?.subCategoryName ?? "—"}`;
+    return `${offer.projects.length} Selected Project${offer.projects.length === 1 ? "" : "s"}`;
   };
 
   const advanceLabel = (offer: Offer) => {
     if (!offer.advanceType || offer.advanceValue == null) return "—";
-    return offer.advanceType === "FIXED" ? `₹${offer.advanceValue} advance` : `${offer.advanceValue}% advance`;
+    return offer.advanceType === "FIXED" ? `₹${offer.advanceValue} deposit` : `${offer.advanceValue}% deposit`;
   };
 
   const isLive = (offer: Offer) => {
@@ -170,46 +177,83 @@ export default function AdminOffers() {
   };
 
   const columns: Column<Offer>[] = [
-    { key: "name", header: "Name", render: (o) => o.name },
-    { key: "scope", header: "Scope", render: (o) => scopeLabel(o) },
-    { key: "discount", header: "Discount", render: (o) => `${o.discountPercent}%` },
-    { key: "advance", header: "Pre-booking", render: (o) => advanceLabel(o) },
+    {
+      key: "name",
+      header: "Offer Name",
+      render: (o) => (
+        <div>
+          <span className="font-bold text-fg text-xs block">{o.name}</span>
+          <span className="text-[11px] text-muted">{scopeLabel(o)}</span>
+        </div>
+      ),
+    },
+    {
+      key: "discount",
+      header: "Discount %",
+      render: (o) => (
+        <span className="inline-flex items-center gap-1 font-mono font-bold text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-lg">
+          {o.discountPercent}% OFF
+        </span>
+      ),
+    },
+    {
+      key: "advance",
+      header: "Pre-Booking Deposit",
+      render: (o) => (
+        <span className="text-xs font-semibold text-fg">
+          {advanceLabel(o)}
+        </span>
+      ),
+    },
     {
       key: "window",
-      header: "Window",
+      header: "Active Schedule",
       render: (o) => (
-        <span>
-          {new Date(o.startsAt).toLocaleDateString()} → {new Date(o.endsAt).toLocaleDateString()}
+        <span className="text-[11px] text-muted">
+          {new Date(o.startsAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })} →{" "}
+          {new Date(o.endsAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
         </span>
       ),
     },
     {
       key: "status",
       header: "Status",
-      render: (o) => (
-        <span
-          className={cn(
-            "rounded-full px-2 py-1 text-xs font-medium",
-            isLive(o) ? "bg-emerald-500/10 text-emerald-400" : "bg-bg-soft text-muted"
-          )}
-        >
-          {isLive(o) ? "Live" : o.active ? "Scheduled/Expired" : "Inactive"}
-        </span>
-      ),
+      render: (o) => {
+        const live = isLive(o);
+        return (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold border",
+              live
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                : o.active
+                ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                : "bg-surface-hi text-muted border-line"
+            )}
+          >
+            {live ? "LIVE NOW" : o.active ? "SCHEDULED" : "DISABLED"}
+          </span>
+        );
+      },
     },
     {
       key: "actions",
       header: "",
       render: (o) => (
-        <div className="flex gap-2 justify-end">
-          <button onClick={() => openEdit(o)} className="text-muted hover:text-violet">
-            <Pencil className="h-4 w-4" />
+        <div className="flex gap-1.5 justify-end">
+          <button
+            onClick={() => openEdit(o)}
+            className="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet/10 border border-transparent hover:border-violet/20 transition-all cursor-pointer"
+            title="Edit offer"
+          >
+            <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => confirm(`Delete offer "${o.name}"?`) && deleteMutation.mutate(o.id)}
-            className="text-muted hover:text-rose-400"
+            className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all cursor-pointer"
+            title="Delete offer"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),
@@ -218,51 +262,88 @@ export default function AdminOffers() {
   ];
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-2xl font-bold text-fg">Offers &amp; Discount Campaigns</h1>
-        <Button variant="auth" onClick={openNew}>
-          <Plus className="h-4 w-4" /> New Offer
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
+        <div className="space-y-1">
+          <h1 className="font-display text-2xl font-bold text-fg flex items-center gap-2.5">
+            <Percent className="h-6 w-6 text-rose-400" />
+            Promotions & Flash Deals
+          </h1>
+          <p className="text-xs text-muted">
+            Configure site-wide discounts, category sales, and pre-booking advance deposit schemes.
+          </p>
+        </div>
+
+        <Button variant="primary" onClick={openNew} className="gap-1.5 shadow-md shadow-violet-500/20">
+          <Plus className="h-4 w-4" />
+          Create New Offer
         </Button>
       </div>
 
-      <DataTable columns={columns} rows={data?.items ?? []} rowKey={(o) => o.id} isLoading={isLoading} />
+      <DataTable
+        columns={columns}
+        rows={data?.items ?? []}
+        rowKey={(o) => o.id}
+        isLoading={isLoading}
+        emptyMessage="No active or scheduled promotions found."
+      />
 
-      <FormModal open={!!editing} title={editing === "new" ? "New Offer" : "Edit Offer"} onClose={() => setEditing(null)} wide>
-        <div className="space-y-4">
+      <FormModal open={!!editing} title={editing === "new" ? "Create New Promotion" : "Edit Promotion"} onClose={() => setEditing(null)} wide>
+        <div className="space-y-4 text-xs">
           {errorMsg && (
-            <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 p-3 text-xs font-medium text-rose-400">
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-semibold text-rose-400 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
               {errorMsg}
             </div>
           )}
 
-          <Field label="Offer Name" htmlFor="o-name">
-            <Input id="o-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <Field label="Promotion Name" htmlFor="o-name" required>
+            <Input
+              id="o-name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="e.g. Flash Final Year Sale • 15% Off"
+              required
+            />
           </Field>
 
-          <Field label="Applies to" htmlFor="o-scope">
-            <select
-              id="o-scope"
-              className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
-              value={form.scopeType}
-              onChange={(e) => setForm({ ...form, scopeType: e.target.value as OfferScopeType })}
-            >
-              <option value="ALL">All projects</option>
-              <option value="CATEGORY">A category</option>
-              <option value="SUBCATEGORY">A sub-category</option>
-              <option value="PROJECT">Specific projects</option>
-            </select>
-          </Field>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Offer Target Scope" htmlFor="o-scope">
+              <select
+                id="o-scope"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+                value={form.scopeType}
+                onChange={(e) => setForm({ ...form, scopeType: e.target.value as OfferScopeType })}
+              >
+                <option value="ALL">All Projects Site-Wide</option>
+                <option value="CATEGORY">Specific Academic Stream</option>
+                <option value="SUBCATEGORY">Specific Sub-Branch</option>
+                <option value="PROJECT">Custom Selected Projects</option>
+              </select>
+            </Field>
+
+            <Field label="Discount Percentage (%)" htmlFor="o-disc" required>
+              <Input
+                id="o-disc"
+                type="number"
+                min={1}
+                max={99}
+                value={form.discountPercent}
+                onChange={(e) => setForm({ ...form, discountPercent: Number(e.target.value) })}
+                required
+              />
+            </Field>
+          </div>
 
           {form.scopeType === "CATEGORY" && (
-            <Field label="Category" htmlFor="o-category">
+            <Field label="Select Academic Stream" htmlFor="o-cat" required>
               <select
-                id="o-category"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
+                id="o-cat"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
                 value={form.categoryId ?? ""}
                 onChange={(e) => setForm({ ...form, categoryId: e.target.value || null })}
               >
-                <option value="">Select category</option>
+                <option value="">Select category...</option>
                 {categories?.items.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.categoryName}
@@ -273,17 +354,17 @@ export default function AdminOffers() {
           )}
 
           {form.scopeType === "SUBCATEGORY" && (
-            <Field label="Sub-category" htmlFor="o-subcategory">
+            <Field label="Select Sub-Branch" htmlFor="o-subcat" required>
               <select
-                id="o-subcategory"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
+                id="o-subcat"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
                 value={form.subCategoryId ?? ""}
                 onChange={(e) => setForm({ ...form, subCategoryId: e.target.value || null })}
               >
-                <option value="">Select sub-category</option>
-                {filteredSubCategories.map((sc) => (
+                <option value="">Select sub-category...</option>
+                {subCategories?.items.map((sc) => (
                   <option key={sc.id} value={sc.id}>
-                    {sc.subCategoryName} ({sc.category.categoryName})
+                    {sc.subCategoryName}
                   </option>
                 ))}
               </select>
@@ -291,92 +372,43 @@ export default function AdminOffers() {
           )}
 
           {form.scopeType === "PROJECT" && (
-            <Field label="Projects" htmlFor="o-projects">
+            <div>
+              <span className="text-xs font-bold text-fg block mb-1">Pick Projects</span>
               <ProjectPicker selected={pickedProjects} onChange={setPickedProjects} />
-            </Field>
+            </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Discount %" htmlFor="o-discount">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Start Date & Time" htmlFor="o-start" required>
               <Input
-                id="o-discount"
-                type="number"
-                min={1}
-                max={100}
-                value={form.discountPercent}
-                onChange={(e) => setForm({ ...form, discountPercent: Number(e.target.value) })}
-              />
-            </Field>
-            <Field label="Active" htmlFor="o-active">
-              <label className="flex items-center gap-2 h-11">
-                <input
-                  id="o-active"
-                  type="checkbox"
-                  checked={form.active}
-                  onChange={(e) => setForm({ ...form, active: e.target.checked })}
-                  className="h-4 w-4"
-                />
-                <span className="text-sm text-fg">Offer is active</span>
-              </label>
-            </Field>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Pre-booking option" htmlFor="o-advance-type" hint="Let customers reserve this offer by paying only part of the price now">
-              <select
-                id="o-advance-type"
-                className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
-                value={form.advanceType ?? ""}
-                onChange={(e) =>
-                  setForm({ ...form, advanceType: (e.target.value || null) as AdvanceType | null, advanceValue: null })
-                }
-              >
-                <option value="">None</option>
-                <option value="FIXED">Fixed ₹ amount</option>
-                <option value="PERCENT">Percentage of price</option>
-              </select>
-            </Field>
-            {form.advanceType && (
-              <Field label={form.advanceType === "FIXED" ? "Advance Amount (₹)" : "Advance Percent (%)"} htmlFor="o-advance-value">
-                <Input
-                  id="o-advance-value"
-                  type="number"
-                  min={1}
-                  max={form.advanceType === "PERCENT" ? 100 : undefined}
-                  value={form.advanceValue ?? ""}
-                  onChange={(e) => setForm({ ...form, advanceValue: e.target.value ? Number(e.target.value) : null })}
-                />
-              </Field>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Starts At" htmlFor="o-starts">
-              <Input
-                id="o-starts"
+                id="o-start"
                 type="datetime-local"
                 value={form.startsAt}
                 onChange={(e) => setForm({ ...form, startsAt: e.target.value })}
+                required
               />
             </Field>
-            <Field label="Ends At (order before)" htmlFor="o-ends">
+            <Field label="End Date & Time" htmlFor="o-end" required>
               <Input
-                id="o-ends"
+                id="o-end"
                 type="datetime-local"
                 value={form.endsAt}
                 onChange={(e) => setForm({ ...form, endsAt: e.target.value })}
+                required
               />
             </Field>
           </div>
 
-          <Button
-            className="w-full"
-            variant="auth"
-            onClick={handleSave}
-            disabled={isSaving || !form.name || !form.startsAt || !form.endsAt}
-          >
-            {isSaving ? "Saving..." : "Save Offer"}
-          </Button>
+          <div className="pt-2">
+            <Button
+              className="w-full h-11 text-sm shadow-lg shadow-violet-500/25"
+              variant="primary"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving promotion..." : editing === "new" ? "Create Promotion" : "Save Changes"}
+            </Button>
+          </div>
         </div>
       </FormModal>
     </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, Pencil, Plus } from "lucide-react";
+import { Trash2, Pencil, Plus, Tags, Layers, Globe, Sparkles, FolderTree } from "lucide-react";
 import {
   useAdminCategories,
   useCreateAdminCategory,
@@ -32,26 +32,39 @@ function CategoriesTab() {
   const [name, setName] = useState("");
 
   const columns: Column<Category>[] = [
-    { key: "name", header: "Category Name", render: (c) => c.categoryName },
+    {
+      key: "name",
+      header: "Category / Academic Stream",
+      render: (c) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet/10 border border-violet/20 text-violet text-xs font-bold shrink-0">
+            <Tags className="h-4 w-4" />
+          </div>
+          <span className="font-bold text-fg text-xs">{c.categoryName}</span>
+        </div>
+      ),
+    },
     {
       key: "actions",
       header: "",
       render: (c) => (
-        <div className="flex gap-2 justify-end">
+        <div className="flex gap-1.5 justify-end">
           <button
             onClick={() => {
               setEditing(c);
               setName(c.categoryName);
             }}
-            className="text-muted hover:text-violet"
+            className="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet/10 border border-transparent hover:border-violet/20 transition-all cursor-pointer"
+            title="Edit category"
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => confirm(`Delete category "${c.categoryName}"?`) && deleteMutation.mutate(c.id)}
-            className="text-muted hover:text-rose-400"
+            className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all cursor-pointer"
+            title="Delete category"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),
@@ -68,27 +81,45 @@ function CategoriesTab() {
   };
 
   return (
-    <div>
-      <div className="flex justify-end mb-4">
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-xs text-muted">
+          Major engineering departments (e.g. AI/ML, Cybersecurity, Web Apps, IoT).
+        </p>
         <Button
-          variant="auth"
+          variant="primary"
           size="sm"
           onClick={() => {
             setEditing("new");
             setName("");
           }}
+          className="gap-1.5 shadow-md shadow-violet-500/20"
         >
-          <Plus className="h-4 w-4" /> New Category
+          <Plus className="h-4 w-4" /> Add Stream
         </Button>
       </div>
-      <DataTable columns={columns} rows={data?.items ?? []} rowKey={(c) => c.id} isLoading={isLoading} />
-      <FormModal open={!!editing} title={editing === "new" ? "New Category" : "Edit Category"} onClose={() => setEditing(null)}>
-        <div className="space-y-4">
-          <Field label="Category Name" htmlFor="cat-name">
-            <Input id="cat-name" value={name} onChange={(e) => setName(e.target.value)} />
+
+      <DataTable
+        columns={columns}
+        rows={data?.items ?? []}
+        rowKey={(c) => c.id}
+        isLoading={isLoading}
+        emptyMessage="No categories created yet."
+      />
+
+      <FormModal open={!!editing} title={editing === "new" ? "New Academic Stream" : "Edit Academic Stream"} onClose={() => setEditing(null)}>
+        <div className="space-y-4 text-xs">
+          <Field label="Category Name" htmlFor="cat-name" required>
+            <Input
+              id="cat-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Artificial Intelligence & Data Science"
+              required
+            />
           </Field>
-          <Button className="w-full" variant="auth" onClick={handleSave} disabled={!name.trim()}>
-            Save
+          <Button className="w-full shadow-md shadow-violet-500/20" variant="primary" onClick={handleSave} disabled={!name.trim()}>
+            {editing === "new" ? "Create Stream" : "Save Stream"}
           </Button>
         </div>
       </FormModal>
@@ -103,30 +134,53 @@ function SubCategoriesTab() {
   const updateMutation = useUpdateAdminSubCategory();
   const deleteMutation = useDeleteAdminSubCategory();
   const [editing, setEditing] = useState<SubCategoryAdmin | "new" | null>(null);
-  const [form, setForm] = useState({ subCategoryName: "", categoryId: "" });
+  const [name, setName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
 
   const columns: Column<SubCategoryAdmin>[] = [
-    { key: "name", header: "Sub-category Name", render: (sc) => sc.subCategoryName },
-    { key: "category", header: "Category", render: (sc) => sc.category.categoryName },
+    {
+      key: "name",
+      header: "Sub-Category Branch",
+      render: (sc) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan/10 border border-cyan/20 text-cyan text-xs font-bold shrink-0">
+            <Layers className="h-4 w-4" />
+          </div>
+          <span className="font-bold text-fg text-xs">{sc.subCategoryName}</span>
+        </div>
+      ),
+    },
+    {
+      key: "category",
+      header: "Parent Academic Stream",
+      render: (sc) => (
+        <span className="text-xs font-semibold text-fg bg-surface-hi border border-line px-2.5 py-1 rounded-lg">
+          {sc.category.categoryName}
+        </span>
+      ),
+    },
     {
       key: "actions",
       header: "",
       render: (sc) => (
-        <div className="flex gap-2 justify-end">
+        <div className="flex gap-1.5 justify-end">
           <button
             onClick={() => {
               setEditing(sc);
-              setForm({ subCategoryName: sc.subCategoryName, categoryId: sc.categoryId });
+              setName(sc.subCategoryName);
+              setCategoryId(sc.categoryId);
             }}
-            className="text-muted hover:text-violet"
+            className="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet/10 border border-transparent hover:border-violet/20 transition-all cursor-pointer"
+            title="Edit sub-category"
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => confirm(`Delete sub-category "${sc.subCategoryName}"?`) && deleteMutation.mutate(sc.id)}
-            className="text-muted hover:text-rose-400"
+            className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all cursor-pointer"
+            title="Delete sub-category"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),
@@ -136,46 +190,52 @@ function SubCategoriesTab() {
 
   const handleSave = () => {
     if (editing === "new") {
-      createMutation.mutate(form, { onSuccess: () => setEditing(null) });
+      createMutation.mutate({ subCategoryName: name, categoryId }, { onSuccess: () => setEditing(null) });
     } else if (editing) {
-      updateMutation.mutate({ id: editing.id, body: form }, { onSuccess: () => setEditing(null) });
+      updateMutation.mutate(
+        { id: editing.id, body: { subCategoryName: name, categoryId } },
+        { onSuccess: () => setEditing(null) }
+      );
     }
   };
 
   return (
-    <div>
-      <div className="flex justify-end mb-4">
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-xs text-muted">
+          Sub-branches mapped under main academic departments (e.g. Deep Learning, Smart Contracts).
+        </p>
         <Button
-          variant="auth"
+          variant="primary"
           size="sm"
           onClick={() => {
             setEditing("new");
-            setForm({ subCategoryName: "", categoryId: categories?.items[0]?.id ?? "" });
+            setName("");
+            setCategoryId(categories?.items[0]?.id ?? "");
           }}
+          className="gap-1.5 shadow-md shadow-violet-500/20"
         >
-          <Plus className="h-4 w-4" /> New Sub-category
+          <Plus className="h-4 w-4" /> Add Branch
         </Button>
       </div>
-      <DataTable columns={columns} rows={data?.items ?? []} rowKey={(sc) => sc.id} isLoading={isLoading} />
-      <FormModal
-        open={!!editing}
-        title={editing === "new" ? "New Sub-category" : "Edit Sub-category"}
-        onClose={() => setEditing(null)}
-      >
-        <div className="space-y-4">
-          <Field label="Sub-category Name" htmlFor="sc-name">
-            <Input
-              id="sc-name"
-              value={form.subCategoryName}
-              onChange={(e) => setForm({ ...form, subCategoryName: e.target.value })}
-            />
-          </Field>
-          <Field label="Category" htmlFor="sc-category">
+
+      <DataTable
+        columns={columns}
+        rows={data?.items ?? []}
+        rowKey={(sc) => sc.id}
+        isLoading={isLoading}
+        emptyMessage="No sub-categories created yet."
+      />
+
+      <FormModal open={!!editing} title={editing === "new" ? "New Sub-Branch" : "Edit Sub-Branch"} onClose={() => setEditing(null)}>
+        <div className="space-y-4 text-xs">
+          <Field label="Parent Stream" htmlFor="sc-cat" required>
             <select
-              id="sc-category"
-              className="w-full rounded-xl border border-line bg-bg-soft px-4 py-2.5 text-sm text-fg"
-              value={form.categoryId}
-              onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+              id="sc-cat"
+              className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              required
             >
               {categories?.items.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -184,8 +244,17 @@ function SubCategoriesTab() {
               ))}
             </select>
           </Field>
-          <Button className="w-full" variant="auth" onClick={handleSave} disabled={!form.subCategoryName.trim() || !form.categoryId}>
-            Save
+          <Field label="Sub-Category Branch Name" htmlFor="sc-name" required>
+            <Input
+              id="sc-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Computer Vision & GANs"
+              required
+            />
+          </Field>
+          <Button className="w-full shadow-md shadow-violet-500/20" variant="primary" onClick={handleSave} disabled={!name.trim() || !categoryId}>
+            {editing === "new" ? "Create Branch" : "Save Branch"}
           </Button>
         </div>
       </FormModal>
@@ -193,7 +262,7 @@ function SubCategoriesTab() {
   );
 }
 
-function ApplicationAreasTab() {
+function AppAreasTab() {
   const { data, isLoading } = useAdminApplicationAreas();
   const createMutation = useCreateAdminApplicationArea();
   const updateMutation = useUpdateAdminApplicationArea();
@@ -202,26 +271,39 @@ function ApplicationAreasTab() {
   const [name, setName] = useState("");
 
   const columns: Column<ApplicationAreaAdmin>[] = [
-    { key: "name", header: "Application Area", render: (a) => a.applicationAreaName },
+    {
+      key: "name",
+      header: "Application Domain",
+      render: (a) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold shrink-0">
+            <Globe className="h-4 w-4" />
+          </div>
+          <span className="font-bold text-fg text-xs">{a.applicationAreaName}</span>
+        </div>
+      ),
+    },
     {
       key: "actions",
       header: "",
       render: (a) => (
-        <div className="flex gap-2 justify-end">
+        <div className="flex gap-1.5 justify-end">
           <button
             onClick={() => {
               setEditing(a);
               setName(a.applicationAreaName);
             }}
-            className="text-muted hover:text-violet"
+            className="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet/10 border border-transparent hover:border-violet/20 transition-all cursor-pointer"
+            title="Edit domain"
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => confirm(`Delete application area "${a.applicationAreaName}"?`) && deleteMutation.mutate(a.id)}
-            className="text-muted hover:text-rose-400"
+            onClick={() => confirm(`Delete application domain "${a.applicationAreaName}"?`) && deleteMutation.mutate(a.id)}
+            className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all cursor-pointer"
+            title="Delete domain"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       ),
@@ -238,31 +320,45 @@ function ApplicationAreasTab() {
   };
 
   return (
-    <div>
-      <div className="flex justify-end mb-4">
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-xs text-muted">
+          Industry application sectors (e.g. Healthcare, Fintech, Agriculture, Autonomous Systems).
+        </p>
         <Button
-          variant="auth"
+          variant="primary"
           size="sm"
           onClick={() => {
             setEditing("new");
             setName("");
           }}
+          className="gap-1.5 shadow-md shadow-violet-500/20"
         >
-          <Plus className="h-4 w-4" /> New Application Area
+          <Plus className="h-4 w-4" /> Add Domain
         </Button>
       </div>
-      <DataTable columns={columns} rows={data?.items ?? []} rowKey={(a) => a.id} isLoading={isLoading} />
-      <FormModal
-        open={!!editing}
-        title={editing === "new" ? "New Application Area" : "Edit Application Area"}
-        onClose={() => setEditing(null)}
-      >
-        <div className="space-y-4">
-          <Field label="Name" htmlFor="aa-name">
-            <Input id="aa-name" value={name} onChange={(e) => setName(e.target.value)} />
+
+      <DataTable
+        columns={columns}
+        rows={data?.items ?? []}
+        rowKey={(a) => a.id}
+        isLoading={isLoading}
+        emptyMessage="No application domains created yet."
+      />
+
+      <FormModal open={!!editing} title={editing === "new" ? "New Application Domain" : "Edit Application Domain"} onClose={() => setEditing(null)}>
+        <div className="space-y-4 text-xs">
+          <Field label="Domain Name" htmlFor="app-name" required>
+            <Input
+              id="app-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Healthcare & Medical Diagnostics"
+              required
+            />
           </Field>
-          <Button className="w-full" variant="auth" onClick={handleSave} disabled={!name.trim()}>
-            Save
+          <Button className="w-full shadow-md shadow-violet-500/20" variant="primary" onClick={handleSave} disabled={!name.trim()}>
+            {editing === "new" ? "Create Domain" : "Save Domain"}
           </Button>
         </div>
       </FormModal>
@@ -274,30 +370,46 @@ export default function AdminCollections() {
   const [tab, setTab] = useState<Tab>("categories");
 
   return (
-    <div>
-      <h1 className="font-display text-2xl font-bold text-fg mb-6">Collections</h1>
-      <div className="flex gap-2 mb-6 border-b border-line">
+    <div className="space-y-6">
+      <div className="pb-4 border-b border-line">
+        <h1 className="font-display text-2xl font-bold text-fg flex items-center gap-2.5">
+          <FolderTree className="h-6 w-6 text-violet" />
+          Academic Collections & Taxonomies
+        </h1>
+        <p className="text-xs text-muted mt-1">
+          Configure academic streams, sub-branches, and industry application areas.
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1.5 rounded-2xl border border-line bg-surface/50 p-1.5 w-fit">
         {[
-          { id: "categories" as const, label: "Categories" },
-          { id: "subcategories" as const, label: "Sub-categories" },
-          { id: "appareas" as const, label: "Application Areas" },
-        ].map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn(
-              "px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors",
-              tab === t.id ? "border-violet text-violet" : "border-transparent text-muted hover:text-fg"
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
+          { key: "categories" as Tab, label: "Academic Streams", icon: Tags },
+          { key: "subcategories" as Tab, label: "Sub-Branches", icon: Layers },
+          { key: "appareas" as Tab, label: "Application Domains", icon: Globe },
+        ].map((t) => {
+          const Icon = t.icon;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={cn(
+                "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer",
+                tab === t.key
+                  ? "bg-violet text-white shadow-md shadow-violet/20"
+                  : "text-muted hover:text-fg hover:bg-surface-hi"
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {tab === "categories" && <CategoriesTab />}
       {tab === "subcategories" && <SubCategoriesTab />}
-      {tab === "appareas" && <ApplicationAreasTab />}
+      {tab === "appareas" && <AppAreasTab />}
     </div>
   );
 }
