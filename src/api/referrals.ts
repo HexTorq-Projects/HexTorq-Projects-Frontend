@@ -9,6 +9,36 @@ const transientRetry = (failureCount: number, error: unknown) => {
   return failureCount < 2;
 };
 
+// The API host cold-starts after idle (first request can take ~10s). Cache the
+// last successful referral payload in localStorage (per-user) so the page
+// renders instantly from cache while the fresh fetch happens in the background.
+const CACHE_PREFIX = "hextorq:referral:v1:";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+function cacheNamespace(token?: string | null) {
+  return token ? `u:${token.slice(-12)}` : "anon";
+}
+
+function readCache<T>(namespace: string, query: string): T | undefined {
+  try {
+    const raw = localStorage.getItem(`${CACHE_PREFIX}${namespace}:${query}`);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Date.now() - parsed.ts > CACHE_TTL_MS) return undefined;
+    return parsed.data as T;
+  } catch {
+    return undefined;
+  }
+}
+
+function writeCache(namespace: string, query: string, data: unknown) {
+  try {
+    localStorage.setItem(`${CACHE_PREFIX}${namespace}:${query}`, JSON.stringify({ ts: Date.now(), data }));
+  } catch {
+    // storage unavailable/full — cache is best-effort only
+  }
+}
+
 interface ReferralCodeResponse {
   code: string;
 }
@@ -77,13 +107,19 @@ interface ReferredUsersResponse {
 
 export function useReferralCode() {
   const token = useAuthStore((s) => s.token);
+  const ns = cacheNamespace(token);
   return useQuery({
     queryKey: ["referral-code"],
-    queryFn: () => apiFetch<ReferralCodeResponse>("/referrals/my-code", { auth: true }),
+    queryFn: async () => {
+      const data = await apiFetch<ReferralCodeResponse>("/referrals/my-code", { auth: true });
+      writeCache(ns, "code", data);
+      return data;
+    },
     enabled: !!token,
     retry: transientRetry,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
+    initialData: token ? readCache<ReferralCodeResponse>(ns, "code") : undefined,
   });
 }
 
@@ -103,9 +139,14 @@ export function useGenerateReferralCode() {
 
 export function useReferralEarnings() {
   const token = useAuthStore((s) => s.token);
+  const ns = cacheNamespace(token);
   return useQuery({
     queryKey: ["referral-earnings"],
-    queryFn: () => apiFetch<ReferralEarningsResponse>("/referrals/earnings", { auth: true }),
+    queryFn: async () => {
+      const data = await apiFetch<ReferralEarningsResponse>("/referrals/earnings", { auth: true });
+      writeCache(ns, "earnings", data);
+      return data;
+    },
     enabled: !!token,
     retry: transientRetry,
     refetchOnMount: "always",
@@ -113,6 +154,7 @@ export function useReferralEarnings() {
     refetchOnWindowFocus: true,
     refetchInterval: 15_000,
     refetchIntervalInBackground: true,
+    initialData: token ? readCache<ReferralEarningsResponse>(ns, "earnings") : undefined,
   });
 }
 
@@ -132,9 +174,14 @@ export function useClaimReferral() {
 
 export function useReferralBalance() {
   const token = useAuthStore((s) => s.token);
+  const ns = cacheNamespace(token);
   return useQuery({
     queryKey: ["referral-balance"],
-    queryFn: () => apiFetch<BalanceResponse>("/referrals/balance", { auth: true }),
+    queryFn: async () => {
+      const data = await apiFetch<BalanceResponse>("/referrals/balance", { auth: true });
+      writeCache(ns, "balance", data);
+      return data;
+    },
     enabled: !!token,
     retry: transientRetry,
     refetchOnMount: "always",
@@ -142,6 +189,7 @@ export function useReferralBalance() {
     refetchOnWindowFocus: true,
     refetchInterval: 15_000,
     refetchIntervalInBackground: true,
+    initialData: token ? readCache<BalanceResponse>(ns, "balance") : undefined,
   });
 }
 
@@ -163,9 +211,14 @@ export function useWithdrawReferral() {
 
 export function useReferredUsers() {
   const token = useAuthStore((s) => s.token);
+  const ns = cacheNamespace(token);
   return useQuery({
     queryKey: ["referral-referred-users"],
-    queryFn: () => apiFetch<ReferredUsersResponse>("/referrals/referred-users", { auth: true }),
+    queryFn: async () => {
+      const data = await apiFetch<ReferredUsersResponse>("/referrals/referred-users", { auth: true });
+      writeCache(ns, "referred-users", data);
+      return data;
+    },
     enabled: !!token,
     retry: transientRetry,
     refetchOnMount: "always",
@@ -173,14 +226,20 @@ export function useReferredUsers() {
     refetchOnWindowFocus: true,
     refetchInterval: 10_000,
     refetchIntervalInBackground: true,
+    initialData: token ? readCache<ReferredUsersResponse>(ns, "referred-users") : undefined,
   });
 }
 
 export function useWithdrawalHistory() {
   const token = useAuthStore((s) => s.token);
+  const ns = cacheNamespace(token);
   return useQuery({
     queryKey: ["referral-withdrawals"],
-    queryFn: () => apiFetch<WithdrawalHistoryItem[]>("/referrals/withdrawals", { auth: true }),
+    queryFn: async () => {
+      const data = await apiFetch<WithdrawalHistoryItem[]>("/referrals/withdrawals", { auth: true });
+      writeCache(ns, "withdrawals", data);
+      return data;
+    },
     enabled: !!token,
     retry: transientRetry,
     refetchOnMount: "always",
@@ -188,5 +247,6 @@ export function useWithdrawalHistory() {
     refetchOnWindowFocus: true,
     refetchInterval: 10_000,
     refetchIntervalInBackground: true,
+    initialData: token ? readCache<WithdrawalHistoryItem[]>(ns, "withdrawals") : undefined,
   });
 }

@@ -3,7 +3,11 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { App } from "./App";
 import { AppProviders } from "./providers/AppProviders";
+import { warmUpBackend } from "./api/client";
 import "./styles/globals.css";
+
+// Wake the API host early so later data loads are fast (it cold-starts after idle).
+warmUpBackend();
 
 // Suppress third-party library deprecation warnings from THREE.Clock
 if (typeof window !== "undefined") {

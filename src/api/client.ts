@@ -58,3 +58,16 @@ export async function apiFetch<T>(path: string, opts: RequestOptions = {}): Prom
 }
 
 export const API_BASE_URL = BASE;
+
+let warmedUp = false;
+
+/**
+ * The API host cold-starts after idle (first request can take ~10s). Fire a
+ * cheap request at app boot so the instance is warm by the time the user
+ * opens data-heavy pages like Refer & Earn.
+ */
+export function warmUpBackend() {
+  if (warmedUp || typeof window === "undefined") return;
+  warmedUp = true;
+  fetch(`${BASE}/stats`).catch(() => {});
+}
