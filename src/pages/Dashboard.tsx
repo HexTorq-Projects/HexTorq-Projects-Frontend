@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useWishlist } from "@/api/wishlist";
-import { useEnquiries } from "@/api/enquiries";
+import { useMyEnquiries } from "@/api/enquiries";
+import type { MyEnquiry } from "@/api/types";
 import {
   useReferralCode,
   useReferralEarnings,
@@ -68,7 +69,7 @@ export default function Dashboard() {
   const changePassword = useChangePassword();
 
   const { data: wishlist = [], isLoading: loadingWishlist } = useWishlist();
-  const { data: enquiries = [], isLoading: loadingEnquiries } = useEnquiries();
+  const { data: enquiries = [], isLoading: loadingEnquiries } = useMyEnquiries();
 
   // Referral queries
   const { data: referralCodeData } = useReferralCode();
@@ -168,7 +169,7 @@ export default function Dashboard() {
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
-  const handleResumeChat = (enq: any) => {
+  const handleResumeChat = (enq: MyEnquiry) => {
     const projectTitle = enq.project?.projectTitle || "Custom Project";
     const text = `Hi Hextorq Team,\n\nI want to follow up on my enquiry (ID: ${enq.id}) for the project: "${projectTitle}".\nMy message: "${enq.message}"`;
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
@@ -584,7 +585,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="space-y-3 sm:space-y-4">
-              {enquiries.map((enq) => (
+              {enquiries.map((enq: MyEnquiry) => (
                 <div
                   key={enq.id}
                   className="glass rounded-xl border border-line p-4 sm:p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-violet/30 transition-colors"
@@ -723,7 +724,7 @@ export default function Dashboard() {
                                     : isPaid
                                     ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                     : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                                bag}`}
+                                }`}
                               >
                                 {isPaid ? "PAID" : w.status}
                               </span>
