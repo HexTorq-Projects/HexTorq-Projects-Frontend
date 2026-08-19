@@ -341,9 +341,28 @@ interface AdminReferralWithdrawal {
 interface AdminReferralStats {
   totalCodes: number;
   totalEarnings: number;
+  referredUsers: number;
   pendingAmount: number;
   confirmedAmount: number;
+  pendingRewards: number;
   totalWithdrawn: number;
+  pendingWithdrawals: number;
+  pendingWithdrawalAmount: number;
+}
+
+interface AdminReferrer {
+  id: string;
+  code: string;
+  referrerName: string;
+  referrerEmail: string;
+  joinedAt: string;
+  referrals: number;
+  purchases: number;
+  earned: number;
+  pending: number;
+  confirmed: number;
+  withdrawn: number;
+  available: number;
 }
 
 // /admin/referrals/* returns `totalPages`, unlike every other admin list
@@ -373,6 +392,13 @@ export function useAdminReferralEarnings(page: number, status?: string) {
   return useQuery({
     queryKey: ["admin", "referrals", "earnings", page, status],
     queryFn: () => adminApiFetch<ReferralPaginated<AdminReferralEarning>>(`/admin/referrals/earnings?${qs}`, { auth: true }),
+  });
+}
+
+export function useAdminReferrers(page: number) {
+  return useQuery({
+    queryKey: ["admin", "referrals", "referrers", page],
+    queryFn: () => adminApiFetch<ReferralPaginated<AdminReferrer>>(`/admin/referrals/referrers?page=${page}`, { auth: true }),
   });
 }
 

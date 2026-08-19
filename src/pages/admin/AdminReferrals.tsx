@@ -22,20 +22,23 @@ import {
   useUpdateAdminReferralEarning,
   useAdminReferralWithdrawals,
   useUpdateAdminReferralWithdrawal,
+  useAdminReferrers,
 } from "@/api/admin";
 import { Button } from "@/components/ui/Button";
 import { Input, Field } from "@/components/ui/Input";
 
 export default function AdminReferrals() {
-  const [tab, setTab] = useState<"withdrawals" | "earnings">("withdrawals");
+  const [tab, setTab] = useState<"withdrawals" | "earnings" | "referrers">("withdrawals");
   const [earningsPage, setEarningsPage] = useState(1);
   const [withdrawalsPage, setWithdrawalsPage] = useState(1);
+  const [referrersPage, setReferrersPage] = useState(1);
   const [earningsFilter, setEarningsFilter] = useState("");
   const [withdrawalsFilter, setWithdrawalsFilter] = useState("");
 
   const { data: stats } = useAdminReferralStats();
   const { data: earningsData } = useAdminReferralEarnings(earningsPage, earningsFilter || undefined);
   const { data: withdrawalsData } = useAdminReferralWithdrawals(withdrawalsPage, withdrawalsFilter || undefined);
+  const { data: referrersData } = useAdminReferrers(referrersPage);
   const updateEarning = useUpdateAdminReferralEarning();
   const updateWithdrawal = useUpdateAdminReferralWithdrawal();
 
@@ -54,22 +57,53 @@ export default function AdminReferrals() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3 md:gap-4">
         {[
           { label: "Total Codes", value: stats?.totalCodes ?? 0, icon: <Users className="h-4 w-4 text-violet" /> },
-          { label: "Total Rewards", value: stats?.totalEarnings ?? 0, icon: <Gift className="h-4 w-4 text-cyan" /> },
+          { label: "Referrals (Signups)", value: stats?.referredUsers ?? 0, icon: <ArrowUpRight className="h-4 w-4 text-cyan" /> },
+          { label: "Rewards Given", value: stats?.totalEarnings ?? 0, icon: <Gift className="h-4 w-4 text-cyan" /> },
+          { label: "Pending Rewards", value: stats?.pendingRewards ?? 0, icon: <Clock className="h-4 w-4 text-amber-400" /> },
           { label: "Pending ₹", value: `₹${stats?.pendingAmount ?? 0}`, icon: <Wallet className="h-4 w-4 text-amber-400" /> },
           { label: "Confirmed ₹", value: `₹${stats?.confirmedAmount ?? 0}`, icon: <CheckCircle className="h-4 w-4 text-emerald-400" /> },
           { label: "Paid Out ₹", value: `₹${stats?.totalWithdrawn ?? 0}`, icon: <IndianRupee className="h-4 w-4 text-emerald-400" /> },
+          { label: "Withdraw Requests", value: stats?.pendingWithdrawals ?? 0, icon: <ExternalLink className="h-4 w-4 text-amber-400" /> },
         ].map((s) => (
-          <div key={s.label} className="glass border border-line rounded-2xl p-4 space-y-2">
-            <div className="flex items-center gap-2 text-xs text-muted">
+          <div key={s.label} className="glass border border-line rounded-2xl p-3 md:p-4 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted truncate">
               {s.icon}
               {s.label}
             </div>
-            <div className="font-display text-xl font-bold text-fg">{s.value}</div>
+            <div className="font-display text-base md:text-xl font-bold text-fg">{s.value}</div>
           </div>
         ))}
+      </div>
+
+      {/* Referral system overview */}
+      <div className="rounded-2xl border border-cyan-500/25 bg-cyan-500/5 p-4 md:p-5 text-xs md:text-sm text-muted space-y-2">
+        <h3 className="font-bold text-fg flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-cyan" />
+          How the Referral System Works
+        </h3>
+        <ul className="list-disc list-inside space-y-1 text-[11px] md:text-xs">
+          <li>
+            Every user gets a unique referral link. When a friend signs up through it and pays for any project
+            (verified via Pay-Panda), the referrer earns <strong className="text-fg">₹100 automatically</strong> — no
+            manual confirmation needed.
+          </li>
+          <li>
+            Rewards are <strong className="text-fg">added to the referrer's wallet instantly</strong> (status
+            CONFIRMED). Use "Cancel" below only for fraud/refund cases.
+          </li>
+          <li>
+            Minimum withdrawal is <strong className="text-fg">₹100</strong> via UPI. Payout is manual: transfer the
+            amount to the user's UPI ID, then enter the transaction/reference ID to mark it Paid — the user gets an
+            email and the site updates automatically.
+          </li>
+          <li>
+            Statuses — Rewards: <strong className="text-fg">CONFIRMED / CANCELLED</strong>. Withdrawals:{" "}
+            <strong className="text-fg">PENDING (needs action) → PAID / REJECTED</strong>.
+          </li>
+        </ul>
       </div>
 
       {/* Tab bar */}
@@ -81,6 +115,7 @@ export default function AdminReferrals() {
             icon: <ExternalLink className="h-4 w-4" />,
           },
           { key: "earnings" as const, label: "Referral Rewards", icon: <Wallet className="h-4 w-4" /> },
+          { key: "referrers" as const, label: "Referrers", icon: <Users className="h-4 w-4" /> },
         ].map((t) => (
           <button
             key={t.key}
@@ -359,6 +394,81 @@ export default function AdminReferrals() {
                   onClick={() => setEarningsPage(p)}
                   className={`px-3 py-1 text-xs rounded-lg border transition-colors cursor-pointer ${
                     p === earningsPage ? "bg-violet text-white border-violet" : "border-line text-muted hover:text-fg"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Referrers Tab */}
+      {tab === "referrers" && (
+        <div className="space-y-4">
+          <div className="glass border border-line rounded-2xl overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-line bg-surface/50 text-left text-muted text-xs">
+                  <th className="px-4 py-3 font-medium">Referrer</th>
+                  <th className="px-4 py-3 font-medium">Referral Code</th>
+                  <th className="px-4 py-3 font-medium">Joined</th>
+                  <th className="px-4 py-3 font-medium">Signups</th>
+                  <th className="px-4 py-3 font-medium">Purchases</th>
+                  <th className="px-4 py-3 font-medium">Pending ₹</th>
+                  <th className="px-4 py-3 font-medium">Confirmed ₹</th>
+                  <th className="px-4 py-3 font-medium">Withdrawn ₹</th>
+                  <th className="px-4 py-3 font-medium text-right">Available ₹</th>
+                </tr>
+              </thead>
+              <tbody>
+                {referrersData?.items.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-8 text-center text-xs text-muted">
+                      No referral codes created yet.
+                    </td>
+                  </tr>
+                )}
+                {referrersData?.items.map((r) => (
+                  <tr
+                    key={r.id}
+                    className="border-b border-line/50 last:border-0 hover:bg-surface/30 transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="text-fg text-xs font-semibold">{r.referrerName}</div>
+                      <div className="text-[10px] text-muted">{r.referrerEmail}</div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <code className="text-[11px] font-mono font-semibold text-cyan">{r.code}</code>
+                    </td>
+                    <td className="px-4 py-3 text-[11px] text-muted">
+                      {new Date(r.joinedAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="px-4 py-3 text-xs font-semibold text-fg">{r.referrals}</td>
+                    <td className="px-4 py-3 text-xs font-semibold text-fg">{r.purchases}</td>
+                    <td className="px-4 py-3 text-xs font-mono text-amber-400">₹{r.pending}</td>
+                    <td className="px-4 py-3 text-xs font-mono text-emerald-400">₹{r.confirmed}</td>
+                    <td className="px-4 py-3 text-xs font-mono text-muted">₹{r.withdrawn}</td>
+                    <td className="px-4 py-3 text-right text-xs font-mono font-bold text-fg">₹{r.available}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {referrersData && referrersData.totalPages > 1 && (
+            <div className="flex justify-center gap-2 pt-2">
+              {Array.from({ length: referrersData.totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setReferrersPage(p)}
+                  className={`px-3 py-1 text-xs rounded-lg border transition-colors cursor-pointer ${
+                    p === referrersPage ? "bg-violet text-white border-violet" : "border-line text-muted hover:text-fg"
                   }`}
                 >
                   {p}

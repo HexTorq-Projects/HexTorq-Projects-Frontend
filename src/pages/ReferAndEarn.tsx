@@ -50,11 +50,11 @@ export default function ReferAndEarn() {
   } = useReferralCode();
   const generateCode = useGenerateReferralCode();
   const [myCode, setMyCode] = useState<string | null>(null);
-  const { data: earningsData } = useReferralEarnings();
-  const { data: balanceData } = useReferralBalance();
+  const { data: earningsData, isLoading: earningsLoading } = useReferralEarnings();
+  const { data: balanceData, isLoading: balanceLoading } = useReferralBalance();
   const withdraw = useWithdrawReferral();
   const { data: withdrawalHistory } = useWithdrawalHistory();
-  const { data: referredUsersData } = useReferredUsers();
+  const { data: referredUsersData, isLoading: referredUsersLoading } = useReferredUsers();
 
   const referralCode = referralCodeData?.code ?? myCode ?? earningsData?.code ?? null;
   const userLink = referralCode ? `https://projects.hextorq.tech/explore?ref=${referralCode}` : null;
@@ -430,33 +430,33 @@ export default function ReferAndEarn() {
           {[
             {
               label: "Withdrawable",
-              value: balanceData ? `₹${balanceData.availableBalance}` : "₹0",
+              value: balanceLoading ? "…" : balanceData ? `₹${balanceData.availableBalance}` : "₹0",
               desc: "Available to withdraw",
               highlight: true,
             },
             {
               label: "Total Earned",
-              value: balanceData ? `₹${balanceData.totalEarned}` : "₹0",
+              value: balanceLoading ? "…" : balanceData ? `₹${balanceData.totalEarned}` : "₹0",
               desc: "All confirmed rewards",
             },
             {
               label: "Confirmed",
-              value: earningsData ? `₹${earningsData.confirmedAmount}` : "₹0",
+              value: earningsLoading ? "…" : earningsData ? `₹${earningsData.confirmedAmount}` : "₹0",
               desc: "Verified purchases",
             },
             {
               label: "Pending",
-              value: earningsData ? `₹${earningsData.pendingAmount}` : "₹0",
+              value: earningsLoading ? "…" : earningsData ? `₹${earningsData.pendingAmount}` : "₹0",
               desc: "In verification process",
             },
             {
               label: "Total Withdrawn",
-              value: balanceData ? `₹${balanceData.totalWithdrawn}` : "₹0",
+              value: balanceLoading ? "…" : balanceData ? `₹${balanceData.totalWithdrawn}` : "₹0",
               desc: "Paid to your UPI",
             },
             {
               label: "Friends Joined",
-              value: referredUsersData ? `${referredUsersData.users.length}` : "0",
+              value: referredUsersLoading ? "…" : referredUsersData ? `${referredUsersData.users.length}` : "0",
               desc: "Signed up with link",
             },
           ].map((stat) => (
