@@ -51,39 +51,41 @@ export default function OrderHistory() {
       ) : (
         <div className="space-y-5">
           {orders.map((order) => (
-            <div key={order.id} className="glass rounded-2xl border border-line p-6 space-y-5 hover:border-violet/30 transition-all">
+            <div key={order.id} className="glass rounded-2xl border border-line p-4 sm:p-6 space-y-4 sm:space-y-5 hover:border-violet/30 transition-all">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-line/60">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-sm font-bold text-fg tracking-wider bg-surface-hi border border-line px-2.5 py-1 rounded-lg">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <span className="font-mono text-xs sm:text-sm font-bold text-fg tracking-wider bg-surface-hi border border-line px-2.5 py-1 rounded-lg">
                       {order.orderNumber}
                     </span>
                     <Badge color={badgeColor(order.paymentStatus)}>
                       {order.status === "BOOKED" ? "PARTIAL PAID (BOOKED)" : order.paymentStatus}
                     </Badge>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-faint pt-1">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-faint pt-1">
                     <span>Date: <strong className="text-muted">{formatDate(order.rowCreatedTime)}</strong></span>
                     <span>•</span>
                     <span>Items: <strong className="text-muted">{order.items.length} package(s)</strong></span>
                     {order.customerEmail && (
                       <>
-                        <span>•</span>
-                        <span>Billing: <strong className="text-muted">{order.customerEmail}</strong></span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="hidden sm:inline">Billing: <strong className="text-muted">{order.customerEmail}</strong></span>
                       </>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="text-right">
-                    <span className="block font-display text-2xl font-black text-fg">{formatINR(order.totalAmount)}</span>
+                <div className="flex items-center justify-between md:justify-end gap-3 flex-wrap pt-2 md:pt-0 border-t md:border-t-0 border-line/40">
+                  <div className="text-left md:text-right">
+                    <span className="block font-display text-xl sm:text-2xl font-black text-fg">{formatINR(order.totalAmount)}</span>
                     {order.status === "BOOKED" && order.balanceDue > 0 && (
                       <span className="text-xs text-rose-400 font-semibold">
                         Balance due: {formatINR(order.balanceDue)}
                       </span>
                     )}
                   </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
 
                   {/* View Thermal Receipt Button */}
                   <Button

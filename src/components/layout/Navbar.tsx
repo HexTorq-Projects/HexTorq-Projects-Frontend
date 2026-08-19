@@ -208,20 +208,20 @@ export function Navbar() {
               )}
             </button>
 
-            {user && (
-              <Link
-                id="navbar-cart-icon-mobile"
-                to="/cart"
-                className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface-hi border border-line"
-              >
-                <ShoppingCart className="h-4 w-4 text-cyan-txt" />
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-bg">
-                    {cartItems.length}
-                  </span>
-                )}
-              </Link>
-            )}
+            {/* Mobile Cart Icon */}
+            <Link
+              id="navbar-cart-icon-mobile"
+              to="/cart"
+              className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface-hi border border-line text-muted hover:text-fg transition-all"
+              title="Cart"
+            >
+              <ShoppingCart className="h-4 w-4 text-cyan-txt" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan text-[10px] font-bold text-bg ring-2 ring-bg px-1 shadow-sm">
+                  {cartItems.length}
+                </span>
+              )}
+            </Link>
             <button
               onClick={() => setMobileNav(!mobileNavOpen)}
               className="text-muted hover:text-fg focus:outline-none"

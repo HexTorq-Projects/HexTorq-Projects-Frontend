@@ -65,11 +65,11 @@ export default function Checkout() {
         <p className="text-sm text-muted mt-1">Pay securely through Pay-Panda. We verify the payment before marking your order paid.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <section className="lg:col-span-3 glass rounded-2xl border border-line p-6 space-y-6">
-          <div className="flex items-center justify-between pb-3 border-b border-line">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8">
+        <section className="lg:col-span-3 glass rounded-2xl border border-line p-4 sm:p-6 space-y-5 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-line">
             <h2 className="font-display text-lg font-bold text-fg">Student Information</h2>
-            <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full w-fit">
               <ShieldCheck className="h-3.5 w-3.5" />
               Verified Encrypted Checkout
             </span>
@@ -147,7 +147,7 @@ export default function Checkout() {
           </p>
         </section>
 
-        <aside className="lg:col-span-2 glass rounded-2xl border border-line p-6 space-y-5 self-start">
+        <aside className="lg:col-span-2 glass rounded-2xl border border-line p-4 sm:p-6 space-y-5 self-start">
           <h2 className="font-display font-bold text-fg text-lg pb-3 border-b border-line">Order Summary</h2>
           <div className="space-y-4">
             {items.map((item) => (

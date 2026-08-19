@@ -50,9 +50,9 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {items.map((project) => (
-              <div key={project.id} className="glass rounded-2xl border border-line p-5 flex flex-col md:flex-row gap-5 justify-between items-start hover:border-violet/30 transition-all">
-                <div className="space-y-2.5 flex-1">
-                  <div className="flex items-center gap-2">
+              <div key={project.id} className="glass rounded-2xl border border-line p-4 sm:p-5 flex flex-col md:flex-row gap-4 md:gap-5 justify-between items-start hover:border-violet/30 transition-all relative">
+                <div className="space-y-2.5 flex-1 w-full pr-8 md:pr-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[10px] font-bold text-cyan tracking-wider uppercase bg-cyan/10 border border-cyan/20 px-2 py-0.5 rounded-md">
                       {project.category?.categoryName || "Engineering"}
                     </span>
@@ -62,7 +62,7 @@ export default function Cart() {
                       </span>
                     )}
                   </div>
-                  <Link to={`/project/${project.id}`} className="font-display font-bold text-fg hover:text-cyan transition-colors text-base leading-snug block">
+                  <Link to={`/project/${project.id}`} className="font-display font-bold text-fg hover:text-cyan transition-colors text-sm sm:text-base leading-snug block">
                     {project.projectTitle}
                   </Link>
                   <p className="text-xs text-muted leading-relaxed line-clamp-2">{project.brief}</p>
@@ -70,9 +70,15 @@ export default function Cart() {
                     <PriceBlock recommended={project.recommendedPrice} discounted={project.discountedPrice} original={project.originalPrice} size="sm" />
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => remove(project.id)} className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 shrink-0 self-start">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => remove(project.id)}
+                  className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 shrink-0 absolute top-4 right-4 md:static"
+                  title="Remove from cart"
+                >
                   <Trash2 className="h-4 w-4" />
-                  Remove
+                  <span className="hidden md:inline">Remove</span>
                 </Button>
               </div>
             ))}
