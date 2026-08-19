@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Gift,
   Users,
@@ -44,6 +44,17 @@ export default function AdminReferrals() {
 
   // Selected withdrawal modal for payment processing
   const [selectedWithdrawal, setSelectedWithdrawal] = useState<any | null>(null);
+
+  // Lock background scroll while the withdrawal modal is open
+  useEffect(() => {
+    if (selectedWithdrawal) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [selectedWithdrawal]);
 
   const pendingWithdrawals = withdrawalsData?.items.filter((w) => w.status === "PENDING") || [];
 
@@ -183,6 +194,9 @@ export default function AdminReferrals() {
                   <th className="px-4 py-3 font-medium">UPI ID</th>
                   <th className="px-4 py-3 font-medium">UPI Holder Name</th>
                   <th className="px-4 py-3 font-medium">Request Date</th>
+                  <th className="px-4 py-3 font-medium">Created By</th>
+                  <th className="px-4 py-3 font-medium">Updated By</th>
+                  <th className="px-4 py-3 font-medium">Updated At</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Transaction ID</th>
                   <th className="px-4 py-3 font-medium text-right">Action</th>
@@ -191,7 +205,7 @@ export default function AdminReferrals() {
               <tbody>
                 {withdrawalsData?.items.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center text-xs text-muted">
+                    <td colSpan={12} className="px-4 py-8 text-center text-xs text-muted">
                       No withdrawal requests found.
                     </td>
                   </tr>
@@ -214,6 +228,17 @@ export default function AdminReferrals() {
                           month: "short",
                           year: "numeric",
                         })}
+                      </td>
+                      <td className="px-4 py-3 text-[11px] text-muted">{w.createdBy || "—"}</td>
+                      <td className="px-4 py-3 text-[11px] text-muted">{w.updatedBy || "—"}</td>
+                      <td className="px-4 py-3 text-[11px] text-muted">
+                        {w.updatedAt
+                          ? new Date(w.updatedAt).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "—"}
                       </td>
                       <td className="px-4 py-3">
                         <span

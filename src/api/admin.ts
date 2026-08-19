@@ -336,6 +336,9 @@ interface AdminReferralWithdrawal {
   transactionId?: string | null;
   paidAt?: string | null;
   createdAt: string;
+  createdBy?: string;
+  updatedBy?: string;
+  updatedAt?: string;
 }
 
 interface AdminReferralStats {
