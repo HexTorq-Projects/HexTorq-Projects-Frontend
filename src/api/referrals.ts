@@ -109,6 +109,8 @@ export function useReferralEarnings() {
     enabled: !!token,
     staleTime: 10_000,
     refetchOnWindowFocus: true,
+    refetchInterval: 15_000,
+    refetchIntervalInBackground: true,
   });
 }
 
@@ -134,6 +136,8 @@ export function useReferralBalance() {
     enabled: !!token,
     staleTime: 10_000,
     refetchOnWindowFocus: true,
+    refetchInterval: 15_000,
+    refetchIntervalInBackground: true,
   });
 }
 
@@ -161,6 +165,8 @@ export function useReferredUsers() {
     enabled: !!token,
     staleTime: 5_000,
     refetchOnWindowFocus: true,
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
   });
 }
 
@@ -172,5 +178,7 @@ export function useWithdrawalHistory() {
     enabled: !!token,
     staleTime: 10_000,
     refetchOnWindowFocus: true,
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
   });
 }
