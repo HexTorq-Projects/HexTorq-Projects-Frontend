@@ -36,6 +36,23 @@ function readCache<T>(namespace: string, query: string): T | undefined {
   }
 }
 
+// Reads the user-id cache, falling back to legacy key formats (token-keyed
+// `t:...` and the earliest `u:<token>` namespace) so previously cached data
+// still renders instantly after the namespace migration.
+function readCacheWithFallback<T>(userId: string | undefined, token: string | null, query: string): T | undefined {
+  if (userId) {
+    const primary = readCache<T>(cacheNamespace(userId, null), query);
+    if (primary !== undefined) return primary;
+  }
+  if (token) {
+    const legacy = readCache<T>(`u:${token.slice(-12)}`, query);
+    if (legacy !== undefined) return legacy;
+    const tokenNs = readCache<T>(`t:${token.slice(-12)}`, query);
+    if (tokenNs !== undefined) return tokenNs;
+  }
+  return undefined;
+}
+
 function writeCache(namespace: string, query: string, data: unknown) {
   try {
     localStorage.setItem(`${CACHE_PREFIX}${namespace}:${query}`, JSON.stringify({ ts: Date.now(), data }));
@@ -165,7 +182,6 @@ export function prefetchReferralData() {
 export function useReferralCode() {
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.user?.id);
-  const ns = cacheNamespace(userId, token);
   return useQuery({
     queryKey: ["referral-code"],
     queryFn: fetchReferralCodeData,
@@ -173,7 +189,8 @@ export function useReferralCode() {
     retry: transientRetry,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
-    initialData: token ? readCache<ReferralCodeResponse>(ns, "code") : undefined,
+    gcTime: 60 * 60 * 1000,
+    initialData: token ? readCacheWithFallback<ReferralCodeResponse>(userId, token, "code") : undefined,
   });
 }
 
@@ -193,7 +210,6 @@ export function useGenerateReferralCode() {
 export function useReferralEarnings() {
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.user?.id);
-  const ns = cacheNamespace(userId, token);
   return useQuery({
     queryKey: ["referral-earnings"],
     queryFn: fetchReferralEarningsData,
@@ -204,7 +220,8 @@ export function useReferralEarnings() {
     refetchOnWindowFocus: true,
     refetchInterval: 15_000,
     refetchIntervalInBackground: true,
-    initialData: token ? readCache<ReferralEarningsResponse>(ns, "earnings") : undefined,
+    gcTime: 60 * 60 * 1000,
+    initialData: token ? readCacheWithFallback<ReferralEarningsResponse>(userId, token, "earnings") : undefined,
   });
 }
 
@@ -225,7 +242,6 @@ export function useClaimReferral() {
 export function useReferralBalance() {
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.user?.id);
-  const ns = cacheNamespace(userId, token);
   return useQuery({
     queryKey: ["referral-balance"],
     queryFn: fetchReferralBalanceData,
@@ -236,7 +252,8 @@ export function useReferralBalance() {
     refetchOnWindowFocus: true,
     refetchInterval: 15_000,
     refetchIntervalInBackground: true,
-    initialData: token ? readCache<BalanceResponse>(ns, "balance") : undefined,
+    gcTime: 60 * 60 * 1000,
+    initialData: token ? readCacheWithFallback<BalanceResponse>(userId, token, "balance") : undefined,
   });
 }
 
@@ -259,7 +276,6 @@ export function useWithdrawReferral() {
 export function useReferredUsers() {
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.user?.id);
-  const ns = cacheNamespace(userId, token);
   return useQuery({
     queryKey: ["referral-referred-users"],
     queryFn: fetchReferredUsersData,
@@ -270,14 +286,14 @@ export function useReferredUsers() {
     refetchOnWindowFocus: true,
     refetchInterval: 10_000,
     refetchIntervalInBackground: true,
-    initialData: token ? readCache<ReferredUsersResponse>(ns, "referred-users") : undefined,
+    gcTime: 60 * 60 * 1000,
+    initialData: token ? readCacheWithFallback<ReferredUsersResponse>(userId, token, "referred-users") : undefined,
   });
 }
 
 export function useWithdrawalHistory() {
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.user?.id);
-  const ns = cacheNamespace(userId, token);
   return useQuery({
     queryKey: ["referral-withdrawals"],
     queryFn: fetchWithdrawalHistoryData,
@@ -288,6 +304,7 @@ export function useWithdrawalHistory() {
     refetchOnWindowFocus: true,
     refetchInterval: 10_000,
     refetchIntervalInBackground: true,
-    initialData: token ? readCache<WithdrawalHistoryItem[]>(ns, "withdrawals") : undefined,
+    gcTime: 60 * 60 * 1000,
+    initialData: token ? readCacheWithFallback<WithdrawalHistoryItem[]>(userId, token, "withdrawals") : undefined,
   });
 }
