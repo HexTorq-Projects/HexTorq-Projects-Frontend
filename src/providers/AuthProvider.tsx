@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { useMe } from "@/api/auth";
+import { prefetchReferralData } from "@/api/referrals";
 import { useAuthStore } from "@/store/useAuthStore";
 import { ApiError } from "@/api/client";
 
@@ -16,6 +17,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data) setUser(data);
   }, [data, setUser]);
+
+  // Warm referral data (memory + localStorage cache) as soon as a session
+  // exists, so the Refer & Earn tab opens instantly later.
+  useEffect(() => {
+    if (token) prefetchReferralData();
+  }, [token]);
 
   useEffect(() => {
     // Only log out if the backend explicitly returned a 401 Unauthorized status
