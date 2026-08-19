@@ -15,6 +15,7 @@ import {
   Check,
   Clock,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 import {
   useAdminReferralStats,
@@ -45,96 +46,154 @@ export default function AdminReferrals() {
   // Selected withdrawal modal for payment processing
   const [selectedWithdrawal, setSelectedWithdrawal] = useState<any | null>(null);
 
-  // Lock background scroll while the withdrawal modal is open
-  useEffect(() => {
-    if (selectedWithdrawal) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [selectedWithdrawal]);
-
   const pendingWithdrawals = withdrawalsData?.items.filter((w) => w.status === "PENDING") || [];
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-fg flex items-center gap-2 font-display">
+        <h1 className="text-2xl font-bold text-fg flex items-center gap-2.5 font-display">
           <Gift className="h-6 w-6 text-emerald-400" />
           Referral & Payouts Management
         </h1>
       </div>
 
-      {/* Stats cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3 md:gap-4">
+      {/* ── 1. Top Stats Cards (Clean 4-Column Responsive Grid, No Truncation) ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {[
-          { label: "Total Codes", value: stats?.totalCodes ?? 0, icon: <Users className="h-4 w-4 text-violet" /> },
-          { label: "Referrals (Signups)", value: stats?.referredUsers ?? 0, icon: <ArrowUpRight className="h-4 w-4 text-cyan" /> },
-          { label: "Rewards Given", value: stats?.totalEarnings ?? 0, icon: <Gift className="h-4 w-4 text-cyan" /> },
-          { label: "Pending Rewards", value: stats?.pendingRewards ?? 0, icon: <Clock className="h-4 w-4 text-amber-400" /> },
-          { label: "Pending ₹", value: `₹${stats?.pendingAmount ?? 0}`, icon: <Wallet className="h-4 w-4 text-amber-400" /> },
-          { label: "Confirmed ₹", value: `₹${stats?.confirmedAmount ?? 0}`, icon: <CheckCircle className="h-4 w-4 text-emerald-400" /> },
-          { label: "Paid Out ₹", value: `₹${stats?.totalWithdrawn ?? 0}`, icon: <IndianRupee className="h-4 w-4 text-emerald-400" /> },
-          { label: "Withdraw Requests", value: stats?.pendingWithdrawals ?? 0, icon: <ExternalLink className="h-4 w-4 text-amber-400" /> },
+          {
+            label: "Total Referral Codes",
+            value: stats?.totalCodes ?? 0,
+            icon: <Users className="h-4.5 w-4.5 text-violet" />,
+            badge: "Active",
+            badgeColor: "bg-violet/10 text-violet border-violet/20",
+          },
+          {
+            label: "Total Friend Signups",
+            value: stats?.referredUsers ?? 0,
+            icon: <ArrowUpRight className="h-4.5 w-4.5 text-cyan" />,
+            badge: "Signups",
+            badgeColor: "bg-cyan/10 text-cyan border-cyan/20",
+          },
+          {
+            label: "Total Rewards Given",
+            value: stats?.totalEarnings ?? 0,
+            icon: <Gift className="h-4.5 w-4.5 text-emerald-400" />,
+            badge: "Purchases",
+            badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+          },
+          {
+            label: "Pending Action Requests",
+            value: stats?.pendingWithdrawals ?? 0,
+            icon: <AlertTriangle className="h-4.5 w-4.5 text-amber-400" />,
+            badge: stats?.pendingWithdrawals ? "Action Req" : "Clear",
+            badgeColor: stats?.pendingWithdrawals
+              ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+              : "bg-surface text-muted border-line",
+          },
+          {
+            label: "Pending ₹ Amount",
+            value: `₹${stats?.pendingAmount ?? 0}`,
+            icon: <Clock className="h-4.5 w-4.5 text-amber-400" />,
+            badge: "Pending",
+            badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+          },
+          {
+            label: "Confirmed ₹ Amount",
+            value: `₹${stats?.confirmedAmount ?? 0}`,
+            icon: <CheckCircle className="h-4.5 w-4.5 text-emerald-400" />,
+            badge: "Confirmed",
+            badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+          },
+          {
+            label: "Total Paid Out ₹",
+            value: `₹${stats?.totalWithdrawn ?? 0}`,
+            icon: <IndianRupee className="h-4.5 w-4.5 text-cyan" />,
+            badge: "Paid via UPI",
+            badgeColor: "bg-cyan/10 text-cyan border-cyan/20",
+          },
+          {
+            label: "Pending Withdraw ₹",
+            value: `₹${stats?.pendingWithdrawalAmount ?? 0}`,
+            icon: <Wallet className="h-4.5 w-4.5 text-amber-400" />,
+            badge: "Needs Payout",
+            badgeColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+          },
         ].map((s) => (
-          <div key={s.label} className="glass border border-line rounded-2xl p-3 md:p-4 space-y-1.5">
-            <div className="flex items-center gap-1.5 text-[11px] text-muted truncate">
-              {s.icon}
-              {s.label}
+          <div
+            key={s.label}
+            className="glass border border-line rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-3 hover:border-line/80 transition-all shadow-sm"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-surface-hi border border-line shrink-0">
+                  {s.icon}
+                </div>
+                <span className="text-xs font-semibold text-muted leading-snug">
+                  {s.label}
+                </span>
+              </div>
+              <span
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${s.badgeColor}`}
+              >
+                {s.badge}
+              </span>
             </div>
-            <div className="font-display text-base md:text-xl font-bold text-fg">{s.value}</div>
+            <div className="font-display text-xl sm:text-2xl font-black text-fg pl-0.5">
+              {s.value}
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Referral system overview */}
-      <div className="rounded-2xl border border-cyan-500/25 bg-cyan-500/5 p-4 md:p-5 text-xs md:text-sm text-muted space-y-2">
+      {/* ── System Overview Guide ── */}
+      <div className="rounded-2xl border border-cyan-500/25 bg-cyan-500/5 p-4 sm:p-5 text-xs sm:text-sm text-muted space-y-2.5">
         <h3 className="font-bold text-fg flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-cyan" />
-          How the Referral System Works
+          <ShieldCheck className="h-4.5 w-4.5 text-cyan" />
+          How the Referral & Payout System Works
         </h3>
-        <ul className="list-disc list-inside space-y-1 text-[11px] md:text-xs">
+        <ul className="list-disc list-inside space-y-1.5 text-xs text-muted/90">
           <li>
             Every user gets a unique referral link. When a friend signs up through it and pays for any project
-            (verified via Pay-Panda), the referrer earns <strong className="text-fg">₹100 automatically</strong> — no
-            manual confirmation needed.
+            (verified via Pay-Panda), the referrer earns <strong className="text-fg">₹100 automatically</strong> in their wallet.
           </li>
           <li>
-            Rewards are <strong className="text-fg">added to the referrer's wallet instantly</strong> (status
-            CONFIRMED). Use "Cancel" below only for fraud/refund cases.
+            Rewards are <strong className="text-fg">credited to the referrer's wallet instantly</strong> with status <strong className="text-emerald-400">CONFIRMED</strong>.
           </li>
           <li>
             Minimum withdrawal is <strong className="text-fg">₹100</strong> via UPI. Payout is manual: transfer the
-            amount to the user's UPI ID, then enter the transaction/reference ID to mark it Paid — the user gets an
-            email and the site updates automatically.
+            amount to the user's UPI ID, then enter the transaction/reference ID to mark it <strong className="text-emerald-400">PAID</strong> — the student receives a confirmation email and the dashboard updates in real-time.
           </li>
           <li>
-            Statuses — Rewards: <strong className="text-fg">CONFIRMED / CANCELLED</strong>. Withdrawals:{" "}
-            <strong className="text-fg">PENDING (needs action) → PAID / REJECTED</strong>.
+            Statuses — Rewards: <strong className="text-emerald-400">CONFIRMED</strong> / <strong className="text-rose-400">CANCELLED</strong>. Withdrawals:{" "}
+            <strong className="text-amber-400">PENDING (needs action)</strong> → <strong className="text-emerald-400">PAID</strong> / <strong className="text-rose-400">REJECTED</strong>.
           </li>
         </ul>
       </div>
 
-      {/* Tab bar */}
-      <div className="flex gap-1 rounded-xl border border-line bg-surface/50 p-1 w-fit">
+      {/* ── Tab Navigation ── */}
+      <div className="flex gap-1.5 rounded-2xl border border-line bg-surface/50 p-1.5 w-fit flex-wrap">
         {[
           {
             key: "withdrawals" as const,
-            label: `Withdrawal Requests ${pendingWithdrawals.length > 0 ? `(${pendingWithdrawals.length})` : ""}`,
+            label: `Withdrawal Requests ${pendingWithdrawals.length > 0 ? `(${pendingWithdrawals.length} Action Needed)` : ""}`,
             icon: <ExternalLink className="h-4 w-4" />,
+            highlight: pendingWithdrawals.length > 0,
           },
           { key: "earnings" as const, label: "Referral Rewards", icon: <Wallet className="h-4 w-4" /> },
-          { key: "referrers" as const, label: "Referrers", icon: <Users className="h-4 w-4" /> },
+          { key: "referrers" as const, label: "Referrers Performance", icon: <Users className="h-4 w-4" /> },
         ].map((t) => (
           <button
             key={t.key}
             onClick={() => {
               setTab(t.key);
             }}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
-              tab === t.key ? "bg-violet text-white shadow-sm" : "text-muted hover:text-fg"
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+              tab === t.key
+                ? "bg-violet text-white shadow-md shadow-violet/20"
+                : t.highlight
+                ? "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
+                : "text-muted hover:text-fg hover:bg-surface-hi"
             }`}
           >
             {t.icon}
@@ -143,22 +202,22 @@ export default function AdminReferrals() {
         ))}
       </div>
 
-      {/* Withdrawals Tab */}
+      {/* ── 2. Tab: Withdrawal Requests (Formatted, Clean Columns, No UUID Noise) ── */}
       {tab === "withdrawals" && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Action Required Banner if pending */}
           {pendingWithdrawals.length > 0 && (
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 md:p-5 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 shrink-0 mt-0.5 sm:mt-0">
                   <AlertTriangle className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-fg">
-                    {pendingWithdrawals.length} Withdrawal Request{pendingWithdrawals.length !== 1 ? "s" : ""} Pending Admin Action
+                    {pendingWithdrawals.length} Withdrawal Request{pendingWithdrawals.length !== 1 ? "s" : ""} Pending Processing
                   </h3>
-                  <p className="text-xs text-muted">
-                    Transfer the requested amount to the user's UPI ID, then enter the Transaction ID to acknowledge payment.
+                  <p className="text-xs text-muted mt-0.5">
+                    Transfer the requested amount to the student's UPI ID, then click <strong>Process</strong> to record the Transaction ID and notify the user.
                   </p>
                 </div>
               </div>
@@ -173,10 +232,10 @@ export default function AdminReferrals() {
                   setWithdrawalsFilter(e.target.value);
                   setWithdrawalsPage(1);
                 }}
-                className="bg-surface border border-line rounded-xl px-3 py-2 text-xs text-fg cursor-pointer"
+                className="bg-surface border border-line rounded-xl px-3.5 py-2 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
               >
                 <option value="">All Statuses</option>
-                <option value="PENDING">Pending (Requires Action)</option>
+                <option value="PENDING">Pending (Needs Action)</option>
                 <option value="APPROVED">Paid / Approved</option>
                 <option value="PAID">Paid</option>
                 <option value="REJECTED">Rejected</option>
@@ -184,104 +243,121 @@ export default function AdminReferrals() {
             </div>
           </div>
 
-          <div className="glass border border-line rounded-2xl overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="glass border border-line rounded-2xl overflow-x-auto shadow-sm">
+            <table className="w-full text-sm min-w-[760px]">
               <thead>
-                <tr className="border-b border-line bg-surface/50 text-left text-muted text-xs">
-                  <th className="px-4 py-3 font-medium">User</th>
-                  <th className="px-4 py-3 font-medium">Email</th>
-                  <th className="px-4 py-3 font-medium">Requested Amount</th>
-                  <th className="px-4 py-3 font-medium">UPI ID</th>
-                  <th className="px-4 py-3 font-medium">UPI Holder Name</th>
-                  <th className="px-4 py-3 font-medium">Request Date</th>
-                  <th className="px-4 py-3 font-medium">Created By</th>
-                  <th className="px-4 py-3 font-medium">Updated By</th>
-                  <th className="px-4 py-3 font-medium">Updated At</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Transaction ID</th>
-                  <th className="px-4 py-3 font-medium text-right">Action</th>
+                <tr className="border-b border-line bg-surface/75 text-left text-muted text-xs">
+                  <th className="px-4 py-3.5 font-semibold">Student / User</th>
+                  <th className="px-4 py-3.5 font-semibold">Amount</th>
+                  <th className="px-4 py-3.5 font-semibold">UPI Payment Details</th>
+                  <th className="px-4 py-3.5 font-semibold">Request Date</th>
+                  <th className="px-4 py-3.5 font-semibold">Status & Note</th>
+                  <th className="px-4 py-3.5 font-semibold">Transaction ID</th>
+                  <th className="px-4 py-3.5 font-semibold text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {withdrawalsData?.items.length === 0 && (
                   <tr>
-                    <td colSpan={12} className="px-4 py-8 text-center text-xs text-muted">
+                    <td colSpan={7} className="px-4 py-12 text-center text-xs text-muted">
                       No withdrawal requests found.
                     </td>
                   </tr>
                 )}
                 {withdrawalsData?.items.map((w) => {
                   const isPaid = w.status === "APPROVED" || w.status === "PAID";
+                  const isPending = w.status === "PENDING";
                   return (
                     <tr
                       key={w.id}
                       className="border-b border-line/50 last:border-0 hover:bg-surface/30 transition-colors"
                     >
-                      <td className="px-4 py-3 text-xs font-semibold text-fg">{w.userName}</td>
-                      <td className="px-4 py-3 text-xs text-muted">{w.userEmail}</td>
-                      <td className="px-4 py-3 text-xs font-mono font-bold text-fg">₹{w.amount}</td>
-                      <td className="px-4 py-3 text-xs font-mono text-cyan">{w.upiId}</td>
-                      <td className="px-4 py-3 text-xs text-fg">{w.upiHolderName}</td>
-                      <td className="px-4 py-3 text-[11px] text-muted">
+                      {/* 1. Student Name & Email */}
+                      <td className="px-4 py-3.5">
+                        <div className="text-xs font-bold text-fg">{w.userName}</div>
+                        <div className="text-[11px] text-muted font-mono">{w.userEmail}</div>
+                      </td>
+
+                      {/* 2. Amount */}
+                      <td className="px-4 py-3.5">
+                        <span className="font-mono font-bold text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                          ₹{w.amount}
+                        </span>
+                      </td>
+
+                      {/* 3. UPI Details with 1-click copy */}
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-1.5">
+                          <code className="text-xs font-mono font-bold text-cyan">{w.upiId}</code>
+                          <button
+                            onClick={() => navigator.clipboard.writeText(w.upiId)}
+                            className="text-muted hover:text-emerald-400 p-0.5 transition-colors"
+                            title="Copy UPI ID"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <div className="text-[11px] text-muted">Holder: <strong className="text-fg">{w.upiHolderName}</strong></div>
+                      </td>
+
+                      {/* 4. Request Date */}
+                      <td className="px-4 py-3.5 text-xs text-muted whitespace-nowrap">
                         {new Date(w.createdAt).toLocaleDateString("en-IN", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
                         })}
                       </td>
-                      <td className="px-4 py-3 text-[11px] text-muted">{w.createdBy || "—"}</td>
-                      <td className="px-4 py-3 text-[11px] text-muted">{w.updatedBy || "—"}</td>
-                      <td className="px-4 py-3 text-[11px] text-muted">
-                        {w.updatedAt
-                          ? new Date(w.updatedAt).toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : "—"}
-                      </td>
-                      <td className="px-4 py-3">
+
+                      {/* 5. Status Badge & Note */}
+                      <td className="px-4 py-3.5">
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
-                            w.status === "PENDING"
-                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                            isPending
+                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
                               : isPaid
-                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                              : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                              : "bg-rose-500/10 text-rose-400 border border-rose-500/30"
                           }`}
                         >
                           {isPaid ? "PAID" : w.status}
                         </span>
                         {w.adminNote && (
-                          <div className="text-[10px] text-muted italic mt-0.5 max-w-[150px] truncate">
+                          <div className="text-[10px] text-muted italic mt-1 max-w-[170px] truncate" title={w.adminNote}>
                             Note: {w.adminNote}
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-xs font-mono">
+
+                      {/* 6. Transaction Reference ID */}
+                      <td className="px-4 py-3.5 text-xs font-mono">
                         {w.transactionId ? (
-                          <span className="text-cyan font-semibold">{w.transactionId}</span>
+                          <span className="text-cyan font-semibold bg-cyan/10 border border-cyan/20 px-2 py-0.5 rounded-md">
+                            {w.transactionId}
+                          </span>
                         ) : (
                           <span className="text-muted text-[11px]">—</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        {w.status === "PENDING" ? (
+
+                      {/* 7. Action Button */}
+                      <td className="px-4 py-3.5 text-right whitespace-nowrap">
+                        {isPending ? (
                           <Button
                             variant="primary"
                             size="sm"
                             onClick={() => setSelectedWithdrawal(w)}
-                            className="text-xs h-7 px-3 gap-1 shadow-sm"
+                            className="text-xs h-8 px-3.5 gap-1.5 shadow-md shadow-violet-500/20"
                           >
-                            <CreditCard className="h-3 w-3" />
-                            Process
+                            <CreditCard className="h-3.5 w-3.5" />
+                            Process Payout
                           </Button>
                         ) : (
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             onClick={() => setSelectedWithdrawal(w)}
-                            className="text-xs h-7 px-2 text-muted hover:text-fg"
+                            className="text-xs h-8 px-3 text-muted hover:text-fg border-line hover:border-violet/40"
                           >
                             View Details
                           </Button>
@@ -312,7 +388,7 @@ export default function AdminReferrals() {
         </div>
       )}
 
-      {/* Referral Rewards Tab */}
+      {/* ── Tab: Referral Rewards ── */}
       {tab === "earnings" && (
         <div className="space-y-4">
           <div className="flex gap-3 items-center">
@@ -322,7 +398,7 @@ export default function AdminReferrals() {
                 setEarningsFilter(e.target.value);
                 setEarningsPage(1);
               }}
-              className="bg-surface border border-line rounded-xl px-3 py-2 text-xs text-fg cursor-pointer"
+              className="bg-surface border border-line rounded-xl px-3.5 py-2 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
             >
               <option value="">All Statuses</option>
               <option value="PENDING">Pending</option>
@@ -331,23 +407,23 @@ export default function AdminReferrals() {
             </select>
           </div>
 
-          <div className="glass border border-line rounded-2xl overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="glass border border-line rounded-2xl overflow-x-auto shadow-sm">
+            <table className="w-full text-sm min-w-[700px]">
               <thead>
-                <tr className="border-b border-line bg-surface/50 text-left text-muted text-xs">
-                  <th className="px-4 py-3 font-medium">Referrer</th>
-                  <th className="px-4 py-3 font-medium">Referred User</th>
-                  <th className="px-4 py-3 font-medium">Project</th>
-                  <th className="px-4 py-3 font-medium">Reward</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium text-right">Action</th>
+                <tr className="border-b border-line bg-surface/75 text-left text-muted text-xs">
+                  <th className="px-4 py-3.5 font-semibold">Referrer (Earned By)</th>
+                  <th className="px-4 py-3.5 font-semibold">Referred Friend</th>
+                  <th className="px-4 py-3.5 font-semibold">Project Purchased</th>
+                  <th className="px-4 py-3.5 font-semibold">Reward</th>
+                  <th className="px-4 py-3.5 font-semibold">Status</th>
+                  <th className="px-4 py-3.5 font-semibold">Date</th>
+                  <th className="px-4 py-3.5 font-semibold text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {earningsData?.items.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-xs text-muted">
+                    <td colSpan={7} className="px-4 py-12 text-center text-xs text-muted">
                       No referral rewards found.
                     </td>
                   </tr>
@@ -357,19 +433,25 @@ export default function AdminReferrals() {
                     key={e.id}
                     className="border-b border-line/50 last:border-0 hover:bg-surface/30 transition-colors"
                   >
-                    <td className="px-4 py-3">
-                      <div className="text-fg text-xs font-semibold">{e.referrerName}</div>
-                      <div className="text-[10px] text-muted">{e.referrerEmail}</div>
+                    <td className="px-4 py-3.5">
+                      <div className="text-fg text-xs font-bold">{e.referrerName}</div>
+                      <div className="text-[11px] text-muted font-mono">{e.referrerEmail}</div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-fg text-xs font-medium">{e.referredName}</div>
-                      <div className="text-[10px] text-muted">{e.referredEmail}</div>
+                    <td className="px-4 py-3.5">
+                      <div className="text-fg text-xs font-semibold">{e.referredName}</div>
+                      <div className="text-[11px] text-muted font-mono">{e.referredEmail}</div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-fg max-w-[200px] truncate">{e.projectTitle}</td>
-                    <td className="px-4 py-3 text-xs font-mono font-bold text-emerald-400">₹{e.amount}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5 text-xs text-fg max-w-[220px] truncate" title={e.projectTitle}>
+                      {e.projectTitle}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="font-mono font-bold text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                        ₹{e.amount}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
                           e.status === "PENDING"
                             ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                             : e.status === "CONFIRMED"
@@ -380,25 +462,25 @@ export default function AdminReferrals() {
                         {e.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-[11px] text-muted">
+                    <td className="px-4 py-3.5 text-xs text-muted whitespace-nowrap">
                       {new Date(e.createdAt).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3.5 text-right whitespace-nowrap">
                       {e.status === "PENDING" && (
                         <div className="flex gap-1.5 justify-end">
                           <button
                             onClick={() => updateEarning.mutate({ id: e.id, status: "CONFIRMED" })}
-                            className="text-[10px] font-semibold text-emerald-400 hover:text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+                            className="text-xs font-bold text-emerald-400 hover:text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/30 hover:bg-emerald-500/10 transition-colors cursor-pointer"
                           >
                             Confirm
                           </button>
                           <button
                             onClick={() => updateEarning.mutate({ id: e.id, status: "CANCELLED" })}
-                            className="text-[10px] font-semibold text-rose-400 hover:text-rose-300 px-2.5 py-1 rounded-lg border border-rose-500/20 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                            className="text-xs font-bold text-rose-400 hover:text-rose-300 px-2.5 py-1 rounded-lg border border-rose-500/30 hover:bg-rose-500/10 transition-colors cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -429,28 +511,28 @@ export default function AdminReferrals() {
         </div>
       )}
 
-      {/* Referrers Tab */}
+      {/* ── Tab: Referrers Performance ── */}
       {tab === "referrers" && (
         <div className="space-y-4">
-          <div className="glass border border-line rounded-2xl overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="glass border border-line rounded-2xl overflow-x-auto shadow-sm">
+            <table className="w-full text-sm min-w-[760px]">
               <thead>
-                <tr className="border-b border-line bg-surface/50 text-left text-muted text-xs">
-                  <th className="px-4 py-3 font-medium">Referrer</th>
-                  <th className="px-4 py-3 font-medium">Referral Code</th>
-                  <th className="px-4 py-3 font-medium">Joined</th>
-                  <th className="px-4 py-3 font-medium">Signups</th>
-                  <th className="px-4 py-3 font-medium">Purchases</th>
-                  <th className="px-4 py-3 font-medium">Pending ₹</th>
-                  <th className="px-4 py-3 font-medium">Confirmed ₹</th>
-                  <th className="px-4 py-3 font-medium">Withdrawn ₹</th>
-                  <th className="px-4 py-3 font-medium text-right">Available ₹</th>
+                <tr className="border-b border-line bg-surface/75 text-left text-muted text-xs">
+                  <th className="px-4 py-3.5 font-semibold">Referrer</th>
+                  <th className="px-4 py-3.5 font-semibold">Referral Code</th>
+                  <th className="px-4 py-3.5 font-semibold">Joined Date</th>
+                  <th className="px-4 py-3.5 font-semibold">Total Signups</th>
+                  <th className="px-4 py-3.5 font-semibold">Purchases</th>
+                  <th className="px-4 py-3.5 font-semibold">Pending ₹</th>
+                  <th className="px-4 py-3.5 font-semibold">Confirmed ₹</th>
+                  <th className="px-4 py-3.5 font-semibold">Withdrawn ₹</th>
+                  <th className="px-4 py-3.5 font-semibold text-right">Available Wallet ₹</th>
                 </tr>
               </thead>
               <tbody>
                 {referrersData?.items.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center text-xs text-muted">
+                    <td colSpan={9} className="px-4 py-12 text-center text-xs text-muted">
                       No referral codes created yet.
                     </td>
                   </tr>
@@ -460,26 +542,32 @@ export default function AdminReferrals() {
                     key={r.id}
                     className="border-b border-line/50 last:border-0 hover:bg-surface/30 transition-colors"
                   >
-                    <td className="px-4 py-3">
-                      <div className="text-fg text-xs font-semibold">{r.referrerName}</div>
-                      <div className="text-[10px] text-muted">{r.referrerEmail}</div>
+                    <td className="px-4 py-3.5">
+                      <div className="text-fg text-xs font-bold">{r.referrerName}</div>
+                      <div className="text-[11px] text-muted font-mono">{r.referrerEmail}</div>
                     </td>
-                    <td className="px-4 py-3">
-                      <code className="text-[11px] font-mono font-semibold text-cyan">{r.code}</code>
+                    <td className="px-4 py-3.5">
+                      <code className="text-xs font-mono font-bold text-cyan bg-cyan/10 border border-cyan/20 px-2 py-0.5 rounded-md">
+                        {r.code}
+                      </code>
                     </td>
-                    <td className="px-4 py-3 text-[11px] text-muted">
+                    <td className="px-4 py-3.5 text-xs text-muted whitespace-nowrap">
                       {new Date(r.joinedAt).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
                     </td>
-                    <td className="px-4 py-3 text-xs font-semibold text-fg">{r.referrals}</td>
-                    <td className="px-4 py-3 text-xs font-semibold text-fg">{r.purchases}</td>
-                    <td className="px-4 py-3 text-xs font-mono text-amber-400">₹{r.pending}</td>
-                    <td className="px-4 py-3 text-xs font-mono text-emerald-400">₹{r.confirmed}</td>
-                    <td className="px-4 py-3 text-xs font-mono text-muted">₹{r.withdrawn}</td>
-                    <td className="px-4 py-3 text-right text-xs font-mono font-bold text-fg">₹{r.available}</td>
+                    <td className="px-4 py-3.5 text-xs font-bold text-fg">{r.referrals}</td>
+                    <td className="px-4 py-3.5 text-xs font-bold text-fg">{r.purchases}</td>
+                    <td className="px-4 py-3.5 text-xs font-mono text-amber-400 font-semibold">₹{r.pending}</td>
+                    <td className="px-4 py-3.5 text-xs font-mono text-emerald-400 font-semibold">₹{r.confirmed}</td>
+                    <td className="px-4 py-3.5 text-xs font-mono text-muted">₹{r.withdrawn}</td>
+                    <td className="px-4 py-3.5 text-right text-xs font-mono font-black text-fg">
+                      <span className="bg-surface-hi border border-line px-2.5 py-1 rounded-lg">
+                        ₹{r.available}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -504,7 +592,7 @@ export default function AdminReferrals() {
         </div>
       )}
 
-      {/* Process Payment & Details Modal */}
+      {/* ── 4. Process Payment & Details Modal (Scroll Containment & Body Locking Fixed) ── */}
       {selectedWithdrawal && (
         <ProcessWithdrawalModal
           withdrawal={selectedWithdrawal}
@@ -517,6 +605,10 @@ export default function AdminReferrals() {
   );
 }
 
+/**
+ * Clean, scroll-locked modal for processing payouts.
+ * Uses body scroll locking, outer overflow-y containment, and clean scrollable form body.
+ */
 function ProcessWithdrawalModal({
   withdrawal,
   onClose,
@@ -536,6 +628,15 @@ function ProcessWithdrawalModal({
 
   const isPendingStatus = withdrawal.status === "PENDING";
   const isPaid = withdrawal.status === "APPROVED" || withdrawal.status === "PAID";
+
+  // Lock body scroll when modal is open and clean up on unmount
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   const handleCopyUpi = () => {
     navigator.clipboard.writeText(withdrawal.upiId).then(() => {
@@ -570,173 +671,220 @@ function ProcessWithdrawalModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-sm">
-      <div className="glass rounded-2xl border border-line p-5 sm:p-6 max-w-lg w-full space-y-4 max-h-[90vh] overflow-y-auto relative shadow-2xl">
-        <div className="flex items-center justify-between pb-3 border-b border-line">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm p-4 sm:p-6 flex min-h-full items-center justify-center overscroll-contain"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="relative w-full max-w-lg rounded-2xl border border-line bg-surface p-5 sm:p-6 shadow-2xl space-y-4 max-h-[88vh] flex flex-col my-auto overscroll-contain">
+        {/* Sticky Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-line shrink-0">
           <h3 className="font-display font-bold text-lg text-fg flex items-center gap-2">
             <CreditCard className="h-5 w-5 text-emerald-400" />
             Withdrawal Request Details
           </h3>
-          <button onClick={onClose} className="text-muted hover:text-fg transition-colors">
+          <button
+            onClick={onClose}
+            className="text-muted hover:text-fg transition-colors p-1 rounded-lg hover:bg-surface-hi cursor-pointer"
+            title="Close modal"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Amount Banner */}
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
-          <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Amount to Transfer</span>
-          <div className="font-display text-3xl font-extrabold text-fg mt-1">₹{withdrawal.amount}</div>
-        </div>
-
-        {/* User & UPI Details */}
-        <div className="space-y-3 bg-surface-hi/40 rounded-xl border border-line p-4 text-xs">
-          <div className="flex justify-between py-1 border-b border-line/40">
-            <span className="text-muted">User Name:</span>
-            <span className="font-semibold text-fg">{withdrawal.userName}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-line/40">
-            <span className="text-muted">User Email:</span>
-            <span className="font-semibold text-fg">{withdrawal.userEmail}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-line/40">
-            <span className="text-muted">UPI Holder Name:</span>
-            <span className="font-semibold text-fg">{withdrawal.upiHolderName}</span>
-          </div>
-          <div className="flex items-center justify-between py-1">
-            <span className="text-muted">UPI ID:</span>
-            <div className="flex items-center gap-2">
-              <code className="font-mono font-bold text-cyan text-sm">{withdrawal.upiId}</code>
-              <button
-                onClick={handleCopyUpi}
-                className="text-muted hover:text-emerald-400 transition-colors p-1"
-                title="Copy UPI ID"
-              >
-                {copiedUpi ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-              </button>
+        {/* Scrollable Content Body */}
+        <div className="overflow-y-auto pr-1 space-y-4 flex-1 overscroll-contain">
+          {/* Amount Banner */}
+          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+              Amount to Transfer
+            </span>
+            <div className="font-display text-3xl font-black text-fg mt-1">
+              ₹{withdrawal.amount}
             </div>
           </div>
-        </div>
 
-        {isPendingStatus ? (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-line bg-surface/50 p-3 text-xs text-muted space-y-1">
-              <p className="font-semibold text-fg flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-cyan" />
-                Manual Payment Instruction:
-              </p>
-              <p>
-                1. Open your UPI application (Google Pay, PhonePe, Paytm, or NetBanking).
-                <br />
-                2. Send <strong>₹{withdrawal.amount}</strong> to <strong>{withdrawal.upiId}</strong> ({withdrawal.upiHolderName}).
-                <br />
-                3. Enter the transaction reference ID below and click <strong>Confirm Payment & Mark Paid</strong>.
-              </p>
-            </div>
-
-            {errorMsg && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-semibold text-rose-400">
-                {errorMsg}
-              </div>
-            )}
-
-            {!rejectMode ? (
-              <form onSubmit={handleConfirmPaid} className="space-y-4">
-                <Field label="Payment Transaction / Reference ID" hint="Required to acknowledge payment">
-                  <Input
-                    value={transactionId}
-                    onChange={(e) => setTransactionId(e.target.value)}
-                    placeholder="e.g. UPI/2026/123456789 or Bank Ref"
-                    required
-                  />
-                </Field>
-
-                <Field label="Admin Note (Optional)">
-                  <Input
-                    value={adminNote}
-                    onChange={(e) => setAdminNote(e.target.value)}
-                    placeholder="Optional message for student"
-                  />
-                </Field>
-
-                <div className="flex gap-3 pt-2">
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={isPending || !transactionId.trim()}
-                    className="flex-1 gap-2 shadow-md"
-                  >
-                    <Check className="h-4 w-4" />
-                    Confirm Payment & Mark Paid
-                  </Button>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    onClick={() => setRejectMode(true)}
-                    className="text-rose-400 border-rose-500/30 hover:bg-rose-500/10"
-                  >
-                    Reject
-                  </Button>
-                </div>
-              </form>
-            ) : (
-              <div className="space-y-3">
-                <Field label="Rejection Reason" hint="Will be emailed to the student">
-                  <Input
-                    value={adminNote}
-                    onChange={(e) => setAdminNote(e.target.value)}
-                    placeholder="e.g. Invalid UPI ID, please re-submit"
-                    required
-                  />
-                </Field>
-                <div className="flex gap-3 pt-2">
-                  <Button
-                    variant="solid"
-                    onClick={handleReject}
-                    disabled={isPending}
-                    className="flex-1 bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30"
-                  >
-                    Confirm Rejection
-                  </Button>
-                  <Button variant="outline" onClick={() => setRejectMode(false)}>
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-3 text-xs">
+          {/* User & UPI Details Card */}
+          <div className="space-y-2.5 bg-surface-hi/50 rounded-2xl border border-line p-4 text-xs">
             <div className="flex justify-between py-1 border-b border-line/40">
-              <span className="text-muted">Status:</span>
-              <span className={`font-bold ${isPaid ? "text-emerald-400" : "text-rose-400"}`}>
-                {isPaid ? "PAID" : withdrawal.status}
-              </span>
+              <span className="text-muted">User Name:</span>
+              <span className="font-bold text-fg">{withdrawal.userName}</span>
             </div>
-            {withdrawal.transactionId && (
-              <div className="flex justify-between py-1 border-b border-line/40">
-                <span className="text-muted">Transaction ID:</span>
-                <span className="font-mono font-bold text-cyan">{withdrawal.transactionId}</span>
+            <div className="flex justify-between py-1 border-b border-line/40">
+              <span className="text-muted">User Email:</span>
+              <span className="font-mono font-medium text-fg">{withdrawal.userEmail}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-line/40">
+              <span className="text-muted">UPI Holder Name:</span>
+              <span className="font-semibold text-fg">{withdrawal.upiHolderName}</span>
+            </div>
+            <div className="flex items-center justify-between py-1">
+              <span className="text-muted font-medium">UPI ID:</span>
+              <div className="flex items-center gap-2">
+                <code className="font-mono font-bold text-cyan text-sm bg-cyan/10 border border-cyan/25 px-2 py-0.5 rounded-md">
+                  {withdrawal.upiId}
+                </code>
+                <button
+                  type="button"
+                  onClick={handleCopyUpi}
+                  className="flex items-center gap-1 text-xs font-semibold text-muted hover:text-emerald-400 transition-colors p-1 border border-line rounded-lg hover:border-emerald-400/40 cursor-pointer"
+                  title="Copy UPI ID"
+                >
+                  {copiedUpi ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      <span className="text-[10px] text-emerald-400">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" />
+                      <span className="text-[10px]">Copy</span>
+                    </>
+                  )}
+                </button>
               </div>
-            )}
-            {withdrawal.paidAt && (
-              <div className="flex justify-between py-1 border-b border-line/40">
-                <span className="text-muted">Paid Date:</span>
-                <span className="text-fg">{new Date(withdrawal.paidAt).toLocaleString("en-IN")}</span>
-              </div>
-            )}
-            {withdrawal.adminNote && (
-              <div className="flex justify-between py-1">
-                <span className="text-muted">Admin Note:</span>
-                <span className="text-fg italic">{withdrawal.adminNote}</span>
-              </div>
-            )}
-            <div className="flex justify-end pt-2">
-              <Button variant="outline" size="sm" onClick={onClose}>
-                Close
-              </Button>
             </div>
           </div>
-        )}
+
+          {isPendingStatus ? (
+            <div className="space-y-4">
+              {/* Payment Instructions */}
+              <div className="rounded-2xl border border-cyan-500/25 bg-cyan-500/5 p-3.5 text-xs text-muted space-y-1.5">
+                <p className="font-bold text-fg flex items-center gap-1.5">
+                  <ShieldCheck className="h-4 w-4 text-cyan" />
+                  Manual Payment Steps:
+                </p>
+                <ol className="list-decimal list-inside space-y-1 text-muted">
+                  <li>
+                    Open GPay / PhonePe / Paytm / Bank app.
+                  </li>
+                  <li>
+                    Transfer <strong>₹{withdrawal.amount}</strong> to <strong>{withdrawal.upiId}</strong> ({withdrawal.upiHolderName}).
+                  </li>
+                  <li>
+                    Paste the Transaction / UTR / Reference ID below and submit.
+                  </li>
+                </ol>
+              </div>
+
+              {errorMsg && (
+                <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-semibold text-rose-400">
+                  {errorMsg}
+                </div>
+              )}
+
+              {!rejectMode ? (
+                <form onSubmit={handleConfirmPaid} className="space-y-4">
+                  <Field
+                    label="Payment Transaction / Reference ID (UTR)"
+                    hint="Required to verify payout and notify the student"
+                  >
+                    <Input
+                      value={transactionId}
+                      onChange={(e) => {
+                        setTransactionId(e.target.value);
+                        if (errorMsg) setErrorMsg("");
+                      }}
+                      placeholder="e.g. 423456789012 or UPI/2026/..."
+                      className="font-mono text-sm"
+                      required
+                      autoFocus
+                    />
+                  </Field>
+
+                  <Field label="Admin Note (Optional)">
+                    <Input
+                      value={adminNote}
+                      onChange={(e) => setAdminNote(e.target.value)}
+                      placeholder="e.g. Paid via GPay / Payout completed"
+                    />
+                  </Field>
+
+                  <div className="flex gap-3 pt-2">
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={isPending || !transactionId.trim()}
+                      className="flex-1 gap-2 shadow-lg shadow-violet-500/25"
+                    >
+                      <Check className="h-4 w-4" />
+                      {isPending ? "Confirming..." : "Confirm Payment & Mark Paid"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      onClick={() => setRejectMode(true)}
+                      className="text-rose-400 border-rose-500/30 hover:bg-rose-500/10"
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="space-y-3">
+                  <Field label="Rejection Reason" hint="Will be emailed to the student">
+                    <Input
+                      value={adminNote}
+                      onChange={(e) => setAdminNote(e.target.value)}
+                      placeholder="e.g. Invalid UPI ID / Name mismatch, please re-submit"
+                      required
+                    />
+                  </Field>
+                  <div className="flex gap-3 pt-2">
+                    <Button
+                      variant="solid"
+                      onClick={handleReject}
+                      disabled={isPending}
+                      className="flex-1 bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 font-bold"
+                    >
+                      Confirm Rejection
+                    </Button>
+                    <Button variant="outline" onClick={() => setRejectMode(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3 text-xs">
+              <div className="flex justify-between py-1.5 border-b border-line/40">
+                <span className="text-muted">Payout Status:</span>
+                <span className={`font-bold ${isPaid ? "text-emerald-400" : "text-rose-400"}`}>
+                  {isPaid ? "PAID" : withdrawal.status}
+                </span>
+              </div>
+              {withdrawal.transactionId && (
+                <div className="flex justify-between py-1.5 border-b border-line/40">
+                  <span className="text-muted">Transaction ID:</span>
+                  <span className="font-mono font-bold text-cyan bg-cyan/10 border border-cyan/20 px-2 py-0.5 rounded">
+                    {withdrawal.transactionId}
+                  </span>
+                </div>
+              )}
+              {withdrawal.paidAt && (
+                <div className="flex justify-between py-1.5 border-b border-line/40">
+                  <span className="text-muted">Paid Date / Time:</span>
+                  <span className="text-fg font-medium">
+                    {new Date(withdrawal.paidAt).toLocaleString("en-IN")}
+                  </span>
+                </div>
+              )}
+              {withdrawal.adminNote && (
+                <div className="flex justify-between py-1.5">
+                  <span className="text-muted">Admin Note:</span>
+                  <span className="text-fg italic">{withdrawal.adminNote}</span>
+                </div>
+              )}
+              <div className="flex justify-end pt-2">
+                <Button variant="outline" size="sm" onClick={onClose}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
