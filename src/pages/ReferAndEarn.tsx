@@ -430,33 +430,33 @@ export default function ReferAndEarn() {
           {[
             {
               label: "Withdrawable",
-              value: balanceLoading ? "…" : balanceData ? `₹${balanceData.availableBalance}` : "₹0",
+              value: `₹${balanceData?.availableBalance ?? 0}`,
               desc: "Available to withdraw",
               highlight: true,
             },
             {
               label: "Total Earned",
-              value: balanceLoading ? "…" : balanceData ? `₹${balanceData.totalEarned}` : "₹0",
+              value: `₹${balanceData?.totalEarned ?? 0}`,
               desc: "All confirmed rewards",
             },
             {
               label: "Confirmed",
-              value: earningsLoading ? "…" : earningsData ? `₹${earningsData.confirmedAmount}` : "₹0",
+              value: `₹${earningsData?.confirmedAmount ?? 0}`,
               desc: "Verified purchases",
             },
             {
               label: "Pending",
-              value: earningsLoading ? "…" : earningsData ? `₹${earningsData.pendingAmount}` : "₹0",
+              value: `₹${earningsData?.pendingAmount ?? 0}`,
               desc: "In verification process",
             },
             {
               label: "Total Withdrawn",
-              value: balanceLoading ? "…" : balanceData ? `₹${balanceData.totalWithdrawn}` : "₹0",
+              value: `₹${balanceData?.totalWithdrawn ?? 0}`,
               desc: "Paid to your UPI",
             },
             {
               label: "Friends Joined",
-              value: referredUsersLoading ? "…" : referredUsersData ? `${referredUsersData.users.length}` : "0",
+              value: `${referredUsersData?.users?.length ?? 0}`,
               desc: "Signed up with link",
             },
           ].map((stat) => (
@@ -477,7 +477,7 @@ export default function ReferAndEarn() {
       </Reveal>
 
       {/* Withdraw Section */}
-      {token && balanceData && (
+      {token && (
         <Reveal delay={0.18}>
           <section className="max-w-4xl mx-auto glass border border-line rounded-2xl p-5 sm:p-7 md:p-8 space-y-6 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
@@ -505,7 +505,6 @@ export default function ReferAndEarn() {
                       setShowWithdraw(true);
                       setWithdrawValidationError("");
                     }}
-                    disabled={availableBal < 100}
                     className="gap-1.5 w-full sm:w-auto"
                   >
                     <Banknote className="h-4 w-4" />

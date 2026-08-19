@@ -1,72 +1,48 @@
-import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Heart,
   MessageSquare,
   ArrowRight,
-  Edit3,
-  Check,
-  X,
   User as UserIcon,
   ExternalLink,
-  Gift,
+  Edit3,
+  Check,
   KeyRound,
-  Copy,
-  MessageCircle,
   Eye,
   EyeOff,
-  Wallet,
-  CheckCircle2,
-  Lock,
+  X,
+  Gift,
+  Copy,
+  MessageCircle,
+  Banknote,
+  Clock,
+  Users,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useUpdateProfile, useChangePassword } from "@/api/auth";
 import { useWishlist } from "@/api/wishlist";
-import { useMyEnquiries } from "@/api/enquiries";
-import { useReferralCode, useReferralBalance, useReferredUsers } from "@/api/referrals";
-import { ProjectCard } from "@/components/project/ProjectCard";
-import { Badge } from "@/components/ui/Badge";
+import { useEnquiries } from "@/api/enquiries";
+import {
+  useReferralCode,
+  useReferralEarnings,
+  useReferralBalance,
+  useReferredUsers,
+  useWithdrawalHistory,
+} from "@/api/referrals";
 import { Button } from "@/components/ui/Button";
-import { Input, Field } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
+import { ProjectCard } from "@/components/project/ProjectCard";
+import { Field, Input } from "@/components/ui/Input";
+import { useUpdateProfile, useChangePassword } from "@/api/auth";
+import { WithdrawalModal } from "@/components/modals/WithdrawalModal";
 import { formatDate, formatINR } from "@/lib/format";
-import { WHATSAPP_NUMBER } from "@/lib/constants";
 import { cn } from "@/lib/cn";
 
-type StrengthLevel = 0 | 1 | 2 | 3 | 4;
-const strengthMeta: Record<StrengthLevel, { label: string; color: string; bg: string }> = {
-  0: { label: "Very Weak", color: "text-rose-400", bg: "bg-rose-500/30" },
-  1: { label: "Weak", color: "text-rose-400", bg: "bg-rose-500" },
-  2: { label: "Fair", color: "text-amber-400", bg: "bg-amber-400" },
-  3: { label: "Strong", color: "text-emerald-400", bg: "bg-emerald-400" },
-  4: { label: "Very Strong", color: "text-emerald-400", bg: "bg-emerald-400" },
-};
-
-function passwordStrength(pw: string): StrengthLevel {
-  if (!pw) return 0;
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (pw.length >= 12) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  if (score <= 1) return 1;
-  if (score === 2) return 2;
-  if (score === 3) return 3;
-  return 4;
-}
+const WHATSAPP_NUMBER = "919080579708";
 
 export default function Dashboard() {
   const { user } = useAuthStore();
-  const navigate = useNavigate();
-  const updateProfile = useUpdateProfile();
-  const changePassword = useChangePassword();
-  const { data: wishlist = [], isLoading: loadingWishlist } = useWishlist();
-  const { data: enquiries = [], isLoading: loadingEnquiries } = useMyEnquiries();
-  const { data: referralCodeData } = useReferralCode();
-  const { data: balanceData } = useReferralBalance();
-  const { data: referredUsersData } = useReferredUsers();
-
-  const [activeTab, setActiveTab] = useState<"wishlist" | "enquiries">("wishlist");
+  const [activeTab, setActiveTab] = useState<"wishlist" | "enquiries" | "referrals">("wishlist");
 
   // Profile Edit State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -84,30 +60,56 @@ export default function Dashboard() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState(false);
 
-  // Referral Copy State
+  // Referral State
   const [copiedReferral, setCopiedReferral] = useState(false);
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
 
-  const referralCode = referralCodeData?.code;
-  const referralLink = referralCode ? `https://projects.hextorq.tech/explore?ref=${referralCode}` : "";
+  const updateProfile = useUpdateProfile();
+  const changePassword = useChangePassword();
 
-  const pwLevel = useMemo(() => passwordStrength(newPassword), [newPassword]);
-  const pwMeta = strengthMeta[pwLevel];
+  const { data: wishlist = [], isLoading: loadingWishlist } = useWishlist();
+  const { data: enquiries = [], isLoading: loadingEnquiries } = useEnquiries();
 
-  useEffect(() => {
-    if (!user) {
-      navigate(`/login?redirect=${encodeURIComponent("/dashboard")}`);
-    } else {
-      setEditName(user.name);
-      setEditPhone(user.phone || "");
-    }
-  }, [user, navigate]);
+  // Referral queries
+  const { data: referralCodeData } = useReferralCode();
+  const { data: earningsData } = useReferralEarnings();
+  const { data: balanceData } = useReferralBalance();
+  const { data: referredUsersData } = useReferredUsers();
+  const { data: withdrawalHistory = [] } = useWithdrawalHistory();
+
+  const referralCode = referralCodeData?.code ?? earningsData?.code ?? null;
+  const referralLink = referralCode ? `https://projects.hextorq.tech/explore?ref=${referralCode}` : null;
+  const availableBal = balanceData?.availableBalance ?? 0;
 
   if (!user) return null;
 
+  // Password strength calculator
+  const getPasswordStrength = (pw: string) => {
+    let score = 0;
+    if (pw.length >= 6) score++;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score;
+  };
+
+  const pwLevel = getPasswordStrength(newPassword);
+  const pwMeta =
+    pwLevel <= 1
+      ? { label: "Weak", color: "text-rose-400", bg: "bg-rose-500" }
+      : pwLevel === 2
+      ? { label: "Fair", color: "text-amber-400", bg: "bg-amber-500" }
+      : pwLevel === 3
+      ? { label: "Good", color: "text-cyan", bg: "bg-cyan" }
+      : { label: "Strong", color: "text-emerald-400", bg: "bg-emerald-500" };
+
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editName.trim()) return;
+
     updateProfile.mutate(
-      { name: editName, phone: editPhone || null },
+      { name: editName.trim(), phone: editPhone.trim() || undefined },
       {
         onSuccess: () => {
           setIsEditingProfile(false);
@@ -123,11 +125,11 @@ export default function Dashboard() {
     setPasswordError("");
 
     if (newPassword.length < 6) {
-      setPasswordError("New password must be at least 6 characters long.");
+      setPasswordError("New password must be at least 6 characters");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordError("New password and confirmation password do not match.");
+      setPasswordError("New passwords do not match");
       return;
     }
 
@@ -146,7 +148,7 @@ export default function Dashboard() {
           setTimeout(() => setPasswordSuccess(false), 4000);
         },
         onError: (err: any) => {
-          setPasswordError(err.message || "Failed to update password. Please verify current password.");
+          setPasswordError(err.message || "Failed to update password");
         },
       }
     );
@@ -176,12 +178,12 @@ export default function Dashboard() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
-        return "#10b981"; // emerald
+        return "#10b981";
       case "processing":
       case "in_progress":
-        return "#3b82f6"; // blue
+        return "#3b82f6";
       default:
-        return "#f59e0b"; // amber (pending)
+        return "#f59e0b";
     }
   };
 
@@ -230,7 +232,11 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-        <div className="flex gap-2.5 text-xs text-faint">
+        <div className="flex gap-2.5 text-xs text-faint flex-wrap">
+          <div className="rounded-xl border border-line bg-surface p-2.5 sm:p-3 text-center flex-1 sm:min-w-28">
+            <span className="block font-bold text-emerald-400 text-base sm:text-lg">₹{availableBal}</span>
+            Referral Balance
+          </div>
           <div className="rounded-xl border border-line bg-surface p-2.5 sm:p-3 text-center flex-1 sm:min-w-28">
             <span className="block font-bold text-fg text-base sm:text-lg">{wishlist.length}</span>
             Saved Projects
@@ -242,7 +248,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Dedicated Referral & Earn Hub Card in Profile */}
+      {/* Dedicated Referral & Earn Banner Card in Profile */}
       <div className="glass rounded-2xl border border-emerald-500/30 bg-surface/40 p-5 sm:p-6 md:p-7 relative overflow-hidden shadow-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6 relative z-10">
           <div className="space-y-2 max-w-xl">
@@ -264,14 +270,14 @@ export default function Dashboard() {
                   </span>
                   <button
                     onClick={handleCopyReferral}
-                    className="text-muted hover:text-emerald-400 transition-colors p-1"
+                    className="text-muted hover:text-emerald-400 transition-colors p-1 cursor-pointer"
                     title="Copy Referral Link"
                   >
                     {copiedReferral ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
                   <button
                     onClick={handleWhatsAppShare}
-                    className="text-[#25D366] hover:opacity-80 transition-opacity p-1"
+                    className="text-[#25D366] hover:opacity-80 transition-opacity p-1 cursor-pointer"
                     title="Share on WhatsApp"
                   >
                     <MessageCircle className="h-3.5 w-3.5 fill-current" />
@@ -290,7 +296,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-3 gap-2.5 w-full sm:w-auto text-center">
               <div className="rounded-xl border border-line bg-surface-hi/40 p-2.5 min-w-[70px] sm:min-w-20">
                 <span className="block font-bold text-emerald-400 text-sm sm:text-base">
-                  ₹{balanceData?.availableBalance ?? 0}
+                  ₹{availableBal}
                 </span>
                 <span className="text-[9px] sm:text-[10px] text-muted">Withdrawable</span>
               </div>
@@ -302,19 +308,29 @@ export default function Dashboard() {
               </div>
               <div className="rounded-xl border border-line bg-surface-hi/40 p-2.5 min-w-[70px] sm:min-w-20">
                 <span className="block font-bold text-cyan text-sm sm:text-base">
-                  {referredUsersData?.users.length ?? 0}
+                  {referredUsersData?.users?.length ?? 0}
                 </span>
                 <span className="text-[9px] sm:text-[10px] text-muted">Friends Joined</span>
               </div>
             </div>
 
-            <Link to="/refer-and-earn" className="w-full sm:w-auto">
-              <Button variant="primary" size="sm" className="w-full gap-2 shadow-md">
-                <Wallet className="h-4 w-4" />
-                Open Refer & Earn Hub
-                <ArrowRight className="h-3.5 w-3.5" />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsWithdrawOpen(true)}
+                className="flex-1 sm:flex-none gap-1.5 shadow-md shadow-emerald-500/20"
+              >
+                <Banknote className="h-4 w-4" />
+                Request Payout
               </Button>
-            </Link>
+              <Link to="/refer-and-earn" className="flex-1 sm:flex-none">
+                <Button variant="outline" size="sm" className="w-full gap-1.5">
+                  <span>Full Hub</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -330,7 +346,7 @@ export default function Dashboard() {
               </h3>
               <button
                 onClick={() => setIsEditingProfile(false)}
-                className="text-muted hover:text-fg transition-colors p-1"
+                className="text-muted hover:text-fg transition-colors p-1 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -378,7 +394,7 @@ export default function Dashboard() {
               </h3>
               <button
                 onClick={() => setIsChangingPassword(false)}
-                className="text-muted hover:text-fg transition-colors p-1"
+                className="text-muted hover:text-fg transition-colors p-1 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -403,7 +419,7 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => setShowCurrentPw(!showCurrentPw)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg p-1 cursor-pointer"
                   >
                     {showCurrentPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -424,7 +440,7 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => setShowNewPw(!showNewPw)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg p-1 cursor-pointer"
                   >
                     {showNewPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -503,6 +519,17 @@ export default function Dashboard() {
           <MessageSquare className="h-4 w-4" />
           Enquiries ({enquiries.length})
         </button>
+        <button
+          onClick={() => setActiveTab("referrals")}
+          className={`flex items-center gap-2 pb-3.5 text-xs sm:text-sm font-semibold border-b-2 px-3 sm:px-4 transition-colors -mb-[2px] whitespace-nowrap cursor-pointer ${
+            activeTab === "referrals"
+              ? "border-emerald-400 text-emerald-400"
+              : "border-transparent text-muted hover:text-fg"
+          }`}
+        >
+          <Gift className="h-4 w-4" />
+          Refer & Earn (₹{availableBal})
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -535,73 +562,244 @@ export default function Dashboard() {
               ))}
             </div>
           )
-        ) : loadingEnquiries ? (
-          <div className="space-y-3 sm:space-y-4">
-            {[1, 2].map((n) => (
-              <div key={n} className="h-24 rounded-xl bg-surface-hi/40 animate-pulse border border-line" />
-            ))}
-          </div>
-        ) : enquiries.length === 0 ? (
-          <div className="text-center py-12 md:py-16 border border-dashed border-line rounded-2xl bg-surface/30 px-4">
-            <MessageSquare className="h-10 w-10 text-faint mx-auto mb-3" />
-            <h3 className="font-display font-semibold text-base sm:text-lg text-fg">No Enquiries Yet</h3>
-            <p className="text-muted text-xs sm:text-sm mt-1 mb-6 max-w-sm mx-auto">
-              When you enquire about a project or custom requirements, details will show up here.
-            </p>
-            <Link to="/explore">
-              <Button variant="outline" className="mx-auto">
-                Explore Projects
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-3 sm:space-y-4">
-            {enquiries.map((enq) => (
-              <div
-                key={enq.id}
-                className="glass rounded-xl border border-line p-4 sm:p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-violet/30 transition-colors"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center flex-wrap gap-2">
-                    <Badge color={getStatusColor(enq.status)}>
-                      {enq.status.toUpperCase()}
-                    </Badge>
-                    <span className="text-xs text-faint">{formatDate(enq.rowCreatedTime)}</span>
-                  </div>
-                  <h4 className="font-display font-semibold text-fg text-sm sm:text-base md:text-lg">
-                    {enq.project ? (
-                      <Link to={`/project/${enq.project.id}`} className="hover:text-cyan transition-colors inline-flex items-center gap-1">
-                        {enq.project.projectTitle}
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </Link>
-                    ) : (
-                      "Custom Project Request"
-                    )}
-                  </h4>
-                  <p className="text-xs sm:text-sm text-muted line-clamp-2 max-w-2xl bg-bg-soft/40 border border-line/20 p-2.5 rounded-lg italic">
-                    "{enq.message}"
-                  </p>
-                  {enq.project && (
-                    <div className="text-xs text-faint">
-                      Quoted Price: <span className="text-fg font-semibold">{formatINR(enq.project.discountedPrice ?? enq.project.recommendedPrice)}</span>
+        ) : activeTab === "enquiries" ? (
+          loadingEnquiries ? (
+            <div className="space-y-3 sm:space-y-4">
+              {[1, 2].map((n) => (
+                <div key={n} className="h-24 rounded-xl bg-surface-hi/40 animate-pulse border border-line" />
+              ))}
+            </div>
+          ) : enquiries.length === 0 ? (
+            <div className="text-center py-12 md:py-16 border border-dashed border-line rounded-2xl bg-surface/30 px-4">
+              <MessageSquare className="h-10 w-10 text-faint mx-auto mb-3" />
+              <h3 className="font-display font-semibold text-base sm:text-lg text-fg">No Enquiries Yet</h3>
+              <p className="text-muted text-xs sm:text-sm mt-1 mb-6 max-w-sm mx-auto">
+                When you enquire about a project or custom requirements, details will show up here.
+              </p>
+              <Link to="/explore">
+                <Button variant="outline" className="mx-auto">
+                  Explore Projects
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3 sm:space-y-4">
+              {enquiries.map((enq) => (
+                <div
+                  key={enq.id}
+                  className="glass rounded-xl border border-line p-4 sm:p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-violet/30 transition-colors"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center flex-wrap gap-2">
+                      <Badge color={getStatusColor(enq.status)}>
+                        {enq.status.toUpperCase()}
+                      </Badge>
+                      <span className="text-xs text-faint">{formatDate(enq.rowCreatedTime)}</span>
                     </div>
-                  )}
+                    <h4 className="font-display font-semibold text-fg text-sm sm:text-base md:text-lg">
+                      {enq.project ? (
+                        <Link to={`/project/${enq.project.id}`} className="hover:text-cyan transition-colors inline-flex items-center gap-1">
+                          {enq.project.projectTitle}
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </Link>
+                      ) : (
+                        "Custom Project Request"
+                      )}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-muted line-clamp-2 max-w-2xl bg-bg-soft/40 border border-line/20 p-2.5 rounded-lg italic">
+                      "{enq.message}"
+                    </p>
+                    {enq.project && (
+                      <div className="text-xs text-faint">
+                        Quoted Price: <span className="text-fg font-semibold">{formatINR(enq.project.discountedPrice ?? enq.project.recommendedPrice)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center md:self-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleResumeChat(enq)}
+                      className="w-full md:w-auto text-xs"
+                    >
+                      Resume WhatsApp Chat
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center md:self-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleResumeChat(enq)}
-                    className="w-full md:w-auto text-xs"
-                  >
-                    Resume WhatsApp Chat
-                  </Button>
-                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          /* Dedicated Referrals Tab Content */
+          <div className="space-y-6">
+            {/* Quick stats in tab */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="glass rounded-xl border border-emerald-500/30 p-4 text-center space-y-1">
+                <span className="text-xs text-muted">Withdrawable</span>
+                <span className="block font-display text-xl font-bold text-emerald-400">
+                  ₹{availableBal}
+                </span>
+                <span className="text-[10px] text-faint">Instant UPI transfer</span>
               </div>
-            ))}
+              <div className="glass rounded-xl border border-line p-4 text-center space-y-1">
+                <span className="text-xs text-muted">Total Earned</span>
+                <span className="block font-display text-xl font-bold text-fg">
+                  ₹{balanceData?.totalEarned ?? 0}
+                </span>
+                <span className="text-[10px] text-faint">Confirmed rewards</span>
+              </div>
+              <div className="glass rounded-xl border border-line p-4 text-center space-y-1">
+                <span className="text-xs text-muted">Total Withdrawn</span>
+                <span className="block font-display text-xl font-bold text-fg">
+                  ₹{balanceData?.totalWithdrawn ?? 0}
+                </span>
+                <span className="text-[10px] text-faint">Paid out to bank</span>
+              </div>
+              <div className="glass rounded-xl border border-line p-4 text-center space-y-1">
+                <span className="text-xs text-muted">Friends Joined</span>
+                <span className="block font-display text-xl font-bold text-cyan">
+                  {referredUsersData?.users?.length ?? 0}
+                </span>
+                <span className="text-[10px] text-faint">Signed up with link</span>
+              </div>
+            </div>
+
+            {/* Payout Action Card */}
+            <div className="glass rounded-2xl border border-line p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h4 className="font-display font-bold text-fg text-base">Request UPI Withdrawal</h4>
+                <p className="text-xs text-muted">
+                  Minimum withdrawal is ₹100. Payouts are transferred directly to your UPI ID.
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsWithdrawOpen(true)}
+                className="gap-1.5 shadow-md shadow-emerald-500/20"
+              >
+                <Banknote className="h-4 w-4" />
+                Request Withdrawal (₹{availableBal})
+              </Button>
+            </div>
+
+            {/* Payout & Withdrawal History */}
+            <div className="glass rounded-2xl border border-line p-5 sm:p-6 space-y-4">
+              <h4 className="font-display font-bold text-fg text-base flex items-center gap-2">
+                <Clock className="h-4 w-4 text-cyan" />
+                Withdrawal & Payout History
+              </h4>
+              {withdrawalHistory.length === 0 ? (
+                <p className="text-xs text-muted text-center py-6 bg-surface-hi/20 rounded-xl border border-line">
+                  No payout requests submitted yet. Request a withdrawal once your balance reaches ₹100.
+                </p>
+              ) : (
+                <div className="overflow-x-auto rounded-xl border border-line bg-surface/30">
+                  <table className="w-full text-xs min-w-[500px]">
+                    <thead>
+                      <tr className="text-left text-muted border-b border-line bg-surface/60">
+                        <th className="px-3.5 py-2.5 font-medium">Amount</th>
+                        <th className="px-3.5 py-2.5 font-medium">UPI Details</th>
+                        <th className="px-3.5 py-2.5 font-medium">Status</th>
+                        <th className="px-3.5 py-2.5 font-medium">Transaction ID</th>
+                        <th className="px-3.5 py-2.5 font-medium">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {withdrawalHistory.map((w) => {
+                        const isPaid = w.status === "APPROVED" || w.status === "PAID";
+                        return (
+                          <tr key={w.id} className="border-b border-line/40 last:border-0 hover:bg-surface/40 transition-colors">
+                            <td className="px-3.5 py-3 font-mono font-bold text-fg">₹{w.amount}</td>
+                            <td className="px-3.5 py-3">
+                              <div className="font-mono text-fg">{w.upiId}</div>
+                              <div className="text-[10px] text-muted">{w.upiHolderName}</div>
+                            </td>
+                            <td className="px-3.5 py-3">
+                              <span
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                  w.status === "PENDING"
+                                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                    : isPaid
+                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                    : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                                bag}`}
+                              >
+                                {isPaid ? "PAID" : w.status}
+                              </span>
+                            </td>
+                            <td className="px-3.5 py-3 font-mono text-cyan font-semibold">
+                              {w.transactionId || (isPaid ? "Completed" : "—")}
+                            </td>
+                            <td className="px-3.5 py-3 text-muted">
+                              {new Date(w.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Friends who joined */}
+            <div className="glass rounded-2xl border border-line p-5 sm:p-6 space-y-4">
+              <h4 className="font-display font-bold text-fg text-base flex items-center gap-2">
+                <Users className="h-4 w-4 text-violet" />
+                Friends Joined Via Your Link
+              </h4>
+              {!referredUsersData || referredUsersData.users.length === 0 ? (
+                <p className="text-xs text-muted text-center py-6 bg-surface-hi/20 rounded-xl border border-line">
+                  No friends have joined using your link yet. Share your referral link to earn ₹100 per project!
+                </p>
+              ) : (
+                <div className="overflow-x-auto rounded-xl border border-line bg-surface/30">
+                  <table className="w-full text-xs min-w-[500px]">
+                    <thead>
+                      <tr className="text-left text-muted border-b border-line bg-surface/60">
+                        <th className="px-3.5 py-2.5 font-medium">Friend Name</th>
+                        <th className="px-3.5 py-2.5 font-medium">Email</th>
+                        <th className="px-3.5 py-2.5 font-medium">Signed Up</th>
+                        <th className="px-3.5 py-2.5 font-medium">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {referredUsersData.users.map((u) => (
+                        <tr key={u.id} className="border-b border-line/40 last:border-0 hover:bg-surface/40 transition-colors">
+                          <td className="px-3.5 py-3 font-semibold text-fg">{u.name}</td>
+                          <td className="px-3.5 py-3 text-muted font-mono">{u.email}</td>
+                          <td className="px-3.5 py-3 text-muted">
+                            {new Date(u.signedUpAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                          </td>
+                          <td className="px-3.5 py-3">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                u.purchased
+                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                  : "bg-surface-hi text-muted border border-line"
+                              }`}
+                            >
+                              {u.purchased ? "Verified Purchase (₹100 Earned)" : "Signed Up"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
+
+      {/* Reusable Withdrawal Modal */}
+      <WithdrawalModal
+        isOpen={isWithdrawOpen}
+        onClose={() => setIsWithdrawOpen(false)}
+        availableBalance={availableBal}
+      />
     </div>
   );
 }
