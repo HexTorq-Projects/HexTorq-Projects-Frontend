@@ -1,70 +1,98 @@
-import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Loader2, XCircle, Printer, ArrowRight, Sparkles } from "lucide-react";
-import { useVerifyRedirect } from "@/api/orders";
-import { Button } from "@/components/ui/Button";
+import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { X, Printer, Download, Sparkles, Check, ArrowRight } from "lucide-react";
 import {
   ReceiptPrinter,
   type ReceiptPrinterStage,
 } from "@/components/ui/ReceiptPrinter";
 import { formatINR, formatDate } from "@/lib/format";
+import type { Order } from "@/api/types";
+import { Button } from "@/components/ui/Button";
 
-export default function PaymentCallback() {
-  const [params] = useSearchParams();
-  const verify = useVerifyRedirect();
-  const [stage, setStage] = useState<ReceiptPrinterStage>("processing");
+interface ReceiptModalProps {
+  order: Order | null;
+  isOpen: boolean;
+  onClose: () => void;
+  initialStage?: ReceiptPrinterStage;
+}
+
+export function ReceiptModal({
+  order,
+  isOpen,
+  onClose,
+  initialStage = "printing",
+}: ReceiptModalProps) {
+  const [stage, setStage] = useState<ReceiptPrinterStage>(initialStage);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const body = Object.fromEntries(params.entries());
-    if (!verify.isPending && !verify.isSuccess && !verify.isError) {
-      verify.mutate(body);
+    if (isOpen) {
+      setStage(initialStage);
+      if (initialStage === "processing") {
+        const t1 = setTimeout(() => setStage("printing"), 1200);
+        const t2 = setTimeout(() => setStage("complete"), 3600);
+        return () => {
+          clearTimeout(t1);
+          clearTimeout(t2);
+        };
+      } else if (initialStage === "printing") {
+        const t = setTimeout(() => setStage("complete"), 2400);
+        return () => clearTimeout(t);
+      }
     }
-  }, []);
+  }, [isOpen, initialStage]);
 
-  const order = verify.data?.order;
-  const paid = order?.paymentStatus === "SUCCESS";
-  const partial = order?.paymentStatus === "PARTIAL";
-
-  // Trigger smooth receipt animation when payment is verified
-  useEffect(() => {
-    if (verify.isSuccess && (paid || partial)) {
-      setStage("printing");
-      const t = setTimeout(() => {
-        setStage("complete");
-      }, 2600);
-      return () => clearTimeout(t);
-    } else if (verify.isError) {
-      setStage("complete");
-    }
-  }, [verify.isSuccess, verify.isError, paid, partial]);
+  if (!isOpen || !order) return null;
 
   const paidAmount =
-    order && paid
+    order.paymentStatus === "SUCCESS"
       ? order.totalAmount
-      : order && partial && order.balanceDue > 0
+      : order.status === "BOOKED" && order.balanceDue > 0
       ? order.totalAmount - order.balanceDue
-      : order?.totalAmount ?? 0;
+      : order.totalAmount;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleCopyId = () => {
+    if (order.orderNumber) {
+      navigator.clipboard.writeText(order.orderNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 flex flex-col items-center justify-center aurora grain">
-      {/* If Order Verified Successfully: Show The Receipt Printer Animation */}
-      {order && (paid || partial) ? (
-        <div className="w-full max-w-md flex flex-col items-center space-y-6">
-          <div className="text-center space-y-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              {paid ? "Payment Verified Successfully" : "Advance Deposit Received"}
-            </span>
-            <h1 className="font-display text-2xl font-bold text-fg">
-              {paid ? "Order Confirmed!" : "Project Slot Booked!"}
-            </h1>
-            <p className="text-xs text-muted">
-              {partial
-                ? `Your slot is locked. Remaining balance can be paid before final handoff.`
-                : `Your receipt has been generated below. Keep this for Viva & Code Support.`}
-            </p>
-          </div>
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/85 backdrop-blur-md"
+        />
 
+        {/* Content */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.92, y: 20 }}
+          transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          className="relative z-10 w-full max-w-md my-8 flex flex-col items-center"
+        >
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute -top-12 right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all cursor-pointer"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {/* Receipt Printer Component */}
           <ReceiptPrinter.Root stage={stage} feedMotion="stepped">
             <ReceiptPrinter.Machine>
               <ReceiptPrinter.Header>
@@ -76,9 +104,16 @@ export default function PaymentCallback() {
                     HEXTORQ
                   </span>
                 </div>
-                <span className="text-[11px] font-mono font-bold text-cyan bg-cyan/10 border border-cyan/25 px-2 py-0.5 rounded-md">
-                  {order.orderNumber}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleCopyId}
+                    className="text-[11px] font-mono font-bold text-cyan bg-cyan/10 border border-cyan/25 hover:bg-cyan/20 px-2 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer"
+                    title="Click to copy Order #"
+                  >
+                    {copied ? <Check className="h-3 w-3" /> : null}
+                    <span>{order.orderNumber}</span>
+                  </button>
+                </div>
               </ReceiptPrinter.Header>
 
               <ReceiptPrinter.Screen>
@@ -91,7 +126,7 @@ export default function PaymentCallback() {
                           : `${order.items.length} Project Package(s)`}
                       </p>
                       <p className="text-[10px] text-white/50 pt-0.5">
-                        Pay-Panda Verified Gateway
+                        Verified Pay-Panda Handoff
                       </p>
                     </div>
                     <strong className="font-mono text-base font-black text-emerald-400">
@@ -105,6 +140,7 @@ export default function PaymentCallback() {
 
             <ReceiptPrinter.Output>
               <ReceiptPrinter.Paper>
+                {/* Receipt Paper Content */}
                 <div className="space-y-4 text-xs font-mono select-text">
                   {/* Store Header */}
                   <div className="text-center pb-3 border-b border-dashed border-black/30 space-y-1">
@@ -185,7 +221,7 @@ export default function PaymentCallback() {
                     )}
                   </div>
 
-                  {/* Barcode */}
+                  {/* Barcode representation */}
                   <div className="pt-3 border-t border-dashed border-black/30 text-center space-y-1.5">
                     <div className="h-9 w-full flex items-center justify-center gap-[3px] overflow-hidden px-4 opacity-80">
                       {Array.from({ length: 34 }).map((_, i) => (
@@ -214,60 +250,31 @@ export default function PaymentCallback() {
             </ReceiptPrinter.Output>
           </ReceiptPrinter.Root>
 
-          {/* Action buttons */}
-          <div className="w-full max-w-sm flex items-center gap-3">
+          {/* Quick Actions after complete */}
+          <div className="w-full max-w-sm mt-4 flex items-center gap-3">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.print()}
+              onClick={handlePrint}
               className="flex-1 h-10 rounded-xl bg-surface/90 border-line text-xs font-semibold flex items-center justify-center gap-1.5 hover:border-violet/40"
             >
               <Printer className="h-3.5 w-3.5 text-cyan" />
               <span>Print Receipt</span>
             </Button>
-            <Link to="/orders" className="flex-1">
-              <Button
-                variant="primary"
-                size="sm"
-                className="w-full h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5"
-              >
-                <span>View Orders</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            </Link>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onClose}
+              className="flex-1 h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5"
+            >
+              <span>Done</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
           </div>
-        </div>
-      ) : (
-        <div className="max-w-lg w-full rounded-2xl border border-line bg-surface/70 p-8 text-center space-y-5">
-          {verify.isPending && (
-            <>
-              <Loader2 className="h-10 w-10 mx-auto text-cyan animate-spin" />
-              <h1 className="font-display text-2xl font-bold text-fg">Verifying payment</h1>
-              <p className="text-sm text-muted">Please wait while we verify this Pay-Panda payment with the backend.</p>
-            </>
-          )}
-
-          {verify.isSuccess && !paid && !partial && (
-            <>
-              <XCircle className="h-12 w-12 mx-auto text-amber-400" />
-              <h1 className="font-display text-2xl font-bold text-fg">Payment not completed</h1>
-              <p className="text-sm text-muted">
-                Order {order?.orderNumber} is marked as {order?.paymentStatus}.
-              </p>
-              <Link to="/orders"><Button variant="primary">View Orders</Button></Link>
-            </>
-          )}
-
-          {verify.isError && (
-            <>
-              <XCircle className="h-12 w-12 mx-auto text-rose-400" />
-              <h1 className="font-display text-2xl font-bold text-fg">Verification failed</h1>
-              <p className="text-sm text-muted">{(verify.error as Error).message}</p>
-              <Link to="/orders"><Button variant="outline">Go to Orders</Button></Link>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
   );
 }
+
+export default ReceiptModal;

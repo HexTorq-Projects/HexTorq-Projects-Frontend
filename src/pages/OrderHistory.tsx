@@ -1,11 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { PackageCheck, RefreshCw, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
+import { PackageCheck, RefreshCw, Wallet, Receipt } from "lucide-react";
 import { useOrders, useVerifyOrder, usePayBalance } from "@/api/orders";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, formatINR } from "@/lib/format";
+import { ReceiptModal } from "@/components/modals/ReceiptModal";
+import type { Order } from "@/api/types";
 
 function badgeColor(paymentStatus: string) {
   if (paymentStatus === "SUCCESS") return "#10b981";
@@ -20,6 +22,7 @@ export default function OrderHistory() {
   const { data: orders = [], isLoading } = useOrders();
   const verify = useVerifyOrder();
   const payBalance = usePayBalance();
+  const [selectedReceiptOrder, setSelectedReceiptOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     if (!user) navigate(`/login?redirect=${encodeURIComponent("/orders")}`);
@@ -34,7 +37,7 @@ export default function OrderHistory() {
           <PackageCheck className="h-7 w-7 text-cyan" />
           Order History
         </h1>
-        <p className="text-sm text-muted mt-1">Track Pay-Panda checkout and verification status for purchased projects.</p>
+        <p className="text-sm text-muted mt-1">Track Pay-Panda checkout, verification status, and view thermal receipts for purchased projects.</p>
       </div>
 
       {isLoading ? (
@@ -81,6 +84,18 @@ export default function OrderHistory() {
                       </span>
                     )}
                   </div>
+
+                  {/* View Thermal Receipt Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedReceiptOrder(order)}
+                    className="flex items-center gap-1.5 border-line/80 hover:border-cyan/40 hover:text-cyan"
+                    title="View printed thermal receipt"
+                  >
+                    <Receipt className="h-4 w-4 text-cyan" />
+                    <span>Receipt</span>
+                  </Button>
 
                   {order.status === "BOOKED" && order.balanceDue > 0 && (
                     <Button
@@ -132,6 +147,14 @@ export default function OrderHistory() {
           ))}
         </div>
       )}
+
+      {/* Interactive Receipt Printer Modal */}
+      <ReceiptModal
+        order={selectedReceiptOrder}
+        isOpen={Boolean(selectedReceiptOrder)}
+        onClose={() => setSelectedReceiptOrder(null)}
+        initialStage="printing"
+      />
     </div>
   );
 }
