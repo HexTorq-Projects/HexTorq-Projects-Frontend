@@ -86,46 +86,46 @@ export default function OrderHistory() {
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap">
-
-                  {/* View Thermal Receipt Button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedReceiptOrder(order)}
-                    className="flex items-center gap-1.5 border-line/80 hover:border-cyan/40 hover:text-cyan"
-                    title="View printed thermal receipt"
-                  >
-                    <Receipt className="h-4 w-4 text-cyan" />
-                    <span>Receipt</span>
-                  </Button>
-
-                  {order.status === "BOOKED" && order.balanceDue > 0 && (
+                    {/* View Thermal Receipt Button */}
                     <Button
-                      variant="primary"
+                      variant="outline"
                       size="sm"
-                      onClick={() =>
-                        payBalance.mutate(order.id, { onSuccess: (data) => (window.location.href = data.checkoutUrl) })
-                      }
-                      disabled={payBalance.isPending}
-                      className="shadow-md shadow-violet-500/20"
+                      onClick={() => setSelectedReceiptOrder(order)}
+                      className="flex items-center gap-1.5 border-line/80 hover:border-cyan/40 hover:text-cyan"
+                      title="View printed thermal receipt"
                     >
-                      <Wallet className="h-4 w-4" />
-                      Pay Due {formatINR(order.balanceDue)}
+                      <Receipt className="h-4 w-4 text-cyan" />
+                      <span>Receipt</span>
                     </Button>
-                  )}
 
-                  {order.checkoutUrl && order.paymentStatus !== "SUCCESS" && order.paymentStatus !== "PARTIAL" && (
-                    <a href={order.checkoutUrl} target="_blank" rel="noreferrer">
-                      <Button variant="primary" size="sm">Pay Now</Button>
-                    </a>
-                  )}
+                    {order.status === "BOOKED" && order.balanceDue > 0 && (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() =>
+                          payBalance.mutate(order.id, { onSuccess: (data) => (window.location.href = data.checkoutUrl) })
+                        }
+                        disabled={payBalance.isPending}
+                        className="shadow-md shadow-violet-500/20"
+                      >
+                        <Wallet className="h-4 w-4" />
+                        Pay Due {formatINR(order.balanceDue)}
+                      </Button>
+                    )}
 
-                  {order.paymentStatus !== "SUCCESS" && order.paymentStatus !== "PARTIAL" && (
-                    <Button variant="outline" size="sm" onClick={() => verify.mutate(order.id)} disabled={verify.isPending}>
-                      <RefreshCw className={`h-4 w-4 ${verify.isPending ? "animate-spin" : ""}`} />
-                      Re-Verify Status
-                    </Button>
-                  )}
+                    {order.checkoutUrl && order.paymentStatus !== "SUCCESS" && order.paymentStatus !== "PARTIAL" && (
+                      <a href={order.checkoutUrl} target="_blank" rel="noreferrer">
+                        <Button variant="primary" size="sm">Pay Now</Button>
+                      </a>
+                    )}
+
+                    {order.paymentStatus !== "SUCCESS" && order.paymentStatus !== "PARTIAL" && (
+                      <Button variant="outline" size="sm" onClick={() => verify.mutate(order.id)} disabled={verify.isPending}>
+                        <RefreshCw className={`h-4 w-4 ${verify.isPending ? "animate-spin" : ""}`} />
+                        Re-Verify Status
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
 
