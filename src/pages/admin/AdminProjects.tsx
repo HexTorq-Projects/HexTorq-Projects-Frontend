@@ -1,11 +1,30 @@
 import { useState } from "react";
-import { Trash2, Pencil, Plus, AlertCircle, FolderKanban, Search, Star, Code, Layers, Sparkles, ExternalLink } from "lucide-react";
+import {
+  Trash2,
+  Pencil,
+  Plus,
+  AlertCircle,
+  FolderKanban,
+  Search,
+  Star,
+  Code,
+  Layers,
+  Sparkles,
+  ExternalLink,
+  Copy,
+  Upload,
+  Download,
+  Video,
+  HelpCircle,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   useAdminProjects,
   useCreateAdminProject,
   useUpdateAdminProject,
   useDeleteAdminProject,
+  useDuplicateProject,
+  useBulkImportProjects,
   useAdminCategories,
   useAdminSubCategories,
   useAdminApplicationAreas,
@@ -31,6 +50,15 @@ const EMPTY_FORM: ProjectInput = {
   recommendedPrice: null,
   discountedPrice: null,
   originalPrice: null,
+  basicPrice: null,
+  standardPrice: null,
+  premiumPrice: null,
+  elitePrice: null,
+  isFeatured: false,
+  isTrending: false,
+  demoVideoUrl: null,
+  outputImages: null,
+  vivaQuestions: null,
   suggestedTech: "",
   suggestedModules: "",
   categoryId: "",
@@ -41,18 +69,26 @@ const EMPTY_FORM: ProjectInput = {
 export default function AdminProjects() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useAdminProjects(page, search || undefined);
+  const [tier, setTier] = useState("");
+  const { data, isLoading } = useAdminProjects(page, search || undefined, tier || undefined);
   const { data: categories } = useAdminCategories();
   const { data: subCategories } = useAdminSubCategories();
   const { data: appAreas } = useAdminApplicationAreas();
 
   const createMutation = useCreateAdminProject();
   const updateMutation = useUpdateAdminProject();
+  const duplicateMutation = useDuplicateProject();
   const deleteMutation = useDeleteAdminProject();
+  const bulkImportMutation = useBulkImportProjects();
 
   const [editing, setEditing] = useState<Project | "new" | null>(null);
   const [form, setForm] = useState<ProjectInput>(EMPTY_FORM);
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Bulk Import modal state
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [bulkCsvText, setBulkCsvText] = useState("");
+  const [bulkResult, setBulkResult] = useState<{ importedCount: number; errors: string[] } | null>(null);
 
   const openNew = () => {
     setEditing("new");
@@ -74,6 +110,15 @@ export default function AdminProjects() {
       recommendedPrice: project.recommendedPrice,
       discountedPrice: project.discountedPrice,
       originalPrice: project.originalPrice,
+      basicPrice: project.basicPrice ?? null,
+      standardPrice: project.standardPrice ?? null,
+      premiumPrice: project.premiumPrice ?? null,
+      elitePrice: project.elitePrice ?? null,
+      isFeatured: project.isFeatured ?? false,
+      isTrending: project.isTrending ?? false,
+      demoVideoUrl: project.demoVideoUrl ?? null,
+      outputImages: project.outputImages ?? null,
+      vivaQuestions: project.vivaQuestions ?? null,
       suggestedTech: project.suggestedTech ?? "",
       suggestedModules: project.suggestedModules ?? "",
       categoryId: project.category?.id ?? "",
@@ -89,7 +134,6 @@ export default function AdminProjects() {
       setFormError("Project Title is required.");
       return;
     }
-
     if (!form.categoryId) {
       setFormError("Please select an academic Category.");
       return;
@@ -115,6 +159,10 @@ export default function AdminProjects() {
       recommendedPrice: form.recommendedPrice ? Number(form.recommendedPrice) : null,
       discountedPrice: form.discountedPrice ? Number(form.discountedPrice) : null,
       originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
+      basicPrice: form.basicPrice ? Number(form.basicPrice) : null,
+      standardPrice: form.standardPrice ? Number(form.standardPrice) : null,
+      premiumPrice: form.premiumPrice ? Number(form.premiumPrice) : null,
+      elitePrice: form.elitePrice ? Number(form.elitePrice) : null,
       importanceScore: Number(form.importanceScore) || 50,
     };
 
@@ -124,9 +172,7 @@ export default function AdminProjects() {
           setEditing(null);
           setFormError(null);
         },
-        onError: (err: any) => {
-          setFormError(err?.message || "Failed to create project. Please check required fields.");
-        },
+        onError: (err: any) => setFormError(err?.message || "Failed to create project."),
       });
     } else if (editing) {
       updateMutation.mutate(
@@ -136,12 +182,14 @@ export default function AdminProjects() {
             setEditing(null);
             setFormError(null);
           },
-          onError: (err: any) => {
-            setFormError(err?.message || "Failed to update project.");
-          },
+          onError: (err: any) => setFormError(err?.message || "Failed to update project."),
         }
       );
     }
+  };
+
+  const handleDuplicate = (project: Project) => {
+    duplicateMutation.mutate(project.id);
   };
 
   const handleDelete = (project: Project) => {
@@ -150,22 +198,50 @@ export default function AdminProjects() {
     deleteMutation.mutate(project.id);
   };
 
-  const isSaving = createMutation.isPending || updateMutation.isPending;
+  const handleProcessBulkImport = () => {
+    const lines = bulkCsvText.trim().split("\n");
+    if (lines.length < 2) return;
+
+    const defaultCatId = categories?.items[0]?.id || "";
+    const items = lines.slice(1).map((line) => {
+      const parts = line.split(",").map((p) => p.trim().replace(/^"|"$/g, ""));
+      return {
+        projectTitle: parts[0] || "Untitled Project",
+        brief: parts[1] || "",
+        discountedPrice: Number(parts[2]) || 5500,
+        suggestedTech: parts[3] || "React, Node.js, AI/ML",
+        categoryId: defaultCatId,
+      };
+    });
+
+    bulkImportMutation.mutate(items, {
+      onSuccess: (res) => {
+        setBulkResult({ importedCount: res.importedCount, errors: res.errors });
+        if (res.errors.length === 0) {
+          setTimeout(() => {
+            setBulkModalOpen(false);
+            setBulkResult(null);
+            setBulkCsvText("");
+          }, 1500);
+        }
+      },
+    });
+  };
 
   const columns: Column<Project>[] = [
     {
       key: "title",
-      header: "Project Title & Brief",
+      header: "Project Deliverable & Brief",
       render: (p) => (
         <div className="max-w-md">
           <div className="flex items-center gap-2">
             <span className="font-bold text-fg text-xs line-clamp-1 hover:text-cyan transition-colors" title={p.projectTitle}>
               {p.projectTitle}
             </span>
-            {p.sellabilityTier === "Premium" && (
+            {p.isFeatured && (
               <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.2 text-[9px] font-extrabold text-amber-400">
                 <Star className="h-2.5 w-2.5 fill-current" />
-                PREMIUM
+                FEATURED
               </span>
             )}
           </div>
@@ -183,43 +259,27 @@ export default function AdminProjects() {
       ),
     },
     {
-      key: "tier",
-      header: "Tier / Level",
+      key: "tierPricing",
+      header: "Tier Pricing (INR)",
       render: (p) => (
-        <div className="flex flex-col gap-1">
-          {p.sellabilityTier ? (
-            <span className="text-[10px] font-bold text-violet px-2 py-0.5 rounded-md bg-violet/10 border border-violet/20 w-fit">
-              {p.sellabilityTier}
-            </span>
-          ) : (
-            <span className="text-muted text-xs">—</span>
-          )}
-          {p.complexity && (
-            <span className="text-[9px] font-mono text-muted">
-              {p.complexity}
-            </span>
-          )}
+        <div className="flex flex-col gap-0.5 text-[11px] font-mono">
+          <span className="text-emerald-400 font-bold">
+            ₹{(p.discountedPrice ?? p.recommendedPrice ?? 5500).toLocaleString("en-IN")}
+          </span>
+          <span className="text-[10px] text-muted">
+            Basic: ₹{p.basicPrice || 3500} • Elite: ₹{p.elitePrice || 12000}
+          </span>
         </div>
       ),
     },
     {
-      key: "price",
-      header: "Effective Price",
-      render: (p) => {
-        const effective = p.discountedPrice ?? p.recommendedPrice ?? p.originalPrice ?? 0;
-        return (
-          <div>
-            <span className="font-mono font-bold text-sm text-emerald-400 block">
-              ₹{effective.toLocaleString("en-IN")}
-            </span>
-            {p.recommendedPrice && p.discountedPrice && p.discountedPrice < p.recommendedPrice && (
-              <span className="text-[10px] text-muted line-through font-mono">
-                ₹{p.recommendedPrice.toLocaleString("en-IN")}
-              </span>
-            )}
-          </div>
-        );
-      },
+      key: "ordersCount",
+      header: "Orders Placed",
+      render: (p) => (
+        <span className="text-xs font-bold text-fg px-2 py-0.5 rounded-md bg-surface-hi border border-line">
+          {p._count?.orderItems || 0} orders
+        </span>
+      ),
     },
     {
       key: "actions",
@@ -230,10 +290,17 @@ export default function AdminProjects() {
             to={`/project/${p.id}`}
             target="_blank"
             className="p-1.5 rounded-lg text-muted hover:text-cyan hover:bg-cyan/10 border border-transparent hover:border-cyan/20 transition-all"
-            title="View Live Page"
+            title="View live catalog"
           >
             <ExternalLink className="h-3.5 w-3.5" />
           </Link>
+          <button
+            onClick={() => handleDuplicate(p)}
+            className="p-1.5 rounded-lg text-muted hover:text-cyan hover:bg-cyan/10 border border-transparent hover:border-cyan/20 transition-all cursor-pointer"
+            title="Duplicate package"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
           <button
             onClick={() => openEdit(p)}
             className="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet/10 border border-transparent hover:border-violet/20 transition-all cursor-pointer"
@@ -268,28 +335,48 @@ export default function AdminProjects() {
             Engineering Projects Catalog
           </h1>
           <p className="text-xs text-muted">
-            Manage repository titles, descriptions, pricing tiers, technology stacks, and system modules.
+            Manage repository titles, 4-tier pricing matrix, demo media, and Viva Q&A question banks.
           </p>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="relative max-w-xs w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-            <Input
-              placeholder="Search title/brief..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              className="pl-9 bg-surface-hi/60 text-xs"
-            />
-          </div>
+          <Button variant="outline" size="sm" onClick={() => setBulkModalOpen(true)} className="gap-1.5 border-line hover:border-violet/40">
+            <Upload className="h-4 w-4" /> Bulk CSV Import
+          </Button>
           <Button variant="primary" onClick={openNew} className="gap-1.5 shadow-md shadow-violet-500/20">
-            <Plus className="h-4 w-4" />
-            Add New Project
+            <Plus className="h-4 w-4" /> Add Deliverable
           </Button>
         </div>
+      </div>
+
+      {/* Filter Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="relative w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+          <Input
+            placeholder="Search title, tech, or brief..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="pl-9 bg-surface-hi/60 text-xs"
+          />
+        </div>
+
+        <select
+          className="rounded-xl border border-line bg-surface-hi/60 px-3 py-2 text-xs text-fg cursor-pointer"
+          value={tier}
+          onChange={(e) => {
+            setTier(e.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">All Tiers</option>
+          {SELLABILITY_TIERS.filter(Boolean).map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
       </div>
 
       <DataTable
@@ -300,7 +387,7 @@ export default function AdminProjects() {
         page={data?.page}
         pages={data?.pages}
         onPageChange={setPage}
-        emptyMessage="No engineering projects match the search filter."
+        emptyMessage="No projects match the criteria."
       />
 
       {/* Project Create/Edit Modal */}
@@ -312,7 +399,7 @@ export default function AdminProjects() {
       >
         <div className="space-y-5 text-xs">
           {formError && (
-            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-400 flex items-center gap-2">
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-semibold text-rose-400 flex items-center gap-2">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {formError}
             </div>
@@ -323,7 +410,7 @@ export default function AdminProjects() {
               id="p-title"
               value={form.projectTitle}
               onChange={(e) => setForm({ ...form, projectTitle: e.target.value })}
-              placeholder="e.g. Privacy-Preserving Health Platform using Federated ML"
+              placeholder="e.g. Real-Time Autonomous Drone Detection using Deep CNNs"
               required
             />
           </Field>
@@ -334,51 +421,45 @@ export default function AdminProjects() {
               rows={2}
               value={form.brief}
               onChange={(e) => setForm({ ...form, brief: e.target.value })}
-              placeholder="1-2 sentences summarizing the project for catalog cards."
             />
           </Field>
 
           <Field label="Detailed Technical Description" htmlFor="p-detailed">
             <Textarea
               id="p-detailed"
-              rows={4}
+              rows={3}
               value={form.detailed}
               onChange={(e) => setForm({ ...form, detailed: e.target.value })}
-              placeholder="Full system overview, architecture description, and algorithms utilized."
             />
           </Field>
 
-          {/* Categories & Domains */}
+          {/* Academic Categorization */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Field label="Academic Category" htmlFor="p-cat" required>
+            <Field label="Academic Stream" htmlFor="p-cat" required>
               <select
                 id="p-cat"
-                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3 py-2 text-xs text-fg"
                 value={form.categoryId}
                 onChange={(e) => setForm({ ...form, categoryId: e.target.value, subCategoryId: null })}
                 required
               >
                 <option value="">Select Stream...</option>
                 {categories?.items.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.categoryName}
-                  </option>
+                  <option key={c.id} value={c.id}>{c.categoryName}</option>
                 ))}
               </select>
             </Field>
 
-            <Field label="Sub-Category" htmlFor="p-subcat">
+            <Field label="Sub-Category Branch" htmlFor="p-subcat">
               <select
                 id="p-subcat"
-                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3 py-2 text-xs text-fg"
                 value={form.subCategoryId ?? ""}
                 onChange={(e) => setForm({ ...form, subCategoryId: e.target.value || null })}
               >
                 <option value="">None</option>
                 {filteredSubCategories.map((sc) => (
-                  <option key={sc.id} value={sc.id}>
-                    {sc.subCategoryName}
-                  </option>
+                  <option key={sc.id} value={sc.id}>{sc.subCategoryName}</option>
                 ))}
               </select>
             </Field>
@@ -386,128 +467,121 @@ export default function AdminProjects() {
             <Field label="Application Domain" htmlFor="p-apparea">
               <select
                 id="p-apparea"
-                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
+                className="w-full rounded-xl border border-line bg-surface-hi px-3 py-2 text-xs text-fg"
                 value={form.applicationAreaId ?? ""}
                 onChange={(e) => setForm({ ...form, applicationAreaId: e.target.value || null })}
               >
                 <option value="">None</option>
                 {appAreas?.items.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.applicationAreaName}
-                  </option>
+                  <option key={a.id} value={a.id}>{a.applicationAreaName}</option>
                 ))}
               </select>
             </Field>
           </div>
 
-          {/* Pricing Grid */}
+          {/* 4-Tier Pricing Grid */}
           <div className="rounded-2xl border border-line bg-surface-hi/40 p-4 space-y-3">
-            <span className="text-xs font-bold text-fg block">Pricing Parameters (₹ INR)</span>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Field label="Discounted / Effective Price (₹)" htmlFor="p-disc">
+            <span className="text-xs font-bold text-fg block">4-Tier Service Package Pricing (₹ INR)</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <Field label="Basic (₹)" htmlFor="p-bp">
                 <Input
-                  id="p-disc"
+                  id="p-bp"
                   type="number"
-                  value={form.discountedPrice ?? ""}
-                  onChange={(e) => setForm({ ...form, discountedPrice: e.target.value ? Number(e.target.value) : null })}
-                  placeholder="e.g. 6500"
+                  value={form.basicPrice ?? ""}
+                  onChange={(e) => setForm({ ...form, basicPrice: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="3500"
                 />
               </Field>
-              <Field label="Recommended List Price (₹)" htmlFor="p-rec">
+              <Field label="Standard (₹)" htmlFor="p-sp">
                 <Input
-                  id="p-rec"
+                  id="p-sp"
                   type="number"
-                  value={form.recommendedPrice ?? ""}
-                  onChange={(e) => setForm({ ...form, recommendedPrice: e.target.value ? Number(e.target.value) : null })}
-                  placeholder="e.g. 7000"
+                  value={form.standardPrice ?? ""}
+                  onChange={(e) => setForm({ ...form, standardPrice: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="5500"
                 />
               </Field>
-              <Field label="Original Base Price (₹)" htmlFor="p-orig">
+              <Field label="Premium (₹)" htmlFor="p-pp">
                 <Input
-                  id="p-orig"
+                  id="p-pp"
                   type="number"
-                  value={form.originalPrice ?? ""}
-                  onChange={(e) => setForm({ ...form, originalPrice: e.target.value ? Number(e.target.value) : null })}
-                  placeholder="e.g. 8000"
+                  value={form.premiumPrice ?? ""}
+                  onChange={(e) => setForm({ ...form, premiumPrice: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="7500"
+                />
+              </Field>
+              <Field label="Elite (₹)" htmlFor="p-ep">
+                <Input
+                  id="p-ep"
+                  type="number"
+                  value={form.elitePrice ?? ""}
+                  onChange={(e) => setForm({ ...form, elitePrice: e.target.value ? Number(e.target.value) : null })}
+                  placeholder="12000"
                 />
               </Field>
             </div>
           </div>
 
-          {/* Tiers & Score */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Field label="Sellability Tier" htmlFor="p-tier">
-              <select
-                id="p-tier"
-                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
-                value={form.sellabilityTier}
-                onChange={(e) => setForm({ ...form, sellabilityTier: e.target.value })}
-              >
-                {SELLABILITY_TIERS.map((t) => (
-                  <option key={t} value={t}>
-                    {t || "None"}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Complexity Level" htmlFor="p-comp">
-              <select
-                id="p-comp"
-                className="w-full rounded-xl border border-line bg-surface-hi px-3.5 py-2.5 text-xs text-fg cursor-pointer focus:outline-none focus:border-violet"
-                value={form.complexity}
-                onChange={(e) => setForm({ ...form, complexity: e.target.value })}
-              >
-                {COMPLEXITY_OPTIONS.map((c) => (
-                  <option key={c} value={c}>
-                    {c || "None"}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Quality Score (0-100)" htmlFor="p-score">
-              <Input
-                id="p-score"
-                type="number"
-                min={0}
-                max={100}
-                value={form.importanceScore}
-                onChange={(e) => setForm({ ...form, importanceScore: Number(e.target.value) })}
-              />
-            </Field>
-          </div>
-
-          {/* Tech Stack & Modules */}
+          {/* Media & Viva Q&A */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Suggested Tech Stack (Comma separated)" htmlFor="p-tech">
+            <Field label="Demo Video URL (YouTube / Loom)" htmlFor="p-video">
               <Input
-                id="p-tech"
-                value={form.suggestedTech}
-                onChange={(e) => setForm({ ...form, suggestedTech: e.target.value })}
-                placeholder="React, NodeJS, PyTorch, MongoDB"
+                id="p-video"
+                value={form.demoVideoUrl ?? ""}
+                onChange={(e) => setForm({ ...form, demoVideoUrl: e.target.value || null })}
+                placeholder="https://youtube.com/..."
               />
             </Field>
-            <Field label="Suggested Modules (Comma separated)" htmlFor="p-mod">
+
+            <Field label="Viva Q&A Notes (JSON or Text)" htmlFor="p-viva">
               <Input
-                id="p-mod"
-                value={form.suggestedModules}
-                onChange={(e) => setForm({ ...form, suggestedModules: e.target.value })}
-                placeholder="Auth, Model Training, Payment Gateway"
+                id="p-viva"
+                value={form.vivaQuestions ?? ""}
+                onChange={(e) => setForm({ ...form, vivaQuestions: e.target.value || null })}
+                placeholder="Top viva questions and answers..."
               />
             </Field>
           </div>
 
-          <div className="pt-2">
-            <Button
-              className="w-full h-11 text-sm shadow-lg shadow-violet-500/25"
-              variant="primary"
-              onClick={handleSave}
-              disabled={isSaving}
-            >
-              {isSaving ? "Saving project package..." : editing === "new" ? "Create Project Deliverable" : "Save Project Package"}
-            </Button>
-          </div>
+          <Button
+            className="w-full h-11 text-sm shadow-lg shadow-violet-500/25"
+            variant="primary"
+            onClick={handleSave}
+            disabled={createMutation.isPending || updateMutation.isPending}
+          >
+            Save Project Package
+          </Button>
+        </div>
+      </FormModal>
+
+      {/* Bulk CSV Import Modal */}
+      <FormModal open={bulkModalOpen} title="Bulk CSV Catalog Import" onClose={() => setBulkModalOpen(false)}>
+        <div className="space-y-4 text-xs">
+          <p className="text-muted leading-relaxed">
+            Paste CSV formatted catalog records below (Format: <code>Title, Brief, Price, TechStack</code>):
+          </p>
+          <Textarea
+            rows={8}
+            className="font-mono text-xs"
+            value={bulkCsvText}
+            onChange={(e) => setBulkCsvText(e.target.value)}
+            placeholder={`Title,Brief,Price,Tech\nSmart Traffic AI,Traffic flow prediction,5500,"Python, PyTorch"\nFederated EHR,Privacy health ledger,6500,"React, Solidity"`}
+          />
+
+          {bulkResult && (
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-emerald-400">
+              Successfully imported {bulkResult.importedCount} projects!
+            </div>
+          )}
+
+          <Button
+            className="w-full shadow-md shadow-violet-500/20"
+            variant="primary"
+            onClick={handleProcessBulkImport}
+            disabled={bulkImportMutation.isPending || !bulkCsvText.trim()}
+          >
+            {bulkImportMutation.isPending ? "Importing records..." : "Process CSV Import"}
+          </Button>
         </div>
       </FormModal>
     </div>

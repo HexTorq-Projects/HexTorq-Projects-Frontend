@@ -52,6 +52,16 @@ export interface Project {
   recommendedPrice: number | null;
   discountedPrice: number | null;
   originalPrice: number | null;
+  basicPrice?: number | null;
+  standardPrice?: number | null;
+  premiumPrice?: number | null;
+  elitePrice?: number | null;
+  isFeatured?: boolean;
+  isTrending?: boolean;
+  viewCount?: number;
+  demoVideoUrl?: string | null;
+  outputImages?: string | null;
+  vivaQuestions?: string | null;
   suggestedTech: string | null;
   suggestedModules: string | null;
   category: ProjectCategory | null;
@@ -59,6 +69,7 @@ export interface Project {
   applicationArea: ProjectAppArea | null;
   activeOffer: ActiveOfferInfo | null;
   rowCreatedTime: string;
+  _count?: { orderItems: number; wishlist: number; enquiries: number };
 }
 
 export interface ProjectsResponse {
@@ -99,6 +110,7 @@ export interface User {
   name: string;
   email: string;
   phone: string | null;
+  referredByCode?: string | null;
 }
 export interface AuthResponse {
   token: string;
@@ -135,7 +147,7 @@ export interface OrderItem {
   projectId: string;
   projectTitleSnapshot: string;
   unitPrice: number;
-  project: Project;
+  project?: Project;
 }
 
 export interface OrderPayment {
@@ -151,11 +163,92 @@ export interface OrderPayment {
   rowCreatedTime: string;
 }
 
+export interface DeliveryEvent {
+  id: string;
+  fromStatus: string | null;
+  toStatus: string;
+  action: string;
+  actorName: string | null;
+  note: string | null;
+  rowCreatedTime: string;
+}
+
+export interface MeetSchedule {
+  id: string;
+  scheduledAt: string;
+  meetLink: string | null;
+  status: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+  note: string | null;
+  order?: {
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    customerEmail: string;
+    customerMobile: string | null;
+    serviceTier: string;
+    items: { projectTitleSnapshot: string }[];
+  };
+}
+
+export interface VisitSchedule {
+  id: string;
+  scheduledAt: string;
+  location: string | null;
+  status: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+  note: string | null;
+  order?: {
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    customerEmail: string;
+    customerMobile: string | null;
+    serviceTier: string;
+    items: { projectTitleSnapshot: string }[];
+  };
+}
+
+export interface SupportTicketMessage {
+  id: string;
+  authorName: string;
+  authorType: "USER" | "STAFF";
+  body: string;
+  rowCreatedTime: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  subject: string;
+  status: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+  rowCreatedTime: string;
+  user: { id: string; name: string; email: string; phone?: string | null };
+  order: {
+    id: string;
+    orderNumber: string;
+    status: string;
+    serviceTier: string;
+    items: { projectTitleSnapshot: string }[];
+  };
+  messages: SupportTicketMessage[];
+}
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  email: string;
+  role: "ADMIN" | "DELIVERY_SPECIALIST" | "SETUP_ENGINEER" | "MENTOR" | "SUPPORT_STAFF";
+  isActive: boolean;
+  rowCreatedTime: string;
+  _count?: { assignedOrders: number };
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
   status: string;
   paymentStatus: string;
+  deliveryStatus: string;
+  serviceTier: string;
   totalAmount: number;
   currency: string;
   paymentType: "FULL" | "ADVANCE";
@@ -169,8 +262,18 @@ export interface Order {
   bankRrn: string | null;
   paidAt: string | null;
   expiresAt: string | null;
+  packageSentAt?: string | null;
+  setupConfirmedAt?: string | null;
+  internalNotes?: string | null;
+  slaDeadline?: string | null;
+  assignedTo?: StaffMember | null;
+  deliveryEvents?: DeliveryEvent[];
+  meets?: MeetSchedule[];
+  visits?: VisitSchedule[];
+  tickets?: SupportTicket[];
   verificationCode: string | null;
   verificationMessage: string | null;
+  referralCode?: string | null;
   rowCreatedTime: string;
   items: OrderItem[];
   payments: OrderPayment[];
@@ -183,12 +286,15 @@ export interface AdminUser {
   email: string;
   phone: string | null;
   googleId: string | null;
+  referredByCode?: string | null;
   rowCreatedTime: string;
+  rowUpdatedTime?: string;
+  totalSpent?: number;
   _count: { orders: number; wishlist: number; enquiries: number };
 }
 
 export interface AdminOrder extends Order {
-  user: { id: string; name: string; email: string };
+  user: { id: string; name: string; email: string; phone?: string | null };
 }
 
 export interface AdminEnquiry {
@@ -207,7 +313,7 @@ export interface AdminWishlistEntry {
   id: string;
   rowCreatedTime: string;
   user: { id: string; name: string; email: string };
-  project: { id: string; projectTitle: string };
+  project: { id: string; projectTitle: string; discountedPrice?: number | null };
 }
 
 export interface Category {
@@ -236,6 +342,15 @@ export interface ProjectInput {
   recommendedPrice?: number | null;
   discountedPrice?: number | null;
   originalPrice?: number | null;
+  basicPrice?: number | null;
+  standardPrice?: number | null;
+  premiumPrice?: number | null;
+  elitePrice?: number | null;
+  isFeatured?: boolean;
+  isTrending?: boolean;
+  demoVideoUrl?: string | null;
+  outputImages?: string | null;
+  vivaQuestions?: string | null;
   suggestedTech?: string | null;
   suggestedModules?: string | null;
   categoryId: string;
@@ -244,7 +359,6 @@ export interface ProjectInput {
 }
 
 export type OfferScopeType = "ALL" | "CATEGORY" | "SUBCATEGORY" | "PROJECT";
-
 export type AdvanceType = "FIXED" | "PERCENT";
 
 export interface Offer {
@@ -289,11 +403,82 @@ export interface AdminPaginated<T> {
 
 export interface AdminStats {
   userCount: number;
+  usersThisWeek?: number;
   projectCount: number;
+  projectsThisWeek?: number;
   orderStatusCounts: Record<string, number>;
   totalRevenue: number;
+  revenueToday?: number;
+  revenueThisWeek?: number;
+  revenueThisMonth?: number;
   activeOfferCount: number;
+  offersExpiring24h?: number;
   newEnquiryCount: number;
+  enquiriesToday?: number;
+  pendingDeliveryCount?: number;
+  slaBreachedCount?: number;
+  openTicketCount?: number;
+  meetsTodayCount?: number;
+  topProjects?: {
+    projectId: string;
+    title: string;
+    paidOrderCount: number;
+    totalRevenue: number;
+  }[];
+  recentActivity?: {
+    id: string;
+    type: string;
+    title: string;
+    subtitle: string;
+    timestamp: string;
+  }[];
+  infrastructureStatus?: {
+    payPanda: string;
+    smtp: string;
+    postgres: string;
+    apiLatencyMs: number;
+    lastDeployment: string;
+  };
+}
+
+export interface DeliveryBoardResponse {
+  columns: {
+    PACKAGE_PENDING: AdminOrder[];
+    PACKAGE_SENT: AdminOrder[];
+    SETUP_DONE: AdminOrder[];
+    MEET_SCHEDULED: AdminOrder[];
+    COMPLETED: AdminOrder[];
+  };
+  total: number;
+  slaBreachedCount: number;
+  pendingPackageCount: number;
+}
+
+export interface ServiceMatrixTier {
+  name: string;
+  tagline: string;
+  defaultPrice: number;
+  services: Record<string, { enabled: boolean; label: string; included: boolean }>;
+}
+
+export interface ServiceMatrix {
+  tiers: {
+    BASIC: ServiceMatrixTier;
+    STANDARD: ServiceMatrixTier;
+    PREMIUM: ServiceMatrixTier;
+    ELITE: ServiceMatrixTier;
+  };
+}
+
+export interface SystemSettings {
+  referralRewardAmount: number;
+  defaultSlaHours: number;
+  siteContactEmail: string;
+  businessWhatsApp: string;
+  maintenanceMode: boolean;
+  homepageAnnouncement: string;
+  googleMeetEnabled: boolean;
+  paymentGateway: string;
 }
 
 export interface AdminIdentity {

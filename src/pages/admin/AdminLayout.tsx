@@ -1,33 +1,45 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Users,
+  Kanban,
+  ShoppingBag,
   FolderKanban,
   Tags,
-  ShoppingBag,
+  Layers,
+  Calendar,
+  LifeBuoy,
+  Users,
+  UserCheck,
   MessageSquare,
   Heart,
   Percent,
   Gift,
+  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
   Shield,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAdminAuthStore } from "@/store/useAdminAuthStore";
 import { cn } from "@/lib/cn";
 
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/delivery", label: "Delivery Board", icon: Kanban },
+  { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { to: "/admin/projects", label: "Projects", icon: FolderKanban },
   { to: "/admin/collections", label: "Collections", icon: Tags },
-  { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { to: "/admin/services", label: "Services & Tiers", icon: Layers },
+  { to: "/admin/calendar", label: "Meets & Visits", icon: Calendar },
+  { to: "/admin/tickets", label: "Support Tickets", icon: LifeBuoy },
+  { to: "/admin/users", label: "Students", icon: Users },
+  { to: "/admin/staff", label: "Staff Team", icon: UserCheck },
   { to: "/admin/enquiries", label: "Enquiries", icon: MessageSquare },
   { to: "/admin/wishlist", label: "Wishlist", icon: Heart },
   { to: "/admin/offers", label: "Offers", icon: Percent },
   { to: "/admin/referrals", label: "Referrals", icon: Gift },
+  { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminLayout() {
@@ -66,19 +78,24 @@ export function AdminLayout() {
       <aside
         className={cn(
           "shrink-0 border-r border-line bg-surface flex flex-col transition-all duration-300 relative z-20",
-          collapsed ? "w-[72px]" : "w-60"
+          collapsed ? "w-[72px]" : "w-64"
         )}
       >
         {/* Sidebar Header */}
         <div className="h-16 px-4 flex items-center justify-between border-b border-line">
           {!collapsed ? (
-            <div className="flex items-center gap-2 overflow-hidden select-none">
+            <div className="flex items-center gap-2.5 overflow-hidden select-none">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-violet to-cyan text-white shadow-md font-bold text-sm shrink-0">
                 HT
               </div>
-              <span className="font-display text-base font-bold text-fg truncate">
-                HexTorq Admin
-              </span>
+              <div className="min-w-0">
+                <span className="font-display text-sm font-bold text-fg block truncate leading-tight">
+                  HexTorq Enterprise
+                </span>
+                <span className="text-[10px] text-muted font-mono block truncate">
+                  Mission Control v1.1
+                </span>
+              </div>
             </div>
           ) : (
             <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-violet to-cyan text-white shadow-md font-bold text-sm shrink-0">
@@ -103,7 +120,7 @@ export function AdminLayout() {
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
           {NAV.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
@@ -112,17 +129,17 @@ export function AdminLayout() {
               title={collapsed ? label : undefined}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center rounded-xl text-sm font-medium transition-all group relative",
+                  "flex items-center rounded-xl text-xs font-semibold transition-all group relative",
                   collapsed
                     ? "justify-center h-10 w-full px-0"
-                    : "gap-3 px-3.5 py-2.5",
+                    : "gap-3 px-3 py-2.5",
                   isActive
-                    ? "bg-violet text-white shadow-md shadow-violet/20"
+                    ? "bg-violet text-white shadow-md shadow-violet/20 font-bold"
                     : "text-muted hover:bg-bg-soft hover:text-fg"
                 )
               }
             >
-              <Icon className="h-4.5 w-4.5 shrink-0" />
+              <Icon className="h-4 w-4 shrink-0" />
               {!collapsed && <span className="truncate">{label}</span>}
 
               {/* Tooltip in collapsed mode */}
@@ -144,7 +161,7 @@ export function AdminLayout() {
               </div>
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-muted hover:bg-rose-500/10 hover:text-rose-400 transition-colors cursor-pointer"
+                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-muted hover:bg-rose-500/10 hover:text-rose-400 transition-colors cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
                 Log out

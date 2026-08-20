@@ -11,11 +11,19 @@ import type {
   AdminWishlistEntry,
   ApplicationAreaAdmin,
   Category,
+  DeliveryBoardResponse,
+  MeetSchedule,
   Offer,
   OfferInput,
   Project,
   ProjectInput,
+  ServiceMatrix,
+  StaffMember,
   SubCategoryAdmin,
+  SupportTicket,
+  SystemSettings,
+  User,
+  VisitSchedule,
 } from "./types";
 
 // ---- auth ----
@@ -32,11 +40,23 @@ export function useAdminLogin() {
 }
 
 // ---- users ----
-export function useAdminUsers(page: number, search?: string) {
-  const qs = new URLSearchParams({ page: String(page), ...(search ? { search } : {}) }).toString();
+export function useAdminUsers(page: number, search?: string, authProvider?: string) {
+  const qs = new URLSearchParams({
+    page: String(page),
+    ...(search ? { search } : {}),
+    ...(authProvider ? { authProvider } : {}),
+  }).toString();
   return useQuery({
-    queryKey: ["admin", "users", page, search],
+    queryKey: ["admin", "users", page, search, authProvider],
     queryFn: () => adminApiFetch<AdminPaginated<AdminUser>>(`/admin/users?${qs}`, { auth: true }),
+  });
+}
+
+export function useUserDetail(id: string | null) {
+  return useQuery({
+    queryKey: ["admin", "user-detail", id],
+    queryFn: () => adminApiFetch<{ user: any; totalSpent: number }>(`/admin/users/${id}/detail`, { auth: true }),
+    enabled: !!id,
   });
 }
 
@@ -62,10 +82,15 @@ export function useDeleteAdminUser() {
 }
 
 // ---- projects ----
-export function useAdminProjects(page: number, search?: string) {
-  const qs = new URLSearchParams({ page: String(page), ...(search ? { search } : {}) }).toString();
+export function useAdminProjects(page: number, search?: string, tier?: string, category?: string) {
+  const qs = new URLSearchParams({
+    page: String(page),
+    ...(search ? { search } : {}),
+    ...(tier ? { tier } : {}),
+    ...(category ? { category } : {}),
+  }).toString();
   return useQuery({
-    queryKey: ["admin", "projects", page, search],
+    queryKey: ["admin", "projects", page, search, tier, category],
     queryFn: () => adminApiFetch<AdminPaginated<Project>>(`/admin/projects?${qs}`, { auth: true }),
   });
 }
@@ -88,6 +113,27 @@ export function useUpdateAdminProject() {
   });
 }
 
+export function useDuplicateProject() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      adminApiFetch<Project>(`/admin/projects/${id}/duplicate`, { method: "POST", auth: true }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "projects"] }),
+  });
+}
+
+export function useBulkImportProjects() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (items: any[]) =>
+      adminApiFetch<{ success: boolean; importedCount: number; failedCount: number; errors: string[] }>(
+        "/admin/projects/bulk-import",
+        { method: "POST", body: JSON.stringify({ items }), auth: true }
+      ),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "projects"] }),
+  });
+}
+
 export function useDeleteAdminProject() {
   const qc = useQueryClient();
   return useMutation({
@@ -96,13 +142,14 @@ export function useDeleteAdminProject() {
   });
 }
 
-// ---- collections: categories / sub-categories / application areas ----
+// ---- collections ----
 export function useAdminCategories() {
   return useQuery({
     queryKey: ["admin", "categories"],
-    queryFn: () => adminApiFetch<{ items: Category[] }>("/admin/categories", { auth: true }),
+    queryFn: () => adminApiFetch<AdminPaginated<Category>>("/admin/categories", { auth: true }),
   });
 }
+
 export function useCreateAdminCategory() {
   const qc = useQueryClient();
   return useMutation({
@@ -111,6 +158,7 @@ export function useCreateAdminCategory() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "categories"] }),
   });
 }
+
 export function useUpdateAdminCategory() {
   const qc = useQueryClient();
   return useMutation({
@@ -119,6 +167,7 @@ export function useUpdateAdminCategory() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "categories"] }),
   });
 }
+
 export function useDeleteAdminCategory() {
   const qc = useQueryClient();
   return useMutation({
@@ -130,21 +179,27 @@ export function useDeleteAdminCategory() {
 export function useAdminSubCategories() {
   return useQuery({
     queryKey: ["admin", "sub-categories"],
-    queryFn: () => adminApiFetch<{ items: SubCategoryAdmin[] }>("/admin/sub-categories", { auth: true }),
+    queryFn: () => adminApiFetch<AdminPaginated<SubCategoryAdmin>>("/admin/sub-categories", { auth: true }),
   });
 }
+
 export function useCreateAdminSubCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: { subCategoryName: string; categoryId: string }) =>
-      adminApiFetch<SubCategoryAdmin>("/admin/sub-categories", { method: "POST", body: JSON.stringify(body), auth: true }),
+      adminApiFetch<SubCategoryAdmin>("/admin/sub-categories", {
+        method: "POST",
+        body: JSON.stringify(body),
+        auth: true,
+      }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "sub-categories"] }),
   });
 }
+
 export function useUpdateAdminSubCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Partial<{ subCategoryName: string; categoryId: string }> }) =>
+    mutationFn: ({ id, body }: { id: string; body: { subCategoryName: string; categoryId: string } }) =>
       adminApiFetch<SubCategoryAdmin>(`/admin/sub-categories/${id}`, {
         method: "PATCH",
         body: JSON.stringify(body),
@@ -153,6 +208,7 @@ export function useUpdateAdminSubCategory() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "sub-categories"] }),
   });
 }
+
 export function useDeleteAdminSubCategory() {
   const qc = useQueryClient();
   return useMutation({
@@ -164,9 +220,10 @@ export function useDeleteAdminSubCategory() {
 export function useAdminApplicationAreas() {
   return useQuery({
     queryKey: ["admin", "application-areas"],
-    queryFn: () => adminApiFetch<{ items: ApplicationAreaAdmin[] }>("/admin/application-areas", { auth: true }),
+    queryFn: () => adminApiFetch<AdminPaginated<ApplicationAreaAdmin>>("/admin/application-areas", { auth: true }),
   });
 }
+
 export function useCreateAdminApplicationArea() {
   const qc = useQueryClient();
   return useMutation({
@@ -179,6 +236,7 @@ export function useCreateAdminApplicationArea() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "application-areas"] }),
   });
 }
+
 export function useUpdateAdminApplicationArea() {
   const qc = useQueryClient();
   return useMutation({
@@ -191,41 +249,250 @@ export function useUpdateAdminApplicationArea() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "application-areas"] }),
   });
 }
+
 export function useDeleteAdminApplicationArea() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) =>
-      adminApiFetch<void>(`/admin/application-areas/${id}`, { method: "DELETE", auth: true }),
+    mutationFn: (id: string) => adminApiFetch<void>(`/admin/application-areas/${id}`, { method: "DELETE", auth: true }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "application-areas"] }),
   });
 }
 
 // ---- orders ----
-export function useAdminOrders(page: number, status?: string, search?: string) {
+export function useAdminOrders(
+  page: number,
+  status?: string,
+  search?: string,
+  deliveryStatus?: string,
+  serviceTier?: string,
+  slaBreached?: boolean
+) {
   const qs = new URLSearchParams({
     page: String(page),
     ...(status ? { status } : {}),
     ...(search ? { search } : {}),
+    ...(deliveryStatus ? { deliveryStatus } : {}),
+    ...(serviceTier ? { serviceTier } : {}),
+    ...(slaBreached ? { slaBreached: "true" } : {}),
   }).toString();
   return useQuery({
-    queryKey: ["admin", "orders", page, status, search],
+    queryKey: ["admin", "orders", page, status, search, deliveryStatus, serviceTier, slaBreached],
     queryFn: () => adminApiFetch<AdminPaginated<AdminOrder>>(`/admin/orders?${qs}`, { auth: true }),
   });
 }
+
+export function useAdminOrder(id: string | null) {
+  return useQuery({
+    queryKey: ["admin", "order", id],
+    queryFn: () => adminApiFetch<AdminOrder>(`/admin/orders/${id}`, { auth: true }),
+    enabled: !!id,
+  });
+}
+
 export function useUpdateAdminOrder() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Partial<{ status: string; paymentStatus: string }> }) =>
-      adminApiFetch<AdminOrder>(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(body), auth: true }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "orders"] }),
+    mutationFn: ({ id, body }: { id: string; body: Partial<{ status: string; paymentStatus: string; deliveryStatus: string; serviceTier: string; assignedToId: string | null; internalNotes: string | null }> }) =>
+      adminApiFetch<AdminOrder>(`/admin/orders/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+        auth: true,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "orders"] });
+      qc.invalidateQueries({ queryKey: ["admin", "delivery"] });
+    },
   });
 }
+
 export function useVerifyAdminOrder() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      adminApiFetch<{ order: AdminOrder }>(`/admin/orders/${id}/verify`, { method: "POST", auth: true }),
+      adminApiFetch<{ order: AdminOrder; verification: any }>(`/admin/orders/${id}/verify`, {
+        method: "POST",
+        auth: true,
+      }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "orders"] }),
+  });
+}
+
+// ---- enterprise delivery board ----
+export function useAdminDeliveryBoard() {
+  return useQuery({
+    queryKey: ["admin", "delivery", "board"],
+    queryFn: () => adminApiFetch<DeliveryBoardResponse>("/admin/delivery/board", { auth: true }),
+    refetchInterval: 30000,
+  });
+}
+
+export function useUpdateDeliveryStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, deliveryStatus, action, note, assignedToId }: { id: string; deliveryStatus: string; action?: string; note?: string; assignedToId?: string | null }) =>
+      adminApiFetch<AdminOrder>(`/admin/delivery/orders/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ deliveryStatus, action, note, assignedToId }),
+        auth: true,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "delivery"] });
+      qc.invalidateQueries({ queryKey: ["admin", "orders"] });
+    },
+  });
+}
+
+export function useSendProjectPackage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, downloadUrl, packageVersion, customNote }: { id: string; downloadUrl?: string; packageVersion?: string; customNote?: string }) =>
+      adminApiFetch<{ success: boolean; order: AdminOrder }>(`/admin/delivery/orders/${id}/send-package`, {
+        method: "POST",
+        body: JSON.stringify({ downloadUrl, packageVersion, customNote }),
+        auth: true,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "delivery"] });
+      qc.invalidateQueries({ queryKey: ["admin", "orders"] });
+    },
+  });
+}
+
+// ---- staff team ----
+export function useAdminStaff() {
+  return useQuery({
+    queryKey: ["admin", "staff"],
+    queryFn: () => adminApiFetch<{ items: StaffMember[] }>("/admin/staff", { auth: true }),
+  });
+}
+
+export function useCreateStaff() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { name: string; email: string; password: string; role: string }) =>
+      adminApiFetch<StaffMember>("/admin/staff", { method: "POST", body: JSON.stringify(body), auth: true }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "staff"] }),
+  });
+}
+
+export function useUpdateStaff() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: Partial<{ name: string; email: string; role: string; isActive: boolean; password?: string }> }) =>
+      adminApiFetch<StaffMember>(`/admin/staff/${id}`, { method: "PATCH", body: JSON.stringify(body), auth: true }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "staff"] }),
+  });
+}
+
+// ---- calendar (meets & visits) ----
+export function useAdminCalendar() {
+  return useQuery({
+    queryKey: ["admin", "calendar"],
+    queryFn: () => adminApiFetch<{ meets: MeetSchedule[]; visits: VisitSchedule[] }>("/admin/calendar", { auth: true }),
+  });
+}
+
+export function useScheduleMeet() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { orderId: string; scheduledAt: string; meetLink?: string; note?: string }) =>
+      adminApiFetch<MeetSchedule>("/admin/calendar/meets", { method: "POST", body: JSON.stringify(body), auth: true }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "calendar"] });
+      qc.invalidateQueries({ queryKey: ["admin", "delivery"] });
+    },
+  });
+}
+
+export function useScheduleVisit() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { orderId: string; scheduledAt: string; location: string; note?: string }) =>
+      adminApiFetch<VisitSchedule>("/admin/calendar/visits", { method: "POST", body: JSON.stringify(body), auth: true }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "calendar"] });
+      qc.invalidateQueries({ queryKey: ["admin", "delivery"] });
+    },
+  });
+}
+
+// ---- support tickets ----
+export function useAdminTickets(status?: string) {
+  const qs = status ? `?status=${status}` : "";
+  return useQuery({
+    queryKey: ["admin", "tickets", status],
+    queryFn: () => adminApiFetch<{ items: SupportTicket[] }>(`/admin/tickets${qs}`, { auth: true }),
+  });
+}
+
+export function useReplyTicket() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body, status }: { id: string; body: string; status?: string }) =>
+      adminApiFetch<{ message: any; ticket: SupportTicket }>(`/admin/tickets/${id}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ body, status }),
+        auth: true,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "tickets"] }),
+  });
+}
+
+export function useUpdateTicket() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: Partial<{ status: string; priority: string; assignedToId: string | null }> }) =>
+      adminApiFetch<SupportTicket>(`/admin/tickets/${id}`, { method: "PATCH", body: JSON.stringify(body), auth: true }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "tickets"] }),
+  });
+}
+
+// ---- services & tier matrix ----
+export function useAdminServiceMatrix() {
+  return useQuery({
+    queryKey: ["admin", "services", "matrix"],
+    queryFn: () => adminApiFetch<ServiceMatrix>("/admin/services/matrix", { auth: true }),
+  });
+}
+
+export function useUpdateServiceMatrix() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ServiceMatrix) =>
+      adminApiFetch<{ message: string; matrix: ServiceMatrix }>("/admin/services/matrix", {
+        method: "PUT",
+        body: JSON.stringify(body),
+        auth: true,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "services", "matrix"] }),
+  });
+}
+
+// ---- system settings ----
+export function useAdminSettings() {
+  return useQuery({
+    queryKey: ["admin", "settings"],
+    queryFn: () => adminApiFetch<SystemSettings>("/admin/settings", { auth: true }),
+  });
+}
+
+export function useUpdateSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: Partial<SystemSettings>) =>
+      adminApiFetch<{ message: string; settings: SystemSettings }>("/admin/settings", {
+        method: "PUT",
+        body: JSON.stringify(body),
+        auth: true,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "settings"] }),
+  });
+}
+
+export function useAdminEmailTemplates() {
+  return useQuery({
+    queryKey: ["admin", "settings", "email-templates"],
+    queryFn: () => adminApiFetch<{ templates: any[] }>("/admin/settings/email-templates", { auth: true }),
   });
 }
 
@@ -237,6 +504,7 @@ export function useAdminEnquiries(page: number, status?: string) {
     queryFn: () => adminApiFetch<AdminPaginated<AdminEnquiry>>(`/admin/enquiries?${qs}`, { auth: true }),
   });
 }
+
 export function useUpdateAdminEnquiry() {
   const qc = useQueryClient();
   return useMutation({
@@ -249,6 +517,7 @@ export function useUpdateAdminEnquiry() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "enquiries"] }),
   });
 }
+
 export function useDeleteAdminEnquiry() {
   const qc = useQueryClient();
   return useMutation({
@@ -264,6 +533,7 @@ export function useAdminWishlist(page: number) {
     queryFn: () => adminApiFetch<AdminPaginated<AdminWishlistEntry>>(`/admin/wishlist?page=${page}`, { auth: true }),
   });
 }
+
 export function useDeleteAdminWishlistEntry() {
   const qc = useQueryClient();
   return useMutation({
@@ -276,9 +546,10 @@ export function useDeleteAdminWishlistEntry() {
 export function useAdminOffers() {
   return useQuery({
     queryKey: ["admin", "offers"],
-    queryFn: () => adminApiFetch<{ items: Offer[] }>("/admin/offers", { auth: true }),
+    queryFn: () => adminApiFetch<AdminPaginated<Offer>>("/admin/offers", { auth: true }),
   });
 }
+
 export function useCreateAdminOffer() {
   const qc = useQueryClient();
   return useMutation({
@@ -287,6 +558,7 @@ export function useCreateAdminOffer() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "offers"] }),
   });
 }
+
 export function useUpdateAdminOffer() {
   const qc = useQueryClient();
   return useMutation({
@@ -295,6 +567,7 @@ export function useUpdateAdminOffer() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "offers"] }),
   });
 }
+
 export function useDeleteAdminOffer() {
   const qc = useQueryClient();
   return useMutation({
@@ -308,6 +581,7 @@ export function useAdminStats() {
   return useQuery({
     queryKey: ["admin", "stats"],
     queryFn: () => adminApiFetch<AdminStats>("/admin/stats", { auth: true }),
+    refetchInterval: 15000,
   });
 }
 
@@ -336,9 +610,6 @@ interface AdminReferralWithdrawal {
   transactionId?: string | null;
   paidAt?: string | null;
   createdAt: string;
-  createdBy?: string;
-  updatedBy?: string;
-  updatedAt?: string;
 }
 
 interface AdminReferralStats {
@@ -368,9 +639,6 @@ interface AdminReferrer {
   available: number;
 }
 
-// /admin/referrals/* returns `totalPages`, unlike every other admin list
-// endpoint's `pages` (see AdminPaginated<T>) — kept as its own shape rather
-// than papering over the mismatch.
 interface ReferralPaginated<T> {
   items: T[];
   total: number;
